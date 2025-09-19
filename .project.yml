@@ -1,0 +1,4 @@
+project:
+  name: "buildfab-pre-push"
+  modules:
+    - "pre-push"

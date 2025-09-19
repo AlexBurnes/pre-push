@@ -1,0 +1,116 @@
+#!/bin/bash
+
+#FIXME add git depth check
+cp ./scripts/pre-push ./.git/hooks/pre-push
+if [[ -t 2 ]] && [[ -z "${NO_COLOR-}" ]] && [[ "${TERM-}" != "dumb" ]]; then
+    clre="\e[0m" black='\e[30m' red='\e[31m' green='\e[32m' yellow='\e[33m' blue='\e[34m' magenta='\e[35m' cyan='\e[36m' gray='\e[37m' white='\e[38m' bold='\e[1m' blink='\e[5m]'
+else
+    clre='' red='' green='' orange='' blue='' purple='' cyan='' yellow='' bold='' blink=''
+fi
+
+#echo -e "arguments: $@"
+#echo -e "what is pushing:"
+push_refs=0
+
+push_head_ref=
+push_head_commit=
+push_tag_ref=
+push_tag_sha=
+
+while IFS= read -t 1 -r arg; do
+    #echo -e "arg '${arg}'"
+    if [[ ! -z "${arg}" ]]; then
+        ((push_refs++))
+    fi
+    if [[ "${arg}" =~ ^refs\/heads ]]; then
+        push_head_ref=$(echo ${arg} | awk '{print $1}')
+        push_head_commit=$(echo ${arg} | awk '{print $2}')
+        #echo -e "pushing heads ref '${push_head_ref} commit '${push_head_commit}'"
+    fi
+    if [[ "${arg}" =~ ^refs\/tags ]]; then
+        push_tag_ref=$(echo ${arg} | awk '{print $1}')
+        push_tag_sha=$(echo ${arg} | awk '{print $2}')
+        #echo -e "pushing tags ref '${push_tag_ref} sha '${push_tag_sha}'"
+    fi
+done
+
+if [[ ${push_refs} -eq 0 ]]; then
+    exit 0
+fi
+
+head_commit=$(cat .git/HEAD)
+#echo -e "head '${head_commit}'"
+if [[ "${head_commit}" =~ ^ref\: ]]; then
+    head_ref=$(echo ${head_commit} | sed -r 's/^ref\:\s//')
+    #echo -e "head ref ${head_ref}"
+    if [[ -f ".git/${head_ref}" ]]; then
+        head_commit=$(cat .git/${head_ref})
+    fi
+fi
+#echo -e "head commit ${head_commit}"
+
+if [[ -z "${push_head_ref}" || ! ( "${head_ref}" == "${push_head_ref}" && "${head_commit}" == "${push_head_commit}" ) ]]; then
+    #echo -e "no current head or branch is pushing"
+    exit 0
+fi
+
+# Only check version consistency when pushing the current branch
+# Check if we're pushing tags and validate them against VERSION file
+if [[ ! -z "${push_tag_ref}" ]]; then
+    version_tag=$(echo $push_tag_ref | sed -r 's/^refs\/tags\///')
+    
+    # Try to use built version utility first
+    if [[ -e "scripts/version" ]]; then
+        scripts/version check "$version_tag"
+        rc=$?
+        if [[ $rc -gt 0 ]]; then
+            echo -e "${red}Version check failed for tag: $version_tag${clre}"
+            exit 1
+        fi
+    elif [[ -e "scripts/version-check" ]]; then
+        scripts/version-check "$version_tag"
+        rc=$?
+        if [[ $rc -gt 0 ]]; then
+            echo -e "${red}Version check failed for tag: $version_tag${clre}"
+            exit 1
+        fi
+    else
+        echo -e "${yellow}Warning: neither version utility nor version-check script found, skipping version validation${clre}"
+    fi
+fi
+
+#FIXME prevent pre-push if pushing references is not on the same branch
+#echo -e "arguments: $@"
+#IFS= read -t 0.1 -r cli
+#echo -e "what is pushing: ${cli}"
+#exit 1
+
+# Check untracked files
+wc=$(git status 2>&1 | grep 'Untracked' | wc | awk '{print $1}')
+if [[ "${wc}" -gt 0 ]]; then
+    echo -e "${red}there is an untracked file(s)${clre}"
+    echo -e "${red}put it into git index or git stash or into .gitignore${clre}"
+    git status
+    exit 1
+fi
+
+# Check uncommited files in index
+wc=$(git status 2>&1 | grep 'Changes to be committed:' | wc | awk '{print $1}')
+if [[ "${wc}" -gt 0 ]]; then
+    echo -e "${red}there is an uncommited file(s)${clre}"
+    echo -e "${red}commit it${clre}"
+    git status
+    exit 1
+fi
+
+# Check modifed files not added to index
+wc=$(git status 2>&1 | grep 'Changes not staged for commit:' | wc | awk '{print $1}')
+if [[ "${wc}" -gt 0 ]]; then
+    echo -e "${red}there is modified file(s)${clre}"
+    echo -e "${red}put it into git index or git stash or into .gitignore${clre}"
+    git status
+    exit 1
+fi
+
+exit 0
+

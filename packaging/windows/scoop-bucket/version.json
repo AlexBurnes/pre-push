@@ -1,0 +1,17 @@
+{
+  "version": "1.0.0",
+  "description": "git describe-like CLI",
+  "homepage": "https://github.com/AlexBurnes/version-go",
+  "license": "MIT",
+  "architecture": {
+    "64bit": {
+      "url": "https://github.com/AlexBurnes/version-go/releases/download/v1.0.0/version_1.0.0_windows_amd64.zip",
+      "hash": "sha256-REPLACE_FROM_checksums.txt"
+    },
+    "arm64": {
+      "url": "https://github.com/AlexBurnes/version-go/releases/download/v1.0.0/version_1.0.0_windows_arm64.zip",
+      "hash": "sha256-REPLACE_FROM_checksums.txt"
+    }
+  },
+  "bin": ["version.exe"]
+}
