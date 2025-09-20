@@ -74,16 +74,16 @@ func (u *UI) PrintStepStatus(stepName string, status prepush.Status, message str
 
 // PrintStageHeader prints the header for a stage
 func (u *UI) PrintStageHeader(stageName string) {
-    u.Printf("\n🚀 Running stage: %s\n", stageName)
-    u.Printf("%s\n", strings.Repeat("=", 20+len(stageName)))
+    u.Printf("\n\033[36m🚀 Running stage: %s\033[0m\n", stageName)
+    u.Printf("\033[36m%s\033[0m\n", strings.Repeat("=", 20+len(stageName)))
 }
 
 // PrintStageResult prints the result of a stage
 func (u *UI) PrintStageResult(stageName string, success bool, duration time.Duration) {
     if success {
-        u.Printf("\n✅ Stage '%s' completed successfully in %v\n", stageName, duration)
+        u.Printf("\n\033[32m✅ Stage '%s' completed successfully in %v\033[0m\n", stageName, duration)
     } else {
-        u.Printf("\n❌ Stage '%s' failed after %v\n", stageName, duration)
+        u.Printf("\n\033[31m❌ Stage '%s' failed after %v\033[0m\n", stageName, duration)
     }
 }
 
@@ -138,7 +138,7 @@ func (u *UI) PrintRepro(stepName, repro string) {
 
 // PrintSummary prints a summary of results
 func (u *UI) PrintSummary(results []prepush.Result) {
-    u.Printf("\n📊 Summary:\n")
+    u.Printf("\n\033[36m📊 Summary:\033[0m\n")
     
     okCount := 0
     warnCount := 0
@@ -155,16 +155,31 @@ func (u *UI) PrintSummary(results []prepush.Result) {
         }
     }
     
-    u.Printf("   ✅ OK: %d\n", okCount)
-    u.Printf("   ⚠️  WARN: %d\n", warnCount)
-    u.Printf("   ❌ ERROR: %d\n", errorCount)
+    // Only color items when count > 0, otherwise show in gray
+    if okCount > 0 {
+        u.Printf("   \033[32m✅ OK: %d\033[0m\n", okCount)
+    } else {
+        u.Printf("   \033[37m✅ OK: %d\033[0m\n", okCount)
+    }
+    
+    if warnCount > 0 {
+        u.Printf("   \033[33m⚠️  WARN: %d\033[0m\n", warnCount)
+    } else {
+        u.Printf("   \033[37m⚠️  WARN: %d\033[0m\n", warnCount)
+    }
     
     if errorCount > 0 {
-        u.Printf("\n❌ Some checks failed. Please fix the issues above before pushing.\n")
-    } else if warnCount > 0 {
-        u.Printf("\n⚠️  Some checks produced warnings. Review the output above.\n")
+        u.Printf("   \033[31m❌ ERROR: %d\033[0m\n", errorCount)
     } else {
-        u.Printf("\n✅ All checks passed successfully!\n")
+        u.Printf("   \033[37m❌ ERROR: %d\033[0m\n", errorCount)
+    }
+    
+    if errorCount > 0 {
+        u.Printf("\n\033[31m❌ Some checks failed. Please fix the issues above before pushing.\033[0m\n")
+    } else if warnCount > 0 {
+        u.Printf("\n\033[33m⚠️  Some checks produced warnings. Review the output above.\033[0m\n")
+    } else {
+        u.Printf("\n\033[32m✅ All checks passed successfully!\033[0m\n")
     }
 }
 
