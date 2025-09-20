@@ -13,8 +13,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Professional appearance**: Stage headers in cyan, success in green, errors in red, warnings in yellow
 
 ### Fixed
-- **Git hook argument parsing**: Fixed argument parsing to read from stdin when called by Git instead of command line
-- **Hook detection**: Added proper detection of when tool is called by Git vs manually
+- **Git hook argument parsing**: Fixed argument parsing to ignore Git arguments and read from stdin when called by Git
+- **Hook detection**: Enhanced detection logic to distinguish between manual commands and Git hook calls
+- **Command line parsing**: Pre-push now correctly ignores Git arguments (like "origin master --tags") when called as a hook
 
 ### Changed
 - **UI system**: Enhanced colored output with conditional highlighting for better user experience

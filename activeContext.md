@@ -8,6 +8,8 @@
 - Ready for production use and deployment
 
 ## Recent Changes
+- **Fixed Git hook argument parsing**: Corrected argument parsing to ignore Git arguments and read from stdin when called by Git
+- **Improved hook detection**: Enhanced detection logic to distinguish between manual commands and Git hook calls
 - **Improved UI coloring**: Enhanced stage headers, stage results, and summary with conditional coloring
 - **Better visual feedback**: Items with count > 0 get colored, items with count = 0 show in gray
 - **Professional appearance**: Stage headers in cyan, success in green, errors in red, warnings in yellow

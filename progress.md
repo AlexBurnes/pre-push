@@ -13,6 +13,7 @@
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
 - **DAG executor**: Full dependency-based execution with cycle detection and topological sorting
 - **UI system**: Complete colored output, status reporting, progress display, and error formatting with conditional coloring
+- **Git hook integration**: Proper argument parsing that ignores Git arguments and reads ref info from stdin
 - **Configuration system**: YAML parsing, validation, and variable resolution working correctly
 - **CLI interface**: All commands (test, list-uses, --version, --help) fully functional
 - **Comprehensive testing**: Unit tests, integration tests, and E2E tests with race detection

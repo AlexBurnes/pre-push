@@ -95,19 +95,28 @@ func main() {
 
 // isGitHook determines if we're being called by Git as a hook
 func isGitHook() bool {
-    // Git calls hooks with no arguments and passes ref info via stdin
-    // We can detect this by checking if we have no args and stdin has data
+    // Git calls hooks with arguments (like "origin master --tags") and passes ref info via stdin
+    // We detect this by checking if stdin is not a terminal (pipe or file)
+    // and we're not being called with known pre-push subcommands
     if len(os.Args) > 1 {
-        return false
+        // Check if the first argument is a known pre-push subcommand
+        firstArg := os.Args[1]
+        if firstArg == "test" || firstArg == "list-uses" || 
+           firstArg == "-h" || firstArg == "--help" ||
+           firstArg == "-v" || firstArg == "--version" ||
+           firstArg == "-d" || firstArg == "--debug" {
+            return false
+        }
     }
     
-    // Check if stdin has data (Git passes ref info via stdin)
+    // When Git calls the hook, it passes ref info via stdin
+    // Check if stdin is not a terminal (pipe or file)
     stat, err := os.Stdin.Stat()
     if err != nil {
         return false
     }
     
-    // If stdin has data, we're likely being called by Git
+    // If stdin is not a character device, it's likely a pipe or file
     return (stat.Mode() & os.ModeCharDevice) == 0
 }
 
