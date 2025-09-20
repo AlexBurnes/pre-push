@@ -220,6 +220,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name:    "test",
                     Modules: []string{"test"},
@@ -260,6 +261,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name: "test",
                 },
@@ -272,6 +274,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name: "test",
                 },
@@ -289,6 +292,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name: "test",
                 },
@@ -308,6 +312,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name: "test",
                 },
@@ -330,6 +335,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name: "test",
                 },
@@ -357,6 +363,7 @@ func TestConfigValidation(t *testing.T) {
                 Project: struct {
                     Name    string   `yaml:"name"`
                     Modules []string `yaml:"modules"`
+                    BinDir  string   `yaml:"bin,omitempty"`
                 }{
                     Name: "test",
                 },
