@@ -80,8 +80,8 @@ func (r *GitUntrackedRunner) Run(ctx context.Context) (prepush.Result, error) {
     if len(untrackedFiles) > 0 {
         return prepush.Result{
             Status: prepush.StatusError,
-            Message: fmt.Sprintf("untracked files found: %s", strings.Join(untrackedFiles, ", ")),
-        }, fmt.Errorf("untracked files found: %s", strings.Join(untrackedFiles, ", "))
+            Message: "untracked files found, to manually check run:\n     git status",
+        }, fmt.Errorf("untracked files found")
     }
     
     return prepush.Result{
@@ -136,8 +136,8 @@ func (r *GitUncommittedRunner) Run(ctx context.Context) (prepush.Result, error) 
     if len(uncommittedFiles) > 0 {
         return prepush.Result{
             Status: prepush.StatusError,
-            Message: fmt.Sprintf("uncommitted changes found: %s", strings.Join(uncommittedFiles, ", ")),
-        }, fmt.Errorf("uncommitted changes found: %s", strings.Join(uncommittedFiles, ", "))
+            Message: "uncommitted changes found, to manually check run:\n     git status",
+        }, fmt.Errorf("uncommitted changes found")
     }
     
     return prepush.Result{
@@ -189,8 +189,8 @@ func (r *GitModifiedRunner) Run(ctx context.Context) (prepush.Result, error) {
         
         return prepush.Result{
             Status: prepush.StatusError,
-            Message: fmt.Sprintf("working tree differs from HEAD: %s", strings.Join(modifiedFiles, ", ")),
-        }, fmt.Errorf("working tree differs from HEAD: %s", strings.Join(modifiedFiles, ", "))
+            Message: "working tree differs from HEAD, to manually check run:\n     git diff",
+        }, fmt.Errorf("working tree differs from HEAD")
     }
     
     return prepush.Result{

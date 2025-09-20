@@ -72,6 +72,16 @@ func (u *UI) PrintStepStatus(stepName string, status prepush.Status, message str
     }
 }
 
+// PrintCLIHeader prints the CLI utility header with name and version
+func (u *UI) PrintCLIHeader(name, version string) {
+    u.Printf("\033[36m%s %s\033[0m\n", name, version)
+}
+
+// PrintProjectCheck prints the project name and version check message
+func (u *UI) PrintProjectCheck(projectName, version string) {
+    u.Printf("Checking \033[1m%s\033[0m (\033[1m%s\033[0m) before push\n", projectName, version)
+}
+
 // PrintStageHeader prints the header for a stage
 func (u *UI) PrintStageHeader(stageName string) {
     u.Printf("\n\033[36m🚀 Running stage: %s\033[0m\n", stageName)
@@ -133,6 +143,11 @@ func (u *UI) PrintCommandOutput(output string) {
 // PrintRepro prints reproduction instructions for a failed step
 func (u *UI) PrintRepro(stepName, repro string) {
     u.Printf("\n🔍 To reproduce %s:\n", stepName)
+    u.Printf("   %s\n", repro)
+}
+
+// PrintReproInline prints reproduction instructions inline with error message
+func (u *UI) PrintReproInline(stepName, repro string) {
     u.Printf("   %s\n", repro)
 }
 

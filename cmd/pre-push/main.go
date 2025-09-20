@@ -224,18 +224,21 @@ func runTest(cmd *cobra.Command, args []string) error {
     // Load configuration
     cfg, err := config.Load(".project.yml")
     if err != nil {
-        return fmt.Errorf("failed to load configuration: %w", err)
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
     }
     
     // Detect Git variables
     gitVars, err := config.DetectGitVariables(ctx)
     if err != nil {
-        return fmt.Errorf("failed to detect Git variables: %w", err)
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
     }
     
     // Resolve variables in configuration
     if err := config.ResolveVariables(cfg, gitVars); err != nil {
-        return fmt.Errorf("failed to resolve variables: %w", err)
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+        os.Exit(1)
     }
     
     // Create UI
@@ -245,7 +248,12 @@ func runTest(cmd *cobra.Command, args []string) error {
     executor := exec.New(cfg, ui)
     
     // Run pre-push stage
-    return executor.RunStage(ctx, "pre-push")
+    if err := executor.RunStage(ctx, "pre-push"); err != nil {
+        // Exit with error code but don't show Usage
+        os.Exit(1)
+    }
+    
+    return nil
 }
 
 // runListUses lists all available built-in actions

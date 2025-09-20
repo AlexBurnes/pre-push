@@ -7,6 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2025-01-27
+
+### Added
+- **Enhanced pre-push hook output**: CLI utility name, version, and project information now displayed at start
+- **Better error message formatting**: Built-in action error messages now include inline reproduction commands
+- **Improved user experience**: Error messages show "to manually check run:" with properly indented git commands
+
+### Fixed
+- **Cleaner error output**: Removed unwanted Usage information when built-in actions fail
+- **Consistent error formatting**: All built-in actions now use 4-space indentation and simple git commands
+
+### Changed
+- **Error message format**: Built-in actions now show inline reproduction commands instead of separate sections
+- **UI improvements**: Enhanced error message display with better formatting and alignment
+
+## [1.0.1] - 2025-01-27
+
 ### Added
 - **Enhanced UI coloring**: Improved stage headers, stage results, and summary with conditional coloring
 - **Better visual feedback**: Items with count > 0 get colored, items with count = 0 show in gray

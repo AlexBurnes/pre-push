@@ -8,6 +8,11 @@
 - Ready for production use and deployment
 
 ## Recent Changes
+- **Improved pre-push hook output**: Enhanced output to show CLI utility name, version, and project information at start
+- **Better error message formatting**: Improved built-in action error messages with inline reproduction commands
+- **Enhanced user experience**: Error messages now show "to manually check run:" with properly indented git commands
+- **Cleaner error output**: Removed unwanted Usage information when built-in actions fail
+- **Consistent error formatting**: All built-in actions now use 4-space indentation and simple git commands
 - **Fixed Git hook argument parsing**: Corrected argument parsing to ignore Git arguments and read from stdin when called by Git
 - **Improved hook detection**: Enhanced detection logic to distinguish between manual commands and Git hook calls
 - **Improved UI coloring**: Enhanced stage headers, stage results, and summary with conditional coloring

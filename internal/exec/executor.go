@@ -4,7 +4,9 @@ package exec
 import (
     "context"
     "fmt"
+    "os"
     "os/exec"
+    "strings"
     "time"
 
     "github.com/AlexBurnes/pre-push/internal/uses"
@@ -22,12 +24,15 @@ type Executor struct {
 
 // UI defines the interface for user interface operations
 type UI interface {
+    PrintCLIHeader(name, version string)
+    PrintProjectCheck(projectName, version string)
     PrintStepStatus(stepName string, status prepush.Status, message string)
     PrintStageHeader(stageName string)
     PrintStageResult(stageName string, success bool, duration time.Duration)
     PrintCommand(command string)
     PrintCommandOutput(output string)
     PrintRepro(stepName, repro string)
+    PrintReproInline(stepName, repro string)
     PrintSummary(results []prepush.Result)
     IsVerbose() bool
     IsDebug() bool
@@ -49,6 +54,11 @@ func (e *Executor) RunStage(ctx context.Context, stageName string) error {
     if !exists {
         return fmt.Errorf("stage not found: %s", stageName)
     }
+
+    // Print CLI header and project check
+    version := e.getVersion()
+    e.ui.PrintCLIHeader("pre-push", version)
+    e.ui.PrintProjectCheck(e.config.Project.Name, version)
 
     e.ui.PrintStageHeader(stageName)
     start := time.Now()
@@ -219,7 +229,7 @@ func (e *Executor) executeDAG(ctx context.Context, dag map[string]*DAGNode) ([]p
             
             // Check if we should stop on error
             if node.Step.OnError != "warn" {
-                return results, fmt.Errorf("step %s failed: %w", nodeName, result.Error)
+                return results, fmt.Errorf("step %s failed", nodeName)
             }
         } else {
             e.ui.PrintStepStatus(nodeName, result.Status, result.Message)
@@ -339,6 +349,37 @@ func (e *Executor) executeCustomAction(ctx context.Context, action prepush.Actio
         Status: prepush.StatusOK,
         Message: "command executed successfully",
     }, nil
+}
+
+// getVersion returns the current version from the VERSION file
+func (e *Executor) getVersion() string {
+    // Try to read from VERSION file first
+    if version, err := e.readVersionFile(); err == nil {
+        return version
+    }
+    
+    // Fallback to git tag detection
+    if version, err := e.versionDetector.DetectCurrentVersion(context.Background()); err == nil {
+        return version
+    }
+    
+    // Final fallback
+    return "unknown"
+}
+
+// readVersionFile reads the version from the VERSION file
+func (e *Executor) readVersionFile() (string, error) {
+    data, err := os.ReadFile("VERSION")
+    if err != nil {
+        return "", err
+    }
+    
+    version := strings.TrimSpace(string(data))
+    if version == "" {
+        return "", fmt.Errorf("VERSION file is empty")
+    }
+    
+    return version, nil
 }
 
 // hasErrors checks if any results have errors
