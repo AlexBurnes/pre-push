@@ -4,6 +4,7 @@
 package main
 
 import (
+    "bufio"
     "context"
     "fmt"
     "os"
@@ -41,7 +42,7 @@ pre-push hook. When invoked by Git as a hook, it reads the standard
 pre-push input and runs configured checks.
 
 Configuration is provided via .project.yml file in the repository root.`,
-    RunE: runInstall,
+    RunE: runRoot,
 }
 
 // testCmd represents the test command
@@ -64,6 +65,16 @@ of your configuration. Each action includes a brief description of what it does.
 }
 
 func main() {
+    // Check if we're being called by Git as a hook
+    if isGitHook() {
+        // When called by Git, run the hook directly
+        if err := runGitHook(); err != nil {
+            fmt.Fprintf(os.Stderr, "Error: %v\n", err)
+            os.Exit(1)
+        }
+        return
+    }
+    
     // Add global flags
     rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
     rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug output")
@@ -80,6 +91,103 @@ func main() {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
+}
+
+// isGitHook determines if we're being called by Git as a hook
+func isGitHook() bool {
+    // Git calls hooks with no arguments and passes ref info via stdin
+    // We can detect this by checking if we have no args and stdin has data
+    if len(os.Args) > 1 {
+        return false
+    }
+    
+    // Check if stdin has data (Git passes ref info via stdin)
+    stat, err := os.Stdin.Stat()
+    if err != nil {
+        return false
+    }
+    
+    // If stdin has data, we're likely being called by Git
+    return (stat.Mode() & os.ModeCharDevice) == 0
+}
+
+// runGitHook runs the pre-push hook when called by Git
+func runGitHook() error {
+    // Create context with cancellation
+    ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+    defer cancel()
+    
+    // Read ref information from stdin
+    refs, err := readGitRefs()
+    if err != nil {
+        return fmt.Errorf("failed to read Git refs: %w", err)
+    }
+    
+    // If no refs to push, exit successfully
+    if len(refs) == 0 {
+        return nil
+    }
+    
+    // Load configuration
+    cfg, err := config.Load(".project.yml")
+    if err != nil {
+        return fmt.Errorf("failed to load configuration: %w", err)
+    }
+    
+    // Detect Git variables
+    gitVars, err := config.DetectGitVariables(ctx)
+    if err != nil {
+        return fmt.Errorf("failed to detect Git variables: %w", err)
+    }
+    
+    // Resolve variables in configuration
+    if err := config.ResolveVariables(cfg, gitVars); err != nil {
+        return fmt.Errorf("failed to resolve variables: %w", err)
+    }
+    
+    // Create UI
+    ui := ui.New(verbose, debug)
+    
+    // Create executor
+    executor := exec.New(cfg, ui)
+    
+    // Run pre-push stage
+    return executor.RunStage(ctx, "pre-push")
+}
+
+// readGitRefs reads Git ref information from stdin
+func readGitRefs() ([]string, error) {
+    var refs []string
+    scanner := bufio.NewScanner(os.Stdin)
+    
+    for scanner.Scan() {
+        line := scanner.Text()
+        if line != "" {
+            refs = append(refs, line)
+        }
+    }
+    
+    if err := scanner.Err(); err != nil {
+        return nil, err
+    }
+    
+    return refs, nil
+}
+
+// runRoot handles the root command (install or update hook)
+func runRoot(cmd *cobra.Command, args []string) error {
+    // Check if version flag was set
+    if versionFlag, _ := cmd.Flags().GetBool("version"); versionFlag {
+        fmt.Printf("%s version %s\n", appName, version)
+        return nil
+    }
+    
+    // Create context with cancellation
+    ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
+    defer cancel()
+    
+    installer := install.New()
+    return installer.Install(ctx)
 }
 
 // runInstall installs or updates the pre-push hook
