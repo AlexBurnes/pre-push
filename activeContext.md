@@ -8,6 +8,9 @@
 - Ready for production use and deployment
 
 ## Recent Changes
+- **Improved UI coloring**: Enhanced stage headers, stage results, and summary with conditional coloring
+- **Better visual feedback**: Items with count > 0 get colored, items with count = 0 show in gray
+- **Professional appearance**: Stage headers in cyan, success in green, errors in red, warnings in yellow
 - **Fixed GitHub Actions workflows**: Updated CI and release workflows to use 'pre-push' instead of 'version'
 - **Implemented DRY principle**: Replaced inline code in CI workflow with proper buildtools script calls
 - **Improved workflow consistency**: Both CI and release workflows now use the same buildtools scripts

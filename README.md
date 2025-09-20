@@ -21,6 +21,7 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 - **Self-installing**: Automatic installation as Git pre-push hook
 - **Version management**: Integration with version-go library for semantic versioning
 - **Error handling**: Configurable error policies (stop/warn) per step
+- **Professional UI**: Colored output with conditional highlighting and clear status indicators
 
 ## Installation
 
