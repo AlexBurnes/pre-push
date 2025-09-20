@@ -7,7 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.0.2] - 2025-01-27
+## [1.0.3] - 2025-09-20
+
+### Fixed
+- **Test compilation errors**: Fixed missing UI interface methods in mockUI test struct
+- **Test coverage**: All tests now pass with race detection enabled
+- **Mock implementation**: Added all required UI interface methods to mockUI for proper test execution
+
+## [1.0.2] - 2025-09-20
 
 ### Added
 - **Enhanced pre-push hook output**: CLI utility name, version, and project information now displayed at start
@@ -22,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Error message format**: Built-in actions now show inline reproduction commands instead of separate sections
 - **UI improvements**: Enhanced error message display with better formatting and alignment
 
-## [1.0.1] - 2025-01-27
+## [1.0.1] - 2025-09-20
 
 ### Added
 - **Enhanced UI coloring**: Improved stage headers, stage results, and summary with conditional coloring
@@ -79,7 +86,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Build documentation**: Updated build instructions with GoReleaser dry-run and release commands
 - **Workflow documentation**: Added comprehensive CI/CD pipeline documentation to README
 
-## [0.1.0] - 2025-01-27
+## [0.1.0] - 2025-09-20
 
 ### Added
 - **Initial release**: Basic project structure and documentation

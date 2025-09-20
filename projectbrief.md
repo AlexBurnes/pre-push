@@ -29,6 +29,7 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 - Built-in Git checks (untracked, uncommitted, modified files) - ✅ IMPLEMENTED
 - Version validation and checking - ✅ IMPLEMENTED
 - Self-installation as Git hook - ⏳ PENDING
+- Test suite with race detection - ✅ IMPLEMENTED
 - Cross-platform build system (CMake + Conan + GoReleaser) - ✅ CONFIGURED
 - Comprehensive documentation and testing - ✅ IMPLEMENTED
 
