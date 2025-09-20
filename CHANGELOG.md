@@ -12,6 +12,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Better visual feedback**: Items with count > 0 get colored, items with count = 0 show in gray
 - **Professional appearance**: Stage headers in cyan, success in green, errors in red, warnings in yellow
 
+### Fixed
+- **Git hook argument parsing**: Fixed argument parsing to read from stdin when called by Git instead of command line
+- **Hook detection**: Added proper detection of when tool is called by Git vs manually
+
 ### Changed
 - **UI system**: Enhanced colored output with conditional highlighting for better user experience
 
