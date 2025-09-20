@@ -13,6 +13,7 @@ type Config struct {
     Project struct {
         Name    string   `yaml:"name"`
         Modules []string `yaml:"modules"`
+        BinDir  string   `yaml:"bin,omitempty"`
     } `yaml:"project"`
     
     Actions []Action `yaml:"actions"`
@@ -37,6 +38,8 @@ type Step struct {
     Action  string   `yaml:"action"`
     Require []string `yaml:"require,omitempty"`
     OnError string   `yaml:"onerror,omitempty"`
+    If      string   `yaml:"if,omitempty"`
+    Only    []string `yaml:"only,omitempty"`
 }
 
 // Result represents the result of executing a step
@@ -155,6 +158,13 @@ func (c *Config) Validate() error {
             
             if step.OnError != "" && step.OnError != "stop" && step.OnError != "warn" {
                 return fmt.Errorf("step %d in stage %s has invalid onerror value: %s (must be 'stop' or 'warn')", i+1, stageName, step.OnError)
+            }
+            
+            // Validate only field contains valid values
+            for _, onlyValue := range step.Only {
+                if onlyValue != "release" && onlyValue != "prerelease" && onlyValue != "patch" && onlyValue != "minor" && onlyValue != "major" {
+                    return fmt.Errorf("step %d in stage %s has invalid only value: %s (must be 'release', 'prerelease', 'patch', 'minor', or 'major')", i+1, stageName, onlyValue)
+                }
             }
         }
     }

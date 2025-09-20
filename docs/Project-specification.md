@@ -65,7 +65,9 @@ Notes:
 * Variables available for interpolation (GitHub-style):
   `${{ tag }}`, `${{ branch }}` (current repo state), plus the **version-go** library: `${{ version.version }}`, `${{ version.project }}`, `${{ version.module }}`, `${{ version.modules }}`.
 * `onerror`: `stop` (default) or `warn` per step.
-* Future: `env`, `if`, matrix, and reusable action files (out of scope for v1).
+* `only`: List of version types when step should run (e.g., `[release, prerelease]`).
+* `if`: Conditional expression for step execution (e.g., `version.type == 'release'`).
+* Future: `env`, matrix, and reusable action files (out of scope for v1).
 
 ## 3) Executor (DAG Planner)
 
@@ -114,6 +116,7 @@ Registry keys like:
 * `git@untracked` — fail if untracked files present.
 * `git@uncommitted` — fail if staged/unstaged changes present.
 * `git@modified` — fail if working tree differs from HEAD.
+* `version@check-modules-version` — fail if any module outputs incorrect version.
   (These mirror your current YAML `uses` entries.)&#x20;
 
 **Repro hints (for errors):** built-ins expose a `--repro` string in code (e.g., `git status --porcelain=v1` or a small sequence) to print when a step fails (see §6).
@@ -122,7 +125,9 @@ Registry keys like:
 
 ### 4.2 `run:` (external)
 
-Execute shell commands (multi-line allowed). If a `run:` step fails, the repro hint is simply the exact command block to run manually (printed verbatim).
+Execute shell commands (multi-line allowed). Output is suppressed by default (only OK/ERROR status shown). If a `run:` step fails, the repro hint is simply the exact command block to run manually (printed verbatim).
+
+**Language Agnostic**: `run:` actions support any test command (go test, pytest, npm test, etc.).
 
 ## 5) Output & UX
 

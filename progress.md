@@ -25,16 +25,19 @@
 - **Git integration**: Real Git repository operations for status checking and variable detection
 - **Cross-platform support**: Working on Linux with proper Go module structure
 - **Documentation**: Complete memory bank and project documentation
+- **COMPLETED: Enhanced version flag handling**: -V outputs only version, --version outputs full info
+- **COMPLETED: Bin directory support**: Project configuration supports custom module locations
+- **COMPLETED: Flexible version validation**: Shell script approach using scripts/version modules
+- **COMPLETED: Language-agnostic test execution**: Support for any test command via `run:` actions
+- **COMPLETED: Conditional execution framework**: Support for `only` and `if` conditions in step configuration
 
 ## What's Left to Build
 - **Git hook installation**: Complete the install command for automatic hook management
-- **Version detection**: Complete version-go library integration for semantic versioning
-- **Scripts directory updates**: Fix remaining scripts to use 'pre-push' instead of 'version'
-- **Advanced features**: Environment variables, conditional execution, matrix support
+- **Advanced features**: Environment variables, matrix support, conditional execution
 - **Performance optimization**: Optimize for large repositories and complex dependency graphs
 - **Cross-platform testing**: Test builds on Windows and macOS platforms
 - **CI/CD pipeline testing**: Test GitHub Actions workflows in actual CI environment
-- **Advanced error handling**: More sophisticated error recovery and retry mechanisms
+- **Documentation improvements**: Add more examples and use cases
 
 ## Known Issues and Limitations
 - **Git hook installation**: Install command not yet implemented (placeholder only)

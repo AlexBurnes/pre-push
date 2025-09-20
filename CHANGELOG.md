@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-01-27
+
+### Added
+- **Enhanced version flag handling**: -V now outputs only version, --version outputs full module info
+- **Bin directory support**: Project configuration now supports custom module locations via `bin` field
+- **Flexible version validation**: Shell script approach using `scripts/version modules` for project-specific validation
+- **Language-agnostic test execution**: Support for any test command via `run:` actions with output suppression
+- **Conditional execution support**: Added `only` and `if` conditions for step execution based on version type
+- **Project rules documentation**: Comprehensive documentation for pre-push validation requirements
+
+### Changed
+- **Custom action execution**: `run:` actions now suppress output by default, showing only OK/ERROR status
+- **Configuration schema**: Extended to support bin directory and conditional execution fields (`only`, `if`)
+- **Error handling**: Improved error messages with exact reproduction commands for custom actions
+- **Version handling**: Binary now reads version from VERSION file instead of hardcoded value
+
+### Removed
+- **version@check-modules-version built-in action**: Replaced with flexible shell script approach
+
+### Documentation
+- **Pre-push rules**: Created comprehensive documentation for validation requirements
+- **Project specification**: Updated to include enhanced configuration options
+- **Memory bank**: Updated with new architecture decisions and implementation patterns
+
 ## [1.0.3] - 2025-09-20
 
 ### Fixed

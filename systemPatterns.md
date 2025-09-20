@@ -57,15 +57,17 @@
 - **install/**: Manages Git hook installation and updates
 
 ## Built-in Actions Architecture
-**Single Group Design - IMPLEMENTED:**
-- **Group**: `git@` only (no multiple groups planned)
-- **Actions**: `git@untracked`, `git@uncommitted`, `git@modified` - ALL IMPLEMENTED
+**Single Group Design - SIMPLIFIED:**
+- **Group**: `git@` - Git repository checks (IMPLEMENTED)
+- **Actions**: 
+  - `git@untracked`, `git@uncommitted`, `git@modified` - IMPLEMENTED
 - **File Structure**: All actions in registry.go with proper interface implementation
 - **Registration**: Explicit registration calls in New() function - IMPLEMENTED
 - **Interface**: Complete Runner interface with Run, GetRepro, GetHelp, GetName methods - IMPLEMENTED
-- **Reproduction**: Git command strings for manual debugging - IMPLEMENTED
+- **Reproduction**: Command strings for manual debugging - IMPLEMENTED
 - **Help**: Descriptive text for each action - IMPLEMENTED
-- **Error Context**: Detailed error messages with file lists - IMPLEMENTED
+- **Error Context**: Clear error messages with reproduction commands - IMPLEMENTED
+- **Version Validation**: Handled via flexible shell script approach using project configuration
 
 ## Critical Implementation Paths
 **1. Configuration Loading Path - IMPLEMENTED:**
@@ -103,3 +105,15 @@ Binary Execution → Version Check → Hook Installation → Shim Creation → V
 Test Files → Mock Setup → Interface Implementation → Test Execution → Race Detection → Results
 ```
 ✅ Complete test suite with race detection and comprehensive coverage
+
+**7. Version Module Validation Path - IMPLEMENTED:**
+```
+Project Config → scripts/version modules → Shell Script → Module -V Check → Version Comparison
+```
+✅ Flexible shell script approach using project-specific configuration
+
+**8. Enhanced Version Flag Path - IMPLEMENTED:**
+```
+Command Line → Flag Detection → Version Source (VERSION file) → Format Output → Display
+```
+✅ -V outputs only version, --version outputs full module info

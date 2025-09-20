@@ -1,6 +1,7 @@
 project:
-  name: "buildfab-pre-push"
+  name: "pre-push"
   modules: ["pre-push"]
+  bin: "bin"
 
 actions:
   - name: version-check
@@ -18,6 +19,26 @@ actions:
       # This would normally call the version tool
       echo "Version greatest check passed"
 
+  - name: version-module
+    run: |
+      for module in $(scripts/version modules); do
+        echo "Checking module: bin/$module"
+        module_version=$(bin/$module -V 2>/dev/null || echo "")
+        if [ -z "$module_version" ]; then
+          echo "Could not get version from bin/$module -V"
+          exit 1
+        fi
+        if [ "$module_version" != "${{ tag }}" ]; then
+          echo "Version mismatch: bin/$module reports $module_version, expected ${{ tag }}"
+          echo "To check manually run: bin/$module -V"
+          exit 1
+        fi
+        echo "✓ bin/$module version matches: $module_version"
+      done
+
+  - name: run-tests
+    run: go test ./... -v -race
+
   - name: git-untracked
     uses: git@untracked
 
@@ -32,10 +53,17 @@ stages:
     steps:
       - action: version-check
       - action: version-greatest
+
+      # Always run version module validation
+      - action: version-module
+      
+      # Run tests only for release versions
+      - action: run-tests
+        only: [release]
+        require: [version-module]
+      
+      # Run Git checks for all versions      
       - action: git-untracked
-        require: [version-check]
       - action: git-uncommitted
-        require: [git-untracked]
       - action: git-modified
-        require: [git-uncommitted]
         onerror: warn

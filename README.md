@@ -9,6 +9,8 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 ✅ **Cross-platform** - Linux, macOS, Windows (amd64/arm64) support  
 ✅ **Package Managers** - Homebrew and Scoop integration ready  
 ✅ **CI/CD Pipeline** - GitHub Actions workflows configured and DRY-compliant  
+✅ **Enhanced Version Handling** - -V outputs only version, --version outputs full info  
+✅ **Flexible Configuration** - Bin directory support and shell script validation  
 ⏳ **Git Hook Installation** - Install command pending implementation  
 ⏳ **Advanced Features** - Environment variables, conditional execution pending
 
@@ -16,10 +18,13 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 
 - **Cross-platform**: Works on Linux, Windows, and macOS (amd64/arm64)
 - **DAG-based execution**: Parallel execution of checks with explicit dependencies
-- **Built-in checks**: Git state validation, version checking, and custom actions
+- **Built-in checks**: Git state validation with flexible custom actions
 - **Configuration-driven**: YAML-based configuration similar to GitHub Actions
 - **Self-installing**: Automatic installation as Git pre-push hook
-- **Version management**: Integration with version-go library for semantic versioning
+- **Enhanced version handling**: -V outputs only version, --version outputs full module info
+- **Flexible validation**: Shell script approach for project-specific version checking
+- **Bin directory support**: Custom module locations via project configuration
+- **Language-agnostic**: Support for any test command via `run:` actions
 - **Error handling**: Configurable error policies (stop/warn) per step
 - **Professional UI**: Colored output with conditional highlighting and clear status indicators
 - **Git hook integration**: Properly handles Git arguments and reads ref information from stdin

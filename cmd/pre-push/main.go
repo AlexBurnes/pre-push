@@ -9,6 +9,7 @@ import (
     "fmt"
     "os"
     "os/signal"
+    "strings"
     "syscall"
 
     "github.com/spf13/cobra"
@@ -20,9 +21,23 @@ import (
 )
 
 const (
-    version = "0.1.0"
     appName = "pre-push"
 )
+
+// getVersion reads the version from the VERSION file
+func getVersion() string {
+    data, err := os.ReadFile("VERSION")
+    if err != nil {
+        return "unknown"
+    }
+    
+    version := strings.TrimSpace(string(data))
+    if version == "" {
+        return "unknown"
+    }
+    
+    return version
+}
 
 // Global flags
 var (
@@ -79,8 +94,9 @@ func main() {
     rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
     rootCmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "enable debug output")
     
-    // Add version flag
-    rootCmd.Flags().BoolP("version", "V", false, "print version and exit")
+    // Add version flags
+    rootCmd.Flags().BoolP("version", "", false, "print version and module name")
+    rootCmd.Flags().BoolP("version-only", "V", false, "print version only")
     
     // Add subcommands
     rootCmd.AddCommand(testCmd)
@@ -185,9 +201,13 @@ func readGitRefs() ([]string, error) {
 
 // runRoot handles the root command (install or update hook)
 func runRoot(cmd *cobra.Command, args []string) error {
-    // Check if version flag was set
+    // Check if version flags were set
     if versionFlag, _ := cmd.Flags().GetBool("version"); versionFlag {
-        fmt.Printf("%s version %s\n", appName, version)
+        fmt.Printf("%s version %s\n", appName, getVersion())
+        return nil
+    }
+    if versionOnlyFlag, _ := cmd.Flags().GetBool("version-only"); versionOnlyFlag {
+        fmt.Printf("%s\n", getVersion())
         return nil
     }
     
@@ -201,9 +221,13 @@ func runRoot(cmd *cobra.Command, args []string) error {
 
 // runInstall installs or updates the pre-push hook
 func runInstall(cmd *cobra.Command, args []string) error {
-    // Check if version flag was set
+    // Check if version flags were set
     if versionFlag, _ := cmd.Flags().GetBool("version"); versionFlag {
-        fmt.Printf("%s version %s\n", appName, version)
+        fmt.Printf("%s version %s\n", appName, getVersion())
+        return nil
+    }
+    if versionOnlyFlag, _ := cmd.Flags().GetBool("version-only"); versionOnlyFlag {
+        fmt.Printf("%s\n", getVersion())
         return nil
     }
     

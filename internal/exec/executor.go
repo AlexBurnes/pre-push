@@ -216,6 +216,13 @@ func (e *Executor) executeDAG(ctx context.Context, dag map[string]*DAGNode) ([]p
             continue
         }
         
+        // Check if step should be executed based on conditions
+        if !e.shouldExecuteStep(ctx, node) {
+            e.ui.PrintStepStatus(nodeName, prepush.StatusOK, "skipped (condition not met)")
+            completed[nodeName] = true
+            continue
+        }
+        
         // Execute the node
         result, _ := e.executeAction(ctx, node.Action)
         result.Name = nodeName
@@ -334,14 +341,16 @@ func (e *Executor) executeCustomAction(ctx context.Context, action prepush.Actio
     cmd := exec.CommandContext(ctx, "sh", "-c", action.Run)
     output, err := cmd.CombinedOutput()
     
+    // Only show output in verbose mode for custom actions
     if e.ui.IsVerbose() {
         e.ui.PrintCommandOutput(string(output))
     }
     
     if err != nil {
+        // For custom actions, provide the exact command to run manually
         return prepush.Result{
             Status: prepush.StatusError,
-            Message: fmt.Sprintf("command failed: %v", err),
+            Message: fmt.Sprintf("Command failed. To debug run: %s", action.Run),
         }, fmt.Errorf("command failed: %w", err)
     }
     
@@ -380,6 +389,82 @@ func (e *Executor) readVersionFile() (string, error) {
     }
     
     return version, nil
+}
+
+// shouldExecuteStep determines if a step should be executed based on conditions
+func (e *Executor) shouldExecuteStep(ctx context.Context, node *DAGNode) bool {
+    // Check 'if' condition
+    if node.Step.If != "" {
+        if !e.evaluateCondition(ctx, node.Step.If) {
+            return false
+        }
+    }
+    
+    // Check 'only' conditions
+    if len(node.Step.Only) > 0 {
+        if !e.matchesOnlyConditions(ctx, node.Step.Only) {
+            return false
+        }
+    }
+    
+    return true
+}
+
+// evaluateCondition evaluates a condition string
+func (e *Executor) evaluateCondition(ctx context.Context, condition string) bool {
+    // For now, support simple conditions like "version.type == 'release'"
+    // This is a simplified implementation - in a real system, you'd want a proper expression parser
+    
+    if condition == "version.type == 'release'" {
+        versionType, err := e.getVersionType(ctx)
+        return err == nil && versionType == "release"
+    }
+    
+    if condition == "version.type == 'prerelease'" {
+        versionType, err := e.getVersionType(ctx)
+        return err == nil && versionType == "prerelease"
+    }
+    
+    // Default to true for unknown conditions
+    return true
+}
+
+// matchesOnlyConditions checks if current context matches any of the 'only' conditions
+func (e *Executor) matchesOnlyConditions(ctx context.Context, onlyConditions []string) bool {
+    versionType, err := e.getVersionType(ctx)
+    if err != nil {
+        // If we can't determine version type, don't execute steps with 'only' conditions
+        return false
+    }
+    
+    for _, condition := range onlyConditions {
+        if condition == versionType {
+            return true
+        }
+    }
+    
+    return false
+}
+
+// getVersionType determines the type of version (release, prerelease, patch, minor, major)
+func (e *Executor) getVersionType(ctx context.Context) (string, error) {
+    version, err := e.versionDetector.DetectCurrentVersion(ctx)
+    if err != nil {
+        return "", err
+    }
+    
+    // Simple heuristic: if version contains "alpha", "beta", "rc", it's prerelease
+    versionLower := strings.ToLower(version)
+    if strings.Contains(versionLower, "alpha") || 
+       strings.Contains(versionLower, "beta") || 
+       strings.Contains(versionLower, "rc") {
+        return "prerelease", nil
+    }
+    
+    // For now, assume all other versions are releases
+    // In a more sophisticated implementation, you'd analyze the version string
+    // to determine if it's a patch, minor, or major release
+    return "release", nil
 }
 
 // hasErrors checks if any results have errors
