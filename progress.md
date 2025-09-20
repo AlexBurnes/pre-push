@@ -30,6 +30,8 @@
 - **COMPLETED: Flexible version validation**: Shell script approach using scripts/version modules
 - **COMPLETED: Language-agnostic test execution**: Support for any test command via `run:` actions
 - **COMPLETED: Conditional execution framework**: Support for `only` and `if` conditions in step configuration
+- **COMPLETED: Project settings integration**: Updated .project.yml to use scripts/version utility for version validation
+- **COMPLETED: Version checking actions**: version-check and version-greatest actions now use scripts/version commands
 
 ## What's Left to Build
 - **Git hook installation**: Complete the install command for automatic hook management

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- **Project settings integration**: Updated .project.yml to use scripts/version utility for version-check and version-greatest actions
+- **Version validation**: version-check action now uses scripts/version-check command, version-greatest uses scripts/version greatest command
+
 ## [1.1.0] - 2025-01-27
 
 ### Added

@@ -17,6 +17,8 @@
 - **Implemented flexible version validation**: Replaced rigid built-in action with shell script approach
 - **Enhanced project configuration**: Added support for project-specific version checking using scripts/version modules
 - **Removed unnecessary complexity**: Eliminated version@check-modules-version built-in action
+- **Updated project settings**: Modified .project.yml to use scripts/version utility for version-check and version-greatest actions
+- **Improved version validation**: Project configuration now uses scripts/version-check and scripts/version greatest commands
 - **Fixed test compilation errors**: Added missing UI interface methods to mockUI test struct to resolve compilation failures
 - **All tests passing**: Verified all tests pass with race detection enabled (go test ./... -v -race)
 - **Improved pre-push hook output**: Enhanced output to show CLI utility name, version, and project information at start

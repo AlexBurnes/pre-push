@@ -1,23 +1,14 @@
 project:
-  name: "pre-push"
+  name: "buildfab-pre-push"
   modules: ["pre-push"]
   bin: "bin"
 
 actions:
   - name: version-check
-    run: |
-      echo "Checking version: ${{ tag }}"
-      if [ -z "${{ tag }}" ]; then
-        echo "No version tag found"
-        exit 1
-      fi
-      echo "Version check passed: ${{ tag }}"
+    run: scripts/version check
 
   - name: version-greatest
-    run: |
-      echo "Checking if ${{ tag }} is the greatest version"
-      # This would normally call the version tool
-      echo "Version greatest check passed"
+    run: scripts/version check-greatest
 
   - name: version-module
     run: |
