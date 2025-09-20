@@ -1,4 +1,4 @@
-project_name: version
+project_name: pre-push
 
 before:
   hooks:
@@ -17,9 +17,9 @@ before:
     - bash -lc './buildtools/create-simple-installers.sh {{ .Tag }}'
 
 builds:
-  - id: version
-    main: ./cmd/version
-    binary: version
+  - id: pre-push
+    main: ./cmd/pre-push
+    binary: pre-push
     goos: [linux, darwin, windows]
     goarch: [amd64, arm64]
     ldflags:
@@ -28,7 +28,7 @@ builds:
 
 archives:
   - id: default
-    builds: [version]
+    builds: [pre-push]
     format_overrides:
       - goos: windows
         format: zip
@@ -46,8 +46,8 @@ release:
   prerelease: auto
   draft: false
   extra_files:
-    - glob: "installers/version-linux-*-install.sh"
-    - glob: "installers/version-macos-*-install.sh"
+    - glob: "installers/pre-push-linux-*-install.sh"
+    - glob: "installers/pre-push-macos-*-install.sh"
 
 
 scoop:
@@ -55,12 +55,12 @@ scoop:
     owner: AlexBurnes
     name: scoop-bucket
     branch: main
-  homepage: "https://github.com/AlexBurnes/version-go"
-  description: "git describe-like CLI"
-  license: "MIT"
-  name: version
-  commit_msg_template: "chore(scoop): update version to {{ .Tag }}"
-  url_template: "https://github.com/AlexBurnes/version-go/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+  homepage: "https://github.com/AlexBurnes/pre-push"
+  description: "Cross-platform Git pre-push hook runner"
+  license: "Apache-2.0"
+  name: pre-push
+  commit_msg_template: "chore(scoop): update pre-push to {{ .Tag }}"
+  url_template: "https://github.com/AlexBurnes/pre-push/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
   skip_upload: false
   folder: "packaging/windows/scoop-bucket"
 
@@ -69,17 +69,15 @@ brews:
       owner: AlexBurnes
       name: homebrew-tap
       branch: main
-    homepage: "https://github.com/AlexBurnes/version-go"
-    description: "Cross-platform semantic version parsing, validation, and ordering CLI utility"
+    homepage: "https://github.com/AlexBurnes/pre-push"
+    description: "Cross-platform Git pre-push hook runner with DAG-based execution"
     license: "Apache-2.0"
-    name: version
-    commit_msg_template: "chore(homebrew): update version to {{ .Tag }}"
-    url_template: "https://github.com/AlexBurnes/version-go/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
+    name: pre-push
+    commit_msg_template: "chore(homebrew): update pre-push to {{ .Tag }}"
+    url_template: "https://github.com/AlexBurnes/pre-push/releases/download/{{ .Tag }}/{{ .ArtifactName }}"
     skip_upload: false
     folder: "packaging/macos"
     test: |
-      system "#{bin}/version --version"
-      system "#{bin}/version type 1.2.3"
-      system "#{bin}/version type 1.2.3~alpha.1"
-      system "#{bin}/version type 1.2.3.fix.1"
-      system "#{bin}/version type 1.2.3_feature_1"
+      system "#{bin}/pre-push --version"
+      system "#{bin}/pre-push --help"
+      system "#{bin}/pre-push list-uses"

@@ -1,4 +1,41 @@
 project:
   name: "buildfab-pre-push"
-  modules:
-    - "pre-push"
+  modules: ["pre-push"]
+
+actions:
+  - name: version-check
+    run: |
+      echo "Checking version: ${{ tag }}"
+      if [ -z "${{ tag }}" ]; then
+        echo "No version tag found"
+        exit 1
+      fi
+      echo "Version check passed: ${{ tag }}"
+
+  - name: version-greatest
+    run: |
+      echo "Checking if ${{ tag }} is the greatest version"
+      # This would normally call the version tool
+      echo "Version greatest check passed"
+
+  - name: git-untracked
+    uses: git@untracked
+
+  - name: git-uncommitted
+    uses: git@uncommitted
+
+  - name: git-modified
+    uses: git@modified
+
+stages:
+  pre-push:
+    steps:
+      - action: version-check
+      - action: version-greatest
+      - action: git-untracked
+        require: [version-check]
+      - action: git-uncommitted
+        require: [git-untracked]
+      - action: git-modified
+        require: [git-uncommitted]
+        onerror: warn

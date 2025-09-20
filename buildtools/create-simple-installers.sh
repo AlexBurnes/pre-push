@@ -31,8 +31,8 @@ for platform in "${PLATFORMS[@]}"; do
         echo "[INFO] Creating installer for $platform-$arch"
         
         # Determine binary name and extension
-        BINARY_NAME="version"
-        INSTALLER_NAME="version-${platform}-${arch}-install.sh"
+        BINARY_NAME="pre-push"
+        INSTALLER_NAME="pre-push-${platform}-${arch}-install.sh"
         
         # Create installer script
         INSTALLER_PATH="${TARGET_DIR}/${INSTALLER_NAME}"

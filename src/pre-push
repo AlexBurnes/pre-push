@@ -1,17 +1,124 @@
-#!/bin/bash
+#!/usr/bin/env bash
+source $(dirname $(readlink -e "$0"))/functions.sh
+SCRIPT_VERSION="0.2.0"
+set +e
+set +x
 
-#FIXME add git depth check
-cp ./scripts/pre-push ./.git/hooks/pre-push
-if [[ -t 2 ]] && [[ -z "${NO_COLOR-}" ]] && [[ "${TERM-}" != "dumb" ]]; then
-    clre="\e[0m" black='\e[30m' red='\e[31m' green='\e[32m' yellow='\e[33m' blue='\e[34m' magenta='\e[35m' cyan='\e[36m' gray='\e[37m' white='\e[38m' bold='\e[1m' blink='\e[5m]'
-else
-    clre='' red='' green='' orange='' blue='' purple='' cyan='' yellow='' bold='' blink=''
+# checks
+check_index=1
+
+function help() {
+    echo -e "git pre-push hook script, runs on git push command"
+    echo -e "usage: pre-push [options] test"
+    echo -e "options:"
+    echo -e "    -h|--help    print help and exit"
+    echo -e "    -v|--version print version and exit"
+    echo -e "    -d|--debug   verbose output"
+    echo -e "argumets:"
+    echo -e "   test  run this scripts manualy"
+    echo -e "git push run hooks without arguments, pass parameters to stdin"
+    echo -e "  expect exit code 0 on success and 1 on error"
+    echo -e "  on error git push terminates command and push nothing to the server"
+    echo -e "this scripts runs checks on project, check tag version is corrent, "
+    echo -e "  code style, cppcheck, ctest, rpmbuild and so on"
+    echo -e "as pre-push hook runs checks when pushig current branch"
+    exit 0
+}
+
+function version() {
+    echo -e "pre-push version ${SCRIPT_VERSION}"
+    exit 0
+}
+
+while :; do
+    case "${1-}" in
+        -h|--help)
+            help
+            ;;
+        -v|--version)
+            version
+            ;;
+        -d|--debug)
+            set -x
+            ;;
+        *)
+            break ;;
+    esac
+    shift
+done
+
+
+# install or update hook, make link in .git
+if [[  -d "${PROJECT_DIR}/.git/hooks/" ]]; then
+    if [[ ! -L "${PROJECT_DIR}/.git/hooks/${SCRIPT_NAME}" ]]; then
+        if [[ -f "${PROJECT_DIR}/.git/hooks/${SCRIPT_NAME}" ]]; then
+            rm -f "${PROJECT_DIR}/.git/hooks/${SCRIPT_NAME}"
+        fi
+        echo -e "install git hook ${SCRIPT_NAME}"
+        ln -s "${SCRIPT}" "${PROJECT_DIR}/.git/hooks/${SCRIPT_NAME}"
+    fi
 fi
+
+# compare version function and variables
+declare -ri EQUAL=0
+declare -ri GREATEST=1
+declare -ri LEAST=2
+declare -ri CMPERR=3
+function compare_versions() {
+    local v1="${1}"
+    local v2="${2}"
+    if [[ "${v1}" == "${v2}" ]]; then
+        # v1 == v2, v1 and v2 are equal
+        return $EQUAL
+    fi
+
+    local least=$(for v in $(echo "${v1} ${v2}"); do echo "${v}"; done | sort -V | head -1)
+    if [[ "${least}" == "${v1}" ]]; then
+        # v1 < v2, v1 is least
+        return $LEAST
+    fi
+
+    if [[ "${least}" == "${v2}" ]]; then
+        # v1 > v2, v1 is greatest
+        return $GREATEST
+    fi
+
+    return $CMPERR
+}
+
+function check_version_greatest() {
+    local VERSION=$(scripts/describe version)
+    local VERSION_=$(scripts/describe -s abbrev -r version)
+    compare_versions "${VERSION}" "${VERSION_}"
+    rc=$?
+    ((check_index++))
+    printf "check #${check_index}: version '$VERSION' is greatest ... "
+    if [[ $rc -eq $LEAST || $rc -eq $CMPERR ]]; then
+        echo -e "${red}least${clre} greatest is ${clre}${bold}'${VERSION_}'${clre}"
+        echo -e "    to manualy check run: git log --stat"
+        echo -e "    analise tags definitions and their version order and define greatest one"
+        checks_failed=1
+    else
+        echo -e "${green}yes${clre}"
+    fi
+    return 0
+}
+
+# default exit code
+exit_rc=1
+# flag checks is failed
+checks_failed=0
+
+# detecting what pushing commit or/and tags
 
 #echo -e "arguments: $@"
 #echo -e "what is pushing:"
-push_refs=0
+has_args=0
+if [[ "${1-}" == "test" ]]; then
+has_args=1
+fi
 
+push_refs=0
 push_head_ref=
 push_head_commit=
 push_tag_ref=
@@ -20,7 +127,7 @@ push_tag_sha=
 while IFS= read -t 1 -r arg; do
     #echo -e "arg '${arg}'"
     if [[ ! -z "${arg}" ]]; then
-        ((push_refs++))
+        ((push_refs++)) || true
     fi
     if [[ "${arg}" =~ ^refs\/heads ]]; then
         push_head_ref=$(echo ${arg} | awk '{print $1}')
@@ -31,13 +138,24 @@ while IFS= read -t 1 -r arg; do
         push_tag_ref=$(echo ${arg} | awk '{print $1}')
         push_tag_sha=$(echo ${arg} | awk '{print $2}')
         #echo -e "pushing tags ref '${push_tag_ref} sha '${push_tag_sha}'"
+        if [[ -e scripts/version_check ]]; then
+            scripts/version_check $(echo $push_tag_ref | sed -r 's/^refs\/tags\///')
+            rc=$?
+            if [[ $rc -gt 0 ]]; then
+                echo -e "${red}wrong version tag $push_tag_ref${clre}"
+                checks_failed=1
+            fi
+        fi
+        check_version_greatest
     fi
 done
 
-if [[ ${push_refs} -eq 0 ]]; then
+# if push nothing exit
+if [[ ${push_refs} -eq 0 && ${has_args} -eq 0 ]]; then
     exit 0
 fi
 
+# check pushing current branch
 head_commit=$(cat .git/HEAD)
 #echo -e "head '${head_commit}'"
 if [[ "${head_commit}" =~ ^ref\: ]]; then
@@ -49,68 +167,202 @@ if [[ "${head_commit}" =~ ^ref\: ]]; then
 fi
 #echo -e "head commit ${head_commit}"
 
-if [[ -z "${push_head_ref}" || ! ( "${head_ref}" == "${push_head_ref}" && "${head_commit}" == "${push_head_commit}" ) ]]; then
-    #echo -e "no current head or branch is pushing"
-    exit 0
-fi
+if [[ ${has_args} -eq 0 ]]; then
 
-# Only check version consistency when pushing the current branch
-# Check if we're pushing tags and validate them against VERSION file
-if [[ ! -z "${push_tag_ref}" ]]; then
-    version_tag=$(echo $push_tag_ref | sed -r 's/^refs\/tags\///')
-    
-    # Try to use built version utility first
-    if [[ -e "scripts/version" ]]; then
-        scripts/version check "$version_tag"
-        rc=$?
-        if [[ $rc -gt 0 ]]; then
-            echo -e "${red}Version check failed for tag: $version_tag${clre}"
-            exit 1
-        fi
-    elif [[ -e "scripts/version-check" ]]; then
-        scripts/version-check "$version_tag"
-        rc=$?
-        if [[ $rc -gt 0 ]]; then
-            echo -e "${red}Version check failed for tag: $version_tag${clre}"
-            exit 1
-        fi
-    else
-        echo -e "${yellow}Warning: neither version utility nor version-check script found, skipping version validation${clre}"
+    if [[ -z "${push_head_ref}"  || ! ( "${head_ref}" == "${push_head_ref}" && "${head_commit}" == "${push_head_commit}" ) ]]; then
+        #echo -e "no current head or branch is pushing"
+        exit 0
     fi
 fi
 
-#FIXME prevent pre-push if pushing references is not on the same branch
-#echo -e "arguments: $@"
-#IFS= read -t 0.1 -r cli
-#echo -e "what is pushing: ${cli}"
-#exit 1
+# strong checks only for tags pushing
+if [[ -z "${push_tag_ref}" ]]; then
+    #echo -e "no check on commit only"
+    exit_rc=0
+fi
 
-# Check untracked files
+
+printf "check #${check_index}: scripts/describe exists ... "
+if [[ ! -e "scripts/describe" ]]; then
+    echo -e "${red}no${clre}"
+    checks_failed=1
+else
+    echo -e "${green}ok${clre}"
+fi
+
+PROJECT=$(scripts/describe project)
+VERSION=$(scripts/describe version)
+GIT_VERSION=$(scripts/describe version)
+RELEASE=$(scripts/describe release)
+echo -e "Project ${bold}${PROJECT}${clre}-${blue}${bold}${VERSION}${clre}-${red}${bold}${RELEASE}${clre}"
+
+if [[ -e scripts/version_check ]]; then
+    ((check_index++))
+    printf "check #${check_index}: version '$VERSION' ... "
+    scripts/version_check ${VERSION}
+    rc=$?
+    if [[ $rc -gt 0 ]]; then
+        echo -e "${red}wrong$clre}"
+        echo -e "   for manualy check run: scripts/version_check $(scripts/describe version)"
+        checks_failed=1
+    else
+        echo -e "${green}ok${clre}"
+    fi
+fi
+
+check_version_greatest
+
+# check untracked files
+cd ${PROJECT_DIR}
+((check_index++))
+printf "check #${check_index}: there is untracked files ... "
 wc=$(git status 2>&1 | grep 'Untracked' | wc | awk '{print $1}')
 if [[ "${wc}" -gt 0 ]]; then
-    echo -e "${red}there is an untracked file(s)${clre}"
-    echo -e "${red}put it into git index or git stash or into .gitignore${clre}"
-    git status
-    exit 1
+    echo -e "${red}yes${clre}"
+    echo -e "    to manualy check run: git status"
+    echo -e "    put untrack files into git index, git stash or into .gitignore"
+    checks_failed=1
+else
+    echo -e "${green}no${clre}"
 fi
 
-# Check uncommited files in index
-wc=$(git status 2>&1 | grep 'Changes to be committed:' | wc | awk '{print $1}')
-if [[ "${wc}" -gt 0 ]]; then
-    echo -e "${red}there is an uncommited file(s)${clre}"
-    echo -e "${red}commit it${clre}"
-    git status
-    exit 1
+# check submodule is set branches in .gitsubmodule
+((check_index++))
+printf "check #${check_index}: submodule branches ... "
+${SCRIPT_PATH}/branch-check >/dev/null 2>&1
+if [[ $? -gt 0 ]]; then
+    echo -e "${red}failed${clre}"
+    echo -e "    to manualy check run: ${SCRIPT_PATH}/branch-check"
+    checks_failed=1
+else
+    echo -e "${green}ok${clre}"
 fi
 
-# Check modifed files not added to index
-wc=$(git status 2>&1 | grep 'Changes not staged for commit:' | wc | awk '{print $1}')
-if [[ "${wc}" -gt 0 ]]; then
-    echo -e "${red}there is modified file(s)${clre}"
-    echo -e "${red}put it into git index or git stash or into .gitignore${clre}"
-    git status
-    exit 1
+# Check style
+((check_index++))
+printf "check #${check_index}: code style ... "
+if [[ -f .clang-format.style ]]; then
+    ${SCRIPT_PATH}/style-check >/dev/null 2>&1
+    if [[ $? -gt 0 ]]; then
+        echo -e "${red}incorrect${clre}"
+        echo -e "    to manualy check run: ${SCRIPT_PATH}/style-check"
+        echo -e "    to fix run ${SCRIPT_PATH}/style-check -f"
+        echo -e "    to disable rename .clang-format.style to .clang-format.style.off"
+        checks_failed=1
+    else
+        echo -e "${green}correct${clre}"
+    fi
+else
+    echo -e "${magenta}disabled${clre}"
+    if [[ -f .clang-format.style.off ]]; then
+        echo -e "    to enable rename .clang-format.style.off to .clang-format.style"
+    else
+        echo -e "    to enable create file .clang-format.style, see example at scripts"
+    fi
 fi
 
+## cppcheck
+# ((check_index++))
+# printf "check #${check_index}: cppcheck ... "
+# if [[ -f .cppcheck.suppress ]]; then
+#    ${SCRIPT_PATH}/cpp-check >/dev/null 2>&1
+#    if [[ $? -gt 0 ]]; then
+#        echo -e "${red}failed${clre}"
+#        echo -e "    to manualy check run: ${SCRIPT_PATH}/cpp-check"
+#        echo -e "    to disable rename .cppcheck.suppress to .cppcheck.suppress.off"
+#        checks_failed=1
+#    else
+#        echo -e "${green}passed${clre}"
+#    fi
+#else
+#    echo -e "${magenta}disabled${clre}"
+#    if [[ -f .cppcheck.suppress.off ]]; then
+#        echo -e "    to enable rename .cppcheck.suppress.off to .cppcheck.suppress"
+#    else
+#        echo -e "    to enable create file .cppcheck.suppress, see example at scripts"
+#    fi
+#fi
+
+## Build and run tests
+#((check_index++))
+#printf "check #${check_index}: ctest ... "
+#ctest --test-dir .build --parallel 4 >/dev/null 2>&1
+#if [[ $? -gt 0 ]]; then
+#    echo -e "${red}failed${clre}"
+#    echo -e "    to manualy check run: ctest --test-dir .build -V"
+#    checks_failed=1
+#else
+#    echo -e "${green}passed${clre}"
+#fi
+
+# check module and project versions
+if [[ ! -z "${PRG_MODULE-}" ]]; then
+    ((check_index++))
+    printf "check #${check_index}: module ${PRG_MODULE} version ... "
+    PRG_VERSION=$(LD_LIBRARY_PATH=./lib:${LD_LIBRARY_PATH} ${PRG_MODULE} -V)
+    if [[ $? -gt 0 ]]; then
+        echo -e "${red}failed${clre}"
+        echo -e "    module does not accept cli option -V to get its version"
+        checks_failed=1
+    elif [[ -z "${PRG_VERSION}" ]]; then
+        echo -e "${red}failed${clre}"
+        echo -e "    module does not return version"
+        echo -e "    to manualy check run: ${PRG_MODULE} -V"
+        checks_failed=1
+    elif [[ "${PRG_VERSION}" != "${GIT_VERSION}" ]]; then
+        echo -e "${red}failed${clre}"
+        echo -e "    module version '${PRG_VERSION}' is not a current version ${VERSION}"
+        echo -e "    to manualy check run: ${PRG_MODULE} -V"
+        echo -e "    try to rebuild module"
+        checks_failed=1
+    else
+        echo -e "${green}ok${clre}"
+    fi
+fi
+
+# make rpm
+#if [[ false && -f "${PROJECT_NAME-}.spec" ]]; then
+#    if [[ -e $(which rpmbuild) && -f ${SCRIPT_PATH}/rpmbuild ]]; then
+#        ((check_index++))
+#        printf "check #${check_index}: rpmbuild ... "
+#        ${SCRIPT_PATH}/rpmbuild >/dev/null 2>&1
+#        if [ $? -gt 0 ]; then
+#            echo -e "${red}failed${clre}"
+#            echo -e "    to manualy check run: ${SCRIPT_PATH}/rpmbuild"
+#            checks_failed=1
+#        else
+#            echo -e "${green}ok${clre}"
+#        fi
+#    fi
+#fi
+
+# build docker
+#((check_index++))
+#printf "check #${check_index}: docker build ... "
+#if [[ false && -f Dockerfile ]]; then
+#    ${SCRIPT_PATH}/docker-build >/dev/null 2>&1
+#    if [ $? -gt 0 ]; then
+#        echo -e "${red}failed${clre}"
+#        echo -e "    to manualy check run: ${SCRIPT_PATH}/docker-build [Dockerfile]"
+#        checks_failed=1
+#    else
+#        echo -e "${green}ok${clre}"
+#    fi
+#else
+#    echo -e "${magenta}disabled${clre}"
+#    if [[ -f Dockerfile.off ]]; then
+#        echo -e "    to enable rename Dockerfile.off to Dockerfile"
+#        echo -e "    to manualy check run: ${SCRIPT_PATH}/docker-build Dockerfile.off"
+#    else
+#        echo -e "    to enable create file Dockerfile"
+#    fi
+#fi
+
+if [[ $checks_failed -eq 1 ]]; then
+    echo -e "${red}checks failed${clre}"
+    if [[ ${has_args} -eq 0 && ${exit_rc} -eq 0 ]]; then
+        echo -e "no tag is pushing, allowed to push with failed checks"
+    fi
+    exit ${exit_rc}
+fi
 exit 0
-

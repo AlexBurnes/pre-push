@@ -98,7 +98,18 @@ if [[ -f "VERSION" ]]; then
 else
     echo -e "VERSION file: ${RED}NOT FOUND${NC}"
     echo -e "${RED}❌ VERSION file is required for this project${NC}"
-    echo -e "${YELLOW}💡 Create VERSION file with: echo 'v0.5.8' > VERSION${NC}"
+    
+    # Get current version to suggest proper VERSION file content
+    SUGGESTED_VERSION=""
+    if [[ -f "scripts/version" ]]; then
+        SUGGESTED_VERSION=$(scripts/version version 2>/dev/null || echo "")
+    fi
+    
+    if [[ -n "$SUGGESTED_VERSION" ]]; then
+        echo -e "${YELLOW}💡 Create VERSION file with: echo 'v$SUGGESTED_VERSION' > VERSION${NC}"
+    else
+        echo -e "${YELLOW}💡 Create VERSION file with: echo 'v1.0.0' > VERSION${NC}"
+    fi
     exit 1
 fi
 

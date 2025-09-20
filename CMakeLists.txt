@@ -108,9 +108,9 @@ else()
 endif()
 
 # Project configuration
-project(version
+project(pre-push
     VERSION ${PROJECT_VERSION}
-    DESCRIPTION "Build tools version - git describe CLI"
+    DESCRIPTION "Git pre-push hook runner with DAG executor"
     LANGUAGES NONE
 )
 
@@ -156,14 +156,7 @@ if(NOT GO_EXECUTABLE)
     message(FATAL_ERROR "Go compiler not found. Please install Go ${GO_VERSION_REQUIRED} or later.")
 endif()
 
-# Build version utility for self-building (bootstrap version)
-add_custom_target(bootstrap-version
-    COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOOS=${GO_OS} GOARCH=${GO_ARCH}
-    ${GO_EXECUTABLE} build -a -ldflags "-X main.appVersion=${FULL_GIT_VERSION} -s -w" -o ${CMAKE_SOURCE_DIR}/scripts/version .
-    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/version
-    COMMENT "Building bootstrap version utility for self-building"
-    VERBATIM
-)
+# Version utility is already available in scripts/version
 
 # Check Go version
 execute_process(
@@ -184,7 +177,7 @@ endif()
 message(STATUS "Found Go version: ${GO_VERSION_NUMBER}")
 
 # Build configuration
-set(BINARY_NAME "version")
+set(BINARY_NAME "pre-push")
 set(BUILD_DIR "${CMAKE_SOURCE_DIR}/bin")
 set(CONFIG_DIR "${CMAKE_SOURCE_DIR}/etc")
 
@@ -218,17 +211,15 @@ if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     add_custom_target(${BINARY_NAME}
         COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOOS=linux GOARCH=amd64
         ${GO_EXECUTABLE} build -a -ldflags "-extldflags \"-static\"" ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${BINARY_NAME}-linux-amd64-static .
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/version
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
         COMMENT "Building static ${BINARY_NAME} for current platform (linux/amd64)"
-        DEPENDS bootstrap-version
         VERBATIM
     )
 else()
     add_custom_target(${BINARY_NAME}
         COMMAND ${GO_EXECUTABLE} build ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${BINARY_NAME} .
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/version
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
         COMMENT "Building ${BINARY_NAME} for current platform"
-        DEPENDS bootstrap-version
         VERBATIM
     )
 endif()
@@ -251,18 +242,16 @@ foreach(PLATFORM ${PLATFORMS})
         add_custom_target(${BINARY_NAME}-${GOOS}-${GOARCH}
             COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOOS=${GOOS} GOARCH=${GOARCH}
             ${GO_EXECUTABLE} build -a -ldflags "-extldflags \"-static\"" ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${BINARY_NAME_PLATFORM} .
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/version
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
             COMMENT "Building static ${BINARY_NAME} for ${GOOS}/${GOARCH}"
-            DEPENDS bootstrap-version
             VERBATIM
         )
     else()
         add_custom_target(${BINARY_NAME}-${GOOS}-${GOARCH}
             COMMAND ${CMAKE_COMMAND} -E env GOOS=${GOOS} GOARCH=${GOARCH}
             ${GO_EXECUTABLE} build ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${BINARY_NAME_PLATFORM} .
-            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/version
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
             COMMENT "Building ${BINARY_NAME} for ${GOOS}/${GOARCH}"
-            DEPENDS bootstrap-version
             VERBATIM
         )
     endif()
@@ -318,7 +307,7 @@ find_program(GOLANGCI_LINT_EXECUTABLE golangci-lint)
 if(GOLANGCI_LINT_EXECUTABLE)
     add_custom_target(lint
         COMMAND ${GOLANGCI_LINT_EXECUTABLE} run
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/version
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
         COMMENT "Linting code"
         VERBATIM
     )
@@ -458,7 +447,6 @@ message(STATUS "Config directory: ${CONFIG_DIR}")
 # Print available targets
 message(STATUS "")
 message(STATUS "Available targets:")
-message(STATUS "  bootstrap-version       - Build version utility for self-building")
 message(STATUS "  ${BINARY_NAME}           - Build for current platform (static for Linux)")
 message(STATUS "  ${BINARY_NAME}-all       - Build for all platforms")
 message(STATUS "  ${BINARY_NAME}-linux-amd64        - Build for Linux/amd64")
