@@ -32,6 +32,13 @@
 - **COMPLETED: Conditional execution framework**: Support for `only` and `if` conditions in step configuration
 - **COMPLETED: Project settings integration**: Updated .project.yml to use scripts/version utility for version validation
 - **COMPLETED: Version checking actions**: version-check and version-greatest actions now use scripts/version commands
+- **COMPLETED: PRD parallel execution improvements**: 
+  - Ordered output display (steps shown in project.yml declaration order) - ✅ IMPLEMENTED
+  - Continue running independent steps on failure - ✅ IMPLEMENTED
+  - Add SKIPPED status for dependent steps - ✅ IMPLEMENTED
+  - Enhanced error reporting and summary - ✅ IMPLEMENTED
+  - Streaming output that displays results as they complete - ✅ IMPLEMENTED
+  - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## What's Left to Build
 - **Git hook installation**: Complete the install command for automatic hook management

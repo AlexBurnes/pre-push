@@ -7,6 +7,7 @@ import (
     "os"
     "os/exec"
     "strings"
+    "sync"
     "time"
 
     "github.com/AlexBurnes/pre-push/internal/uses"
@@ -69,8 +70,8 @@ func (e *Executor) RunStage(ctx context.Context, stageName string) error {
         return fmt.Errorf("failed to build execution DAG: %w", err)
     }
 
-    // Execute DAG
-    results, err := e.executeDAG(ctx, dag)
+    // Execute DAG with streaming output in declaration order
+    results, err := e.executeDAGWithStreaming(ctx, dag, stage.Steps)
     
     duration := time.Since(start)
     success := err == nil && !hasErrors(results)
@@ -196,7 +197,7 @@ func (e *Executor) executeDAG(ctx context.Context, dag map[string]*DAGNode) ([]p
     completed := make(map[string]bool)
     failed := make(map[string]bool)
     
-    // Get topological order
+    // Get topological order for execution
     order, err := e.topologicalSort(dag)
     if err != nil {
         return results, err
@@ -213,12 +214,25 @@ func (e *Executor) executeDAG(ctx context.Context, dag map[string]*DAGNode) ([]p
         
         // Skip if already failed and this node requires it
         if e.hasFailedDependency(node, failed) {
+            // Mark as skipped due to failed dependency
+            result := prepush.Result{
+                Name: nodeName,
+                Status: prepush.StatusSkipped,
+                Message: "skipped (dependency failed)",
+            }
+            results = append(results, result)
+            completed[nodeName] = true
             continue
         }
         
         // Check if step should be executed based on conditions
         if !e.shouldExecuteStep(ctx, node) {
-            e.ui.PrintStepStatus(nodeName, prepush.StatusOK, "skipped (condition not met)")
+            result := prepush.Result{
+                Name: nodeName,
+                Status: prepush.StatusOK,
+                Message: "skipped (condition not met)",
+            }
+            results = append(results, result)
             completed[nodeName] = true
             continue
         }
@@ -232,18 +246,278 @@ func (e *Executor) executeDAG(ctx context.Context, dag map[string]*DAGNode) ([]p
         
         if result.Status == prepush.StatusError {
             failed[nodeName] = true
-            e.ui.PrintStepStatus(nodeName, result.Status, result.Message)
-            
-            // Check if we should stop on error
-            if node.Step.OnError != "warn" {
-                return results, fmt.Errorf("step %s failed", nodeName)
-            }
-        } else {
-            e.ui.PrintStepStatus(nodeName, result.Status, result.Message)
         }
+        
+        // Note: We no longer return early on error - continue executing independent steps
     }
     
     return results, nil
+}
+
+// executeDAGWithStreaming executes the DAG with streaming output in declaration order
+func (e *Executor) executeDAGWithStreaming(ctx context.Context, dag map[string]*DAGNode, steps []prepush.Step) ([]prepush.Result, error) {
+    var results []prepush.Result
+    completed := make(map[string]bool)
+    failed := make(map[string]bool)
+    displayed := make(map[string]bool)
+    executing := make(map[string]bool)
+    
+    // Create a map of results by step name for quick lookup
+    resultMap := make(map[string]prepush.Result)
+    
+    // Create channels for communication
+    resultChan := make(chan prepush.Result, len(dag))
+    done := make(chan bool)
+    
+    // Mutex for thread-safe access to shared state
+    var mu sync.Mutex
+    
+    // Start a goroutine to handle results and display them
+    go func() {
+        defer close(done)
+        for result := range resultChan {
+            mu.Lock()
+            results = append(results, result)
+            resultMap[result.Name] = result
+            completed[result.Name] = true
+            executing[result.Name] = false
+            
+            if result.Status == prepush.StatusError {
+                failed[result.Name] = true
+            }
+            mu.Unlock()
+            
+            // Display immediately if it's ready in declaration order
+            e.displayStepImmediately(result.Name, steps, resultMap, displayed, completed)
+        }
+    }()
+    
+    // Execute all ready steps in parallel
+    for {
+        mu.Lock()
+        readySteps := e.getReadyStepsLocked(dag, completed, failed, executing)
+        mu.Unlock()
+        
+        if len(readySteps) == 0 {
+            break
+        }
+        
+        // Execute ready steps in parallel
+        var wg sync.WaitGroup
+        for _, nodeName := range readySteps {
+            node := dag[nodeName]
+            
+            mu.Lock()
+            executing[nodeName] = true
+            mu.Unlock()
+            
+            // Skip if already failed and this node requires it
+            if e.hasFailedDependency(node, failed) {
+                result := prepush.Result{
+                    Name: nodeName,
+                    Status: prepush.StatusSkipped,
+                    Message: "skipped (dependency failed)",
+                }
+                resultChan <- result
+                continue
+            }
+            
+            // Check if step should be executed based on conditions
+            if !e.shouldExecuteStep(ctx, node) {
+                result := prepush.Result{
+                    Name: nodeName,
+                    Status: prepush.StatusOK,
+                    Message: "skipped (condition not met)",
+                }
+                resultChan <- result
+                continue
+            }
+            
+            // Execute the node in parallel
+            wg.Add(1)
+            go func(nodeName string, node *DAGNode) {
+                defer wg.Done()
+                result, _ := e.executeAction(ctx, node.Action)
+                result.Name = nodeName
+                resultChan <- result
+            }(nodeName, node)
+        }
+        
+        wg.Wait()
+    }
+    
+    close(resultChan)
+    <-done
+    
+    // Display any remaining steps that weren't displayed yet
+    e.displayRemainingSteps(steps, resultMap, displayed)
+    
+    return results, nil
+}
+
+// displayStepIfReady displays a step if it's ready in declaration order
+func (e *Executor) displayStepIfReady(stepName string, steps []prepush.Step, resultMap map[string]prepush.Result, displayed map[string]bool) {
+    // Find the step in declaration order
+    for _, step := range steps {
+        if step.Action == stepName {
+            // Check if all previous steps in declaration order have been displayed
+            if e.canDisplayStep(step, steps, displayed) {
+                if result, exists := resultMap[stepName]; exists {
+                    e.ui.PrintStepStatus(stepName, result.Status, result.Message)
+                    displayed[stepName] = true
+                }
+            }
+            break
+        }
+    }
+    
+    // Try to display any buffered steps that are now ready
+    e.displayBufferedSteps(steps, resultMap, displayed)
+}
+
+// displayStepImmediately displays a step immediately if it can be shown (streaming)
+func (e *Executor) displayStepImmediately(stepName string, steps []prepush.Step, resultMap map[string]prepush.Result, displayed map[string]bool, completed map[string]bool) {
+    // Find the step in declaration order
+    for _, step := range steps {
+        if step.Action == stepName {
+            // Check if all previous steps in declaration order have been completed
+            if e.canDisplayStepImmediately(step, steps, displayed, completed) {
+                if result, exists := resultMap[stepName]; exists {
+                    e.ui.PrintStepStatus(stepName, result.Status, result.Message)
+                    displayed[stepName] = true
+                }
+            }
+            break
+        }
+    }
+}
+
+// displayBufferedSteps displays any steps that are now ready to be displayed
+func (e *Executor) displayBufferedSteps(steps []prepush.Step, resultMap map[string]prepush.Result, displayed map[string]bool) {
+    for _, step := range steps {
+        if !displayed[step.Action] {
+            if result, exists := resultMap[step.Action]; exists {
+                if e.canDisplayStep(step, steps, displayed) {
+                    e.ui.PrintStepStatus(step.Action, result.Status, result.Message)
+                    displayed[step.Action] = true
+                }
+            }
+        }
+    }
+}
+
+// canDisplayStep checks if a step can be displayed based on declaration order
+func (e *Executor) canDisplayStep(step prepush.Step, steps []prepush.Step, displayed map[string]bool) bool {
+    // Find the position of this step in the declaration order
+    stepIndex := -1
+    for i, s := range steps {
+        if s.Action == step.Action {
+            stepIndex = i
+            break
+        }
+    }
+    
+    if stepIndex == -1 {
+        return false
+    }
+    
+    // Check if all previous steps in declaration order have been displayed
+    for i := 0; i < stepIndex; i++ {
+        if !displayed[steps[i].Action] {
+            return false
+        }
+    }
+    
+    return true
+}
+
+// canDisplayStepImmediately checks if a step can be displayed immediately (streaming)
+func (e *Executor) canDisplayStepImmediately(step prepush.Step, steps []prepush.Step, displayed map[string]bool, completed map[string]bool) bool {
+    // Find the position of this step in the declaration order
+    stepIndex := -1
+    for i, s := range steps {
+        if s.Action == step.Action {
+            stepIndex = i
+            break
+        }
+    }
+    
+    if stepIndex == -1 {
+        return false
+    }
+    
+    // Check if all previous steps in declaration order have been completed (not just displayed)
+    for i := 0; i < stepIndex; i++ {
+        if !completed[steps[i].Action] {
+            return false
+        }
+    }
+    
+    return true
+}
+
+// getReadySteps returns steps that are ready to execute (dependencies completed)
+func (e *Executor) getReadySteps(dag map[string]*DAGNode, completed map[string]bool, failed map[string]bool) []string {
+    var ready []string
+    
+    for nodeName, node := range dag {
+        if completed[nodeName] {
+            continue
+        }
+        
+        // Check if all dependencies are completed
+        if e.allDependenciesCompleted(node, completed) {
+            ready = append(ready, nodeName)
+        }
+    }
+    
+    return ready
+}
+
+// getReadyStepsLocked returns steps that are ready to execute (thread-safe version)
+func (e *Executor) getReadyStepsLocked(dag map[string]*DAGNode, completed map[string]bool, failed map[string]bool, executing map[string]bool) []string {
+    var ready []string
+    
+    for nodeName, node := range dag {
+        if completed[nodeName] || executing[nodeName] {
+            continue
+        }
+        
+        // Check if all dependencies are completed
+        if e.allDependenciesCompleted(node, completed) {
+            ready = append(ready, nodeName)
+        }
+    }
+    
+    return ready
+}
+
+// displayRemainingSteps displays any steps that weren't displayed yet
+func (e *Executor) displayRemainingSteps(steps []prepush.Step, resultMap map[string]prepush.Result, displayed map[string]bool) {
+    for _, step := range steps {
+        if !displayed[step.Action] {
+            if result, exists := resultMap[step.Action]; exists {
+                e.ui.PrintStepStatus(step.Action, result.Status, result.Message)
+                displayed[step.Action] = true
+            }
+        }
+    }
+}
+
+// displayResultsInOrder displays results in the order they appear in the YAML configuration
+func (e *Executor) displayResultsInOrder(steps []prepush.Step, results []prepush.Result) {
+    // Create a map of results by step name for quick lookup
+    resultMap := make(map[string]prepush.Result)
+    for _, result := range results {
+        resultMap[result.Name] = result
+    }
+    
+    // Display results in the order they appear in the YAML configuration
+    for _, step := range steps {
+        if result, exists := resultMap[step.Action]; exists {
+            e.ui.PrintStepStatus(step.Action, result.Status, result.Message)
+        }
+    }
 }
 
 // topologicalSort returns nodes in topological order

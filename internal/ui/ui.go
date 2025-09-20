@@ -52,6 +52,9 @@ func (u *UI) PrintStepStatus(stepName string, status prepush.Status, message str
     case prepush.StatusError:
         icon = "✖"
         color = "\033[31m" // Red
+    case prepush.StatusSkipped:
+        icon = "⊘"
+        color = "\033[90m" // Gray
     case prepush.StatusRunning:
         icon = "⟳"
         color = "\033[36m" // Cyan
@@ -158,6 +161,7 @@ func (u *UI) PrintSummary(results []prepush.Result) {
     okCount := 0
     warnCount := 0
     errorCount := 0
+    skippedCount := 0
     
     for _, result := range results {
         switch result.Status {
@@ -167,6 +171,8 @@ func (u *UI) PrintSummary(results []prepush.Result) {
             warnCount++
         case prepush.StatusError:
             errorCount++
+        case prepush.StatusSkipped:
+            skippedCount++
         }
     }
     
@@ -187,6 +193,12 @@ func (u *UI) PrintSummary(results []prepush.Result) {
         u.Printf("   \033[31m❌ ERROR: %d\033[0m\n", errorCount)
     } else {
         u.Printf("   \033[37m❌ ERROR: %d\033[0m\n", errorCount)
+    }
+    
+    if skippedCount > 0 {
+        u.Printf("   \033[90m⊘ SKIPPED: %d\033[0m\n", skippedCount)
+    } else {
+        u.Printf("   \033[37m⊘ SKIPPED: %d\033[0m\n", skippedCount)
     }
     
     if errorCount > 0 {

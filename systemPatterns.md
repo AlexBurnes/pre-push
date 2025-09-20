@@ -32,6 +32,10 @@
 - **Variable interpolation**: GitHub-style `${{ }}` syntax for dynamic configuration
 - **Self-installing hooks**: Automatic installation and update of Git pre-push hooks
 - **Static binary distribution**: CGO-disabled builds for maximum compatibility
+- **PRD Requirements**: Enhanced parallel execution with ordered output and failure resilience
+  - Steps displayed in project.yml declaration order (not execution order)
+  - Independent steps continue running even when other steps fail
+  - Dependent steps marked as SKIPPED when their dependencies fail
 
 ## Design Patterns in Use
 - **Command Pattern**: CLI commands as separate handlers (test, list-uses, install)

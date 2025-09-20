@@ -11,6 +11,8 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 ✅ **CI/CD Pipeline** - GitHub Actions workflows configured and DRY-compliant  
 ✅ **Enhanced Version Handling** - -V outputs only version, --version outputs full info  
 ✅ **Flexible Configuration** - Bin directory support and shell script validation  
+✅ **Streaming Output** - Results display immediately as steps complete while maintaining declaration order  
+✅ **Parallel Execution** - True parallel execution with dependency-aware result display  
 ⏳ **Git Hook Installation** - Install command pending implementation  
 ⏳ **Advanced Features** - Environment variables, conditional execution pending
 
@@ -28,6 +30,9 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 - **Error handling**: Configurable error policies (stop/warn) per step
 - **Professional UI**: Colored output with conditional highlighting and clear status indicators
 - **Git hook integration**: Properly handles Git arguments and reads ref information from stdin
+- **Streaming output**: Results display immediately as steps complete while maintaining declaration order
+- **Dependency-aware display**: Dependent steps wait for their requirements before showing results
+- **Enhanced error reporting**: SKIPPED status for steps that can't run due to failed dependencies
 
 ## Installation
 

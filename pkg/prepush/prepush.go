@@ -59,6 +59,7 @@ const (
     StatusOK
     StatusWarn
     StatusError
+    StatusSkipped
 )
 
 // String returns the string representation of the status
@@ -74,6 +75,8 @@ func (s Status) String() string {
         return "WARN"
     case StatusError:
         return "ERROR"
+    case StatusSkipped:
+        return "SKIPPED"
     default:
         return "UNKNOWN"
     }

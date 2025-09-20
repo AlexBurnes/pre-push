@@ -7,9 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2025-01-27
+
+### Added
+- **PRD for parallel execution improvements**: Created comprehensive Product Requirements Document for enhanced parallel execution
+  - Ordered output display (steps shown in project.yml declaration order)
+  - Continue running independent steps on failure
+  - Add SKIPPED status for dependent steps
+  - Enhanced error reporting and summary
+- **PRD parallel execution improvements implementation**: Implemented all PRD requirements for better user experience
+  - Steps now display in project.yml declaration order instead of execution order
+  - Independent steps continue running even when other steps fail
+  - Added SKIPPED status for steps that can't run due to failed dependencies
+  - Enhanced summary includes SKIPPED count and improved error reporting
+  - Streaming output displays results as soon as they complete while maintaining declaration order
+  - Dependency-aware display ensures dependent steps wait for their requirements before showing results
+
 ### Changed
 - **Project settings integration**: Updated .project.yml to use scripts/version utility for version-check and version-greatest actions
 - **Version validation**: version-check action now uses scripts/version-check command, version-greatest uses scripts/version greatest command
+- **Executor behavior**: Implemented streaming output that displays results as they complete while maintaining declaration order
+- **Error handling**: Removed early termination on step failure to allow independent steps to continue running
+- **UI enhancements**: Added SKIPPED status support with gray color and ⊘ icon
+- **Summary reporting**: Enhanced summary to include SKIPPED count alongside OK, WARN, and ERROR counts
+- **Parallel execution**: Implemented true parallel execution with dependency-aware result display
+- **Streaming display**: Results are shown immediately when steps complete, but dependent steps wait for their requirements
 
 ## [1.1.0] - 2025-01-27
 
