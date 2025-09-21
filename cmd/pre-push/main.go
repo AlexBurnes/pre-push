@@ -273,7 +273,7 @@ func runTest(cmd *cobra.Command, args []string) error {
     
     // Run pre-push stage
     if err := executor.RunStage(ctx, "pre-push"); err != nil {
-        // Exit with error code but don't show Usage
+        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
     
