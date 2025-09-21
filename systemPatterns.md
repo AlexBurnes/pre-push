@@ -57,7 +57,7 @@
 - **config/**: Parses YAML, validates schema, resolves variables
 - **exec/**: Builds DAG, schedules execution, manages concurrency
 - **uses/**: Implements built-in actions (git@untracked, git@uncommitted, etc.)
-- **version/**: Integrates with version-go library for semantic versioning
+- **version/**: Integrates with `github.com/AlexBurnes/version-go/pkg/version` v0.8.22 for semantic versioning
 - **ui/**: Handles colored output, status reporting, error formatting
 - **install/**: Manages Git hook installation and updates
 
@@ -122,3 +122,9 @@ Project Config → scripts/version modules → Shell Script → Module -V Check 
 Command Line → Flag Detection → Version Source (VERSION file) → Format Output → Display
 ```
 ✅ -V outputs only version, --version outputs full module info
+
+**9. Version Library Integration Path - IMPLEMENTED:**
+```
+VERSION File → version.Parse() → Version Validation → Variable Detection → Interpolation
+```
+✅ Complete integration with `github.com/AlexBurnes/version-go/pkg/version` v0.8.22

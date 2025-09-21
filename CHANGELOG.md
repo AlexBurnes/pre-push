@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2025-09-21
+
+### Added
+- **Version Library Integration**: Integrated `github.com/AlexBurnes/version-go/pkg/version` v0.8.22 library
+  - Replaced CLI utility calls with direct Go library integration
+  - Added support for `${{ version.version }}`, `${{ version.project }}`, `${{ version.module }}`, `${{ version.modules }}` variables
+  - Enhanced variable detection with proper version parsing and validation
+  - Improved version detection reliability and cross-platform compatibility
+- **Enhanced Variable Support**: Extended variable interpolation system
+  - Added `version.version` variable for current version (e.g., "v1.3.0")
+  - Added `version.project` variable for project name (e.g., "buildfab-pre-push")
+  - Added `version.module` variable for module name (e.g., "pre-push")
+  - Added `version.modules` variable for comma-separated modules list
+- **Version Integration Module**: Created `internal/version/integration.go`
+  - Direct integration with version-go library for semantic versioning
+  - Automatic version detection from VERSION file
+  - Project and module detection from go.mod file
+  - Comprehensive error handling and validation
+
+### Changed
+- **Variable Detection**: Enhanced `DetectGitVariables()` function
+  - Added version library variable detection alongside existing Git variables
+  - Improved variable resolution with proper error handling
+  - Updated configuration system to support all version library variables
+- **Project Configuration**: Updated .project.yml to use version library variables
+  - Replaced basic `${{ tag }}` with comprehensive `${{ version.version }}` support
+  - Enhanced variable interpolation for better project configuration flexibility
+
+### Documentation
+- **Memory Bank Updates**: Updated all memory bank files with version library integration
+  - Updated `activeContext.md` with recent changes and current work focus
+  - Updated `progress.md` to mark version library integration as completed
+  - Updated `systemPatterns.md` with version library integration path
+  - Updated `techContext.md` with version library dependency information
+- **Technical Documentation**: Enhanced system architecture documentation
+  - Added version library integration to system patterns
+  - Updated dependency information in technical context
+  - Documented new variable support and integration patterns
+
+## [Unreleased]
+
 ### Added
 - **Buildfab Integration**: Integrated [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 as the core DAG execution engine
   - Replaced custom DAG implementation with buildfab's proven execution engine

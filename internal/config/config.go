@@ -11,6 +11,7 @@ import (
     "strings"
 
     "gopkg.in/yaml.v3"
+    "github.com/AlexBurnes/pre-push/internal/version"
     "github.com/AlexBurnes/pre-push/pkg/prepush"
 )
 
@@ -88,6 +89,16 @@ func LoadFromDir(dir string) (*prepush.Config, error) {
     return nil, fmt.Errorf("no configuration file found in directory: %s", dir)
 }
 
+// LoadFromString loads configuration from a string
+func LoadFromString(content string) (*prepush.Config, error) {
+    var config prepush.Config
+    if err := yaml.Unmarshal([]byte(content), &config); err != nil {
+        return nil, fmt.Errorf("failed to parse YAML: %w", err)
+    }
+
+    return &config, nil
+}
+
 // ResolveVariables resolves variable interpolation in configuration
 func ResolveVariables(config *prepush.Config, variables map[string]string) error {
     // Resolve variables in action run commands
@@ -140,6 +151,11 @@ func GetDefaultVariables() map[string]string {
     return map[string]string{
         "tag":    "", // Will be set by version detection
         "branch": "", // Will be set by git detection
+        // Version library variables
+        "version.version":  "", // Will be set by version library
+        "version.project":  "", // Will be set by version library
+        "version.module":   "", // Will be set by version library
+        "version.modules":  "", // Will be set by version library
     }
 }
 
@@ -155,6 +171,22 @@ func DetectGitVariables(ctx context.Context) (map[string]string, error) {
     // Detect current branch
     if branch, err := detectGitBranch(ctx); err == nil {
         variables["branch"] = branch
+    }
+    
+    // Detect version library variables
+    if versionInfo, err := version.GetVersionInfo(ctx); err == nil {
+        if versionInfo.Version != "" {
+            variables["version.version"] = versionInfo.Version
+        }
+        if versionInfo.Project != "" {
+            variables["version.project"] = versionInfo.Project
+        }
+        if versionInfo.Module != "" {
+            variables["version.module"] = versionInfo.Module
+        }
+        if len(versionInfo.Modules) > 0 {
+            variables["version.modules"] = strings.Join(versionInfo.Modules, " ")
+        }
     }
     
     return variables, nil

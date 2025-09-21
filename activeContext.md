@@ -18,6 +18,12 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Version Library Integration**: Integrated `github.com/AlexBurnes/version-go/pkg/version` v0.8.22 library
+  - Replaced CLI utility calls with direct Go library integration
+  - Added support for `${{ version.version }}`, `${{ version.project }}`, `${{ version.module }}`, `${{ version.modules }}` variables
+  - Enhanced variable detection with proper version parsing and validation
+  - Updated .project.yml to use version library variables instead of basic tag variables
+  - Improved version detection reliability and cross-platform compatibility
 - **Buildfab Integration**: Integrated [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 as the core DAG execution engine
   - Replaced custom DAG implementation with buildfab's proven execution engine
   - Created BuildfabExecutor using buildfab.RunStage() and buildfab.RunAction() APIs
