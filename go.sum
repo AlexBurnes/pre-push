@@ -1,3 +1,5 @@
+github.com/AlexBurnes/buildfab v0.5.0 h1:XDln6CJi9mctPzCrly1/NTe3r9X5RP7Wj74XO9lU1gQ=
+github.com/AlexBurnes/buildfab v0.5.0/go.mod h1:T+T/RiJmOrzQYsbWn85BNelQdW+C37zt9YxUkBBWtwg=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=

@@ -13,7 +13,7 @@
 - **Built-in Git actions**: git@untracked, git@uncommitted, git@modified with real Git operations
 - **Custom action execution**: Full shell command execution for run: actions with verbose output
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
-- **DAG executor**: Full dependency-based execution with cycle detection and topological sorting
+- **Buildfab Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 as core DAG execution engine
 - **UI system**: Complete colored output, status reporting, progress display, and error formatting with conditional coloring
 - **Enhanced error messages**: Improved built-in action error messages with inline reproduction commands and clean formatting
 - **Better user experience**: CLI utility name, version, and project information displayed at start of pre-push hook
@@ -25,6 +25,11 @@
 - **Git integration**: Real Git repository operations for status checking and variable detection
 - **Cross-platform support**: Working on Linux with proper Go module structure
 - **Documentation**: Complete memory bank and project documentation
+- **COMPLETED: Buildfab v0.5.0 Integration**: 
+  - Replaced custom DAG implementation with buildfab's proven execution engine
+  - Created BuildfabExecutor using buildfab.RunStage() and buildfab.RunAction() APIs
+  - Enhanced error handling through buildfab's comprehensive error types
+  - Maintained full compatibility with existing .project.yml configuration format
 - **COMPLETED: Enhanced version flag handling**: -V outputs only version, --version outputs full info
 - **COMPLETED: Bin directory support**: Project configuration supports custom module locations
 - **COMPLETED: Flexible version validation**: Shell script approach using scripts/version modules

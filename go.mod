@@ -1,8 +1,9 @@
 module github.com/AlexBurnes/pre-push
 
-go 1.22
+go 1.23.1
 
 require (
+	github.com/AlexBurnes/buildfab v0.5.0
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v3 v3.0.1
 )

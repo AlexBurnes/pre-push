@@ -1,6 +1,6 @@
 # pre-push
 
-A cross-platform, configurable Git `pre-push` hook runner written in Go, designed to replace legacy bash scripts with a modern, DAG-based executor that provides built-in checks and Buildfab integration.
+A cross-platform, configurable Git `pre-push` hook runner written in Go, designed to replace legacy bash scripts with a modern, DAG-based executor powered by [buildfab](https://github.com/AlexBurnes/buildfab) that provides built-in checks and advanced workflow automation.
 
 ## Status
 
@@ -13,13 +13,14 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 ✅ **Flexible Configuration** - Bin directory support and shell script validation  
 ✅ **Streaming Output** - Results display immediately as steps complete while maintaining declaration order  
 ✅ **Parallel Execution** - True parallel execution with dependency-aware result display  
+✅ **Buildfab Integration** - Powered by buildfab v0.5.0 for advanced DAG execution  
 ⏳ **Git Hook Installation** - Install command pending implementation  
 ⏳ **Advanced Features** - Environment variables, conditional execution pending
 
 ## Features
 
 - **Cross-platform**: Works on Linux, Windows, and macOS (amd64/arm64)
-- **DAG-based execution**: Parallel execution of checks with explicit dependencies
+- **DAG-based execution**: Powered by buildfab v0.5.0 for advanced parallel execution with explicit dependencies
 - **Built-in checks**: Git state validation with flexible custom actions
 - **Configuration-driven**: YAML-based configuration similar to GitHub Actions
 - **Self-installing**: Automatic installation as Git pre-push hook

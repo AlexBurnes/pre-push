@@ -7,6 +7,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **Buildfab Integration**: Integrated [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 as the core DAG execution engine
+  - Replaced custom DAG implementation with buildfab's proven execution engine
+  - Enhanced parallel execution with advanced dependency resolution
+  - Improved error handling with comprehensive error types
+  - Added support for buildfab's advanced workflow features
+- **BuildfabExecutor**: New executor implementation using buildfab API
+  - Simplified executor architecture leveraging buildfab's capabilities
+  - Maintained compatibility with existing pre-push configuration format
+  - Enhanced performance and reliability through buildfab's optimized execution
+- **Documentation**: Added comprehensive buildfab integration documentation
+  - Created `docs/Buildfab-integration.md` with detailed integration guide
+  - Updated README and project specification to reflect buildfab integration
+  - Documented API usage and configuration compatibility
+
+### Changed
+- **Dependencies**: Updated go.mod to include buildfab v0.5.0 dependency
+- **Executor Architecture**: Refactored executor to use buildfab's DAG execution engine
+- **Error Handling**: Enhanced error handling through buildfab's comprehensive error types
+- **Performance**: Improved execution performance through buildfab's optimized parallel execution
+
+### Technical Details
+- **API Integration**: Uses buildfab.RunStage() and buildfab.RunAction() for execution
+- **Configuration**: Maintains full compatibility with existing .project.yml format
+- **Error Types**: Leverages buildfab's ConfigurationError, ExecutionError, DependencyError, and VariableError
+- **Testing**: Updated test suite to work with buildfab integration
+
 ## [1.2.0] - 2025-01-27
 
 ### Added

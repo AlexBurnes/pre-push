@@ -1,7 +1,7 @@
 # System Patterns: pre-push
 
 ## System Architecture
-**Layered Architecture with Clear Separation of Concerns**
+**Layered Architecture with Buildfab Integration**
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
@@ -18,14 +18,15 @@
 ├─────────────────────────────────────────────────────────────┤
 │                External Dependencies                        │
 │  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
-│  │   Git API   │ version-go  │   YAML     │   Context   │  │
-│  │             │  library    │  parsing   │  handling   │  │
+│  │   buildfab  │ version-go  │   YAML     │   Context   │  │
+│  │   v0.5.0    │  library    │  parsing   │  handling   │  │
 │  └─────────────┴─────────────┴─────────────┴─────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Key Technical Decisions
-- **DAG-based execution**: Parallel execution of independent checks with explicit dependencies
+- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 for advanced DAG execution and workflow automation
+- **DAG-based execution**: Parallel execution of independent checks with explicit dependencies via buildfab
 - **YAML configuration**: GitHub Actions-inspired config format for familiarity and flexibility
 - **Context-aware execution**: All operations respect context cancellation and timeouts
 - **Error policy system**: Configurable stop/warn behavior per check step

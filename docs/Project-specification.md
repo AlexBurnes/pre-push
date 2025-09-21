@@ -2,7 +2,7 @@
 
 **Project:** `buildfab-pre-push`
 **Language:** Go
-**Scope:** Cross-platform, configurable Git `pre-push` hook runner with DAG executor, built-in checks, and Buildfab integration.
+**Scope:** Cross-platform, configurable Git `pre-push` hook runner powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 DAG executor, built-in checks, and advanced workflow automation.
 
 ## 1) CLI & Behavior
 

@@ -173,8 +173,8 @@ func runGitHook() error {
     // Create UI
     ui := ui.New(verbose, debug)
     
-    // Create executor
-    executor := exec.New(cfg, ui)
+    // Create buildfab executor
+    executor := exec.NewBuildfabExecutor(cfg, ui)
     
     // Run pre-push stage
     return executor.RunStage(ctx, "pre-push")
@@ -268,8 +268,8 @@ func runTest(cmd *cobra.Command, args []string) error {
     // Create UI
     ui := ui.New(verbose, debug)
     
-    // Create executor
-    executor := exec.New(cfg, ui)
+    // Create buildfab executor
+    executor := exec.NewBuildfabExecutor(cfg, ui)
     
     // Run pre-push stage
     if err := executor.RunStage(ctx, "pre-push"); err != nil {
