@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2025-01-27
+
+### Added
+- **Buildfab v0.7.2 Integration**: Upgraded to buildfab v0.7.2 with SimpleRunner for enhanced step output
+  - Implemented buildfab.SimpleRunner interface for clean step-by-step execution
+  - Added professional step output with proper status icons and summaries
+  - Maintained single stage execution as requested (not individual action execution)
+- **Version Module Fix**: Fixed version-module action version format mismatch
+  - Resolved version format mismatch between binary (`v1.3.0`) and scripts (`1.3.0`)
+  - Added version prefix stripping for consistent comparison
+  - Replaced template variable resolution with direct script calls
+
+### Fixed
+- **Duplicate Error Output**: Removed redundant error printing in main.go
+  - Eliminated duplicate error messages that were shown twice
+  - Achieved clean, professional output formatting
+  - Maintained proper error handling and exit codes
+
+### Changed
+- **Buildfab Integration**: Upgraded from buildfab v0.5.0 to v0.7.2
+  - Replaced custom step execution with buildfab.SimpleRunner
+  - Enhanced step output capabilities with internal buildfab handling
+  - Maintained full compatibility with existing .project.yml configuration
+
 ## [1.3.0] - 2025-09-21
 
 ### Added

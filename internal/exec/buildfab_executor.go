@@ -6,7 +6,6 @@ import (
     "fmt"
     "os"
     "strings"
-    "time"
 
     "github.com/AlexBurnes/buildfab/pkg/buildfab"
     "github.com/AlexBurnes/pre-push/internal/version"
@@ -20,6 +19,7 @@ type BuildfabExecutor struct {
     versionDetector *version.Detector
 }
 
+
 // NewBuildfabExecutor creates a new buildfab-based executor
 func NewBuildfabExecutor(config *prepush.Config, ui UI) *BuildfabExecutor {
     return &BuildfabExecutor{
@@ -29,7 +29,7 @@ func NewBuildfabExecutor(config *prepush.Config, ui UI) *BuildfabExecutor {
     }
 }
 
-// RunStage executes a specific stage using buildfab DAG executor
+// RunStage executes a specific stage using buildfab SimpleRunner
 func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error {
     _, exists := e.config.GetStage(stageName)
     if !exists {
@@ -41,47 +41,26 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     e.ui.PrintCLIHeader("pre-push", version)
     e.ui.PrintProjectCheck(e.config.Project.Name, version)
 
-    e.ui.PrintStageHeader(stageName)
-    start := time.Now()
-
-    // Create buildfab run options
-    opts := buildfab.DefaultRunOptions()
-    opts.Verbose = e.ui.IsVerbose()
-    opts.Debug = e.ui.IsDebug()
-    opts.WorkingDir = "."
-
-    // Convert pre-push config to buildfab config
-    buildfabConfig := e.convertToBuildfabConfig()
-    
-    // Create buildfab runner
-    runner := buildfab.NewRunner(buildfabConfig, opts)
-
-    // Execute using buildfab
-    err := runner.RunStage(ctx, stageName)
-    
-    duration := time.Since(start)
-    success := err == nil
-    
-    e.ui.PrintStageResult(stageName, success, duration)
-
-    return err
+    // Use buildfab RunStageSimple to execute the entire stage
+    // This handles all output internally, so we don't need to add our own
+    return buildfab.RunStageSimple(ctx, ".project.yml", stageName, e.ui.IsVerbose())
 }
 
-// RunAction executes a specific action using buildfab
+// RunAction executes a specific action using buildfab SimpleRunner
 func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) error {
-    // Create buildfab run options
-    opts := buildfab.DefaultRunOptions()
-    opts.Verbose = e.ui.IsVerbose()
-    opts.Debug = e.ui.IsDebug()
-    opts.WorkingDir = "."
-
     // Convert pre-push config to buildfab config
     buildfabConfig := e.convertToBuildfabConfig()
     
-    // Create buildfab runner
-    runner := buildfab.NewRunner(buildfabConfig, opts)
+    // Create simple run options
+    opts := buildfab.DefaultSimpleRunOptions()
+    opts.Verbose = e.ui.IsVerbose()
+    opts.Debug = e.ui.IsDebug()
+    opts.WorkingDir = "."
+    
+    // Create simple runner (handles all output internally)
+    runner := buildfab.NewSimpleRunner(buildfabConfig, opts)
 
-    // Execute using buildfab
+    // Execute using buildfab SimpleRunner
     err := runner.RunAction(ctx, actionName)
     if err != nil {
         e.ui.PrintStepStatus(actionName, prepush.StatusError, err.Error())
@@ -95,6 +74,37 @@ func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) err
 // ListActions returns all available actions
 func (e *BuildfabExecutor) ListActions() []prepush.Action {
     return e.config.Actions
+}
+
+// executeActionWithBuildfab executes a single action using buildfab
+func (e *BuildfabExecutor) executeActionWithBuildfab(ctx context.Context, action prepush.Action) prepush.Result {
+    // Convert pre-push config to buildfab config
+    buildfabConfig := e.convertToBuildfabConfig()
+    
+    // Create simple run options
+    opts := buildfab.DefaultSimpleRunOptions()
+    opts.Verbose = e.ui.IsVerbose()
+    opts.Debug = e.ui.IsDebug()
+    opts.WorkingDir = "."
+    
+    // Create simple runner
+    runner := buildfab.NewSimpleRunner(buildfabConfig, opts)
+
+    // Execute the action
+    err := runner.RunAction(ctx, action.Name)
+    
+    if err != nil {
+        return prepush.Result{
+            Status:  prepush.StatusError,
+            Message: err.Error(),
+            Error:   err,
+        }
+    }
+    
+    return prepush.Result{
+        Status:  prepush.StatusOK,
+        Message: "executed successfully",
+    }
 }
 
 // convertToBuildfabConfig converts pre-push config to buildfab config
