@@ -31,6 +31,14 @@
 - **Git integration**: Real Git repository operations for status checking and variable detection
 - **Cross-platform support**: Working on Linux with proper Go module structure
 - **Documentation**: Complete memory bank and project documentation
+- **README Documentation Enhancement**: Comprehensive installation and usage instructions
+  - **COMPLETED**: Added detailed build prerequisites including version utility installation from version-go project
+  - **COMPLETED**: Added installation scripts section with platform-specific installers (Linux, macOS, Windows)
+  - **COMPLETED**: Added Git hook installation instructions and project configuration examples
+  - **COMPLETED**: Referenced version utility installation for testing purposes in build section
+  - **COMPLETED**: Updated build section with proper prerequisites and version utility setup instructions
+  - **COMPLETED**: Added comprehensive installation methods using official version-go installers
+  - **COMPLETED**: Updated CHANGELOG.md to document all documentation enhancements
 - **COMPLETED: Buildfab v0.7.2 Integration with Step Output**: 
   - Upgraded from v0.5.0 to v0.7.2 for enhanced step output capabilities
   - Implemented buildfab.SimpleRunner for clean step-by-step execution

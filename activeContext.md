@@ -18,6 +18,14 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **README Documentation Enhancement**: Comprehensive installation and usage instructions added
+  - **COMPLETED**: Added detailed build prerequisites including version utility installation from version-go project
+  - **COMPLETED**: Added installation scripts section with platform-specific installers (Linux, macOS, Windows)
+  - **COMPLETED**: Added Git hook installation instructions and project configuration examples
+  - **COMPLETED**: Referenced version utility installation for testing purposes in build section
+  - **COMPLETED**: Updated build section with proper prerequisites and version utility setup instructions
+  - **COMPLETED**: Added comprehensive installation methods using official version-go installers
+  - **COMPLETED**: Updated CHANGELOG.md to document all documentation enhancements
 - **Buildfab v0.7.2 Integration with Step Output**: Upgraded to buildfab v0.7.2 with SimpleRunner for step-by-step output
   - **COMPLETED**: Upgraded from buildfab v0.5.0 to v0.7.2 for enhanced step output capabilities
   - **COMPLETED**: Implemented buildfab.SimpleRunner interface for clean step-by-step execution

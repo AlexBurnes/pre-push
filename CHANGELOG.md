@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Documentation
+- **README Installation Instructions**: Enhanced README with comprehensive installation and usage instructions
+  - Added detailed build prerequisites including version utility installation from version-go project
+  - Added installation scripts section with platform-specific installers (Linux, macOS, Windows)
+  - Added Git hook installation instructions and project configuration examples
+  - Referenced version utility installation for testing purposes in build section
+  - Updated build section with proper prerequisites and version utility setup instructions
+
 ## [1.4.0] - 2025-01-27
 
 ### Added

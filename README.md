@@ -59,7 +59,129 @@ Download the latest release from [GitHub Releases](https://github.com/AlexBurnes
 - **macOS**: `pre-push_macos_amd64.tar.gz` or `pre-push_macos_arm64.tar.gz`
 - **Windows**: `pre-push_windows_amd64.zip`
 
+### Installation Scripts
+
+The project provides automated installation scripts for easy setup:
+
+#### Linux Installation
+```bash
+# Download and run the Linux installer
+curl -sSL https://github.com/AlexBurnes/pre-push/releases/latest/download/install-linux.sh | bash
+
+# Or manually download and run
+wget https://github.com/AlexBurnes/pre-push/releases/latest/download/install-linux.sh
+chmod +x install-linux.sh
+./install-linux.sh
+```
+
+#### macOS Installation
+```bash
+# Download and run the macOS installer
+curl -sSL https://github.com/AlexBurnes/pre-push/releases/latest/download/install-macos.sh | bash
+```
+
+#### Windows Installation
+```powershell
+# Download and run the Windows installer
+Invoke-WebRequest -Uri "https://github.com/AlexBurnes/pre-push/releases/latest/download/install-windows.ps1" -OutFile "install-windows.ps1"
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+.\install-windows.ps1
+```
+
+### Git Hook Installation
+
+After installing the utility, set it up as a Git pre-push hook:
+
+```bash
+# Install as Git hook (run once per repository)
+pre-push install
+
+# Or manually install
+pre-push --install-hook
+```
+
+### Project Configuration
+
+Configure your project to use pre-push by creating a `.project.yml` file in your repository root:
+
+```yaml
+project:
+  name: "your-project-name"
+  modules: ["pre-push"]
+
+actions:
+  - name: version-check
+    run: |
+      version check ${{tag}}
+
+  - name: git-untracked
+    uses: git@untracked
+
+  - name: git-uncommitted
+    uses: git@uncommitted
+
+stages:
+  pre-push:
+    steps:
+      - action: version-check
+      - action: git-untracked
+      - action: git-uncommitted
+```
+
+**Note**: For testing, this project uses another CLI utility called `version`. Installation instructions for the `version` utility can be found in the [Build section](#building-from-source) above.
+
 ### Building from Source
+
+### Prerequisites
+
+Before building, you need to install the required utilities:
+
+1. **Install version utility** (required for build process):
+   
+   **Linux Installation:**
+   ```bash
+   # Quick install to user directory
+   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-linux-amd64-install.sh | sh
+   
+   # Or system-wide install (requires sudo)
+   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-linux-amd64-install.sh | sudo sh
+   
+   # For build requirements, install into ./scripts/ directory
+   mkdir -p ./scripts
+   cp ~/.local/bin/version ./scripts/  # or /usr/local/bin/version if system-wide
+   ```
+   
+   **macOS Installation:**
+   ```bash
+   # For Intel Macs (x86_64/amd64)
+   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-macos-amd64-install.sh | sh
+   
+   # For Apple Silicon Macs (ARM64)
+   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-macos-arm64-install.sh | sh
+   
+   # For build requirements, install into ./scripts/ directory
+   mkdir -p ./scripts
+   cp ~/.local/bin/version ./scripts/  # or /usr/local/bin/version if system-wide
+   ```
+   
+   **Windows Installation:**
+   ```powershell
+   # Install via Scoop (recommended)
+   scoop bucket add burnes https://github.com/AlexBurnes/scoop-bucket
+   scoop install burnes/version
+   
+   # For build requirements, install into ./scripts/ directory
+   mkdir -p ./scripts
+   copy "$env:USERPROFILE\scoop\apps\version\current\version.exe" ./scripts/
+   ```
+
+2. **Install other dependencies**:
+   - Go 1.22 or later
+   - CMake 3.16 or later
+   - Conan 2.x
+   - Git with version tags
+
+### Build Process
 
 ```bash
 # Clone the repository
