@@ -18,6 +18,14 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Packaging Configuration Fixes**: Fixed all packaging files to use correct 'pre-push' binary name instead of 'version'
+  - **COMPLETED**: Updated macOS Homebrew formula (version.rb) with correct class name, description, and test commands
+  - **COMPLETED**: Fixed Windows Scoop manifest (version.json) to reference pre-push.exe instead of version.exe
+  - **COMPLETED**: Updated macOS README.md to reference pre-push CLI instead of version CLI
+  - **COMPLETED**: Fixed Linux installer template to display correct pre-push CLI name
+  - **COMPLETED**: Updated buildtools/create-goreleaser-backup.sh to use pre-push binary names
+  - **COMPLETED**: Ensured all archive names, installer script prefixes, and binary references use 'pre-push'
+  - **COMPLETED**: Version bumped to v1.4.3 for packaging configuration fixes
 - **Version Management System**: Complete version bump automation and package manager integration
   - **COMPLETED**: Created comprehensive version bump script (`scripts/version-bump`) for automated version management
   - **COMPLETED**: Fixed all installer scripts to use correct 'pre-push' binary name instead of 'version'

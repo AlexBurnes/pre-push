@@ -29,9 +29,9 @@ if ! echo "$INSTALL_DIR" | grep -q '^/'; then
 fi
 
 # GitHub release URL
-RELEASE_URL="https://github.com/AlexBurnes/version-go/releases/download/v${VERSION}/version_${PLATFORM}_${ARCH}.tar.gz"
+RELEASE_URL="https://github.com/AlexBurnes/pre-push/releases/download/v${VERSION}/pre-push_${PLATFORM}_${ARCH}.tar.gz"
 
-echo "[*] Installing version CLI v${VERSION} for ${PLATFORM}-${ARCH}"
+echo "[*] Installing pre-push CLI v${VERSION} for ${PLATFORM}-${ARCH}"
 echo "[*] Target directory: ${INSTALL_DIR}"
 
 # Create temp directory

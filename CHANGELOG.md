@@ -1,5 +1,14 @@
 ## [1.4.2] - 2025-09-22
 
+### Fixed
+- **Packaging Configuration**: Fixed all packaging files to use correct 'pre-push' binary name instead of 'version'
+  - Updated macOS Homebrew formula (version.rb) with correct class name, description, and test commands
+  - Fixed Windows Scoop manifest (version.json) to reference pre-push.exe instead of version.exe
+  - Updated macOS README.md to reference pre-push CLI instead of version CLI
+  - Fixed Linux installer template to display correct pre-push CLI name
+  - Updated buildtools/create-goreleaser-backup.sh to use pre-push binary names
+  - Ensured all archive names, installer script prefixes, and binary references use 'pre-push'
+
 ### Added
 - **Version v1.4.2**: New release with improvements and bug fixes
 

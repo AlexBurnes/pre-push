@@ -152,7 +152,7 @@ With buildfab as the execution engine, pre-push can easily support:
 The buildfab integration adds the following dependency:
 
 ```go
-require github.com/burnes/buildfab v0.5.0
+require github.com/AlexBurnes/buildfab v0.5.0
 ```
 
 This dependency provides:
