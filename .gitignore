@@ -1,5 +1,6 @@
 # build artifacts
 bin/
+pre-push
 
 # build directory
 .build
