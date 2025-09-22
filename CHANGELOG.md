@@ -1,3 +1,12 @@
+## [1.4.4] - 2025-01-27
+
+### Fixed
+- **Documentation URLs**: Updated all hardcoded version URLs to use latest releases
+  - Fixed packaging/linux/README.md to use latest download URL instead of hardcoded v1.0.0
+  - Updated packaging/macos/version.rb URLs from v0.5.9 to current v1.4.3
+  - Updated packaging/windows/scoop-bucket/version.json URLs from v1.4.2 to current v1.4.3
+  - Ensured all download URLs point to current version for better user experience
+
 ## [1.4.2] - 2025-09-22
 
 ### Fixed

@@ -18,6 +18,12 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Documentation URL Fixes**: Updated all hardcoded version URLs to use latest releases
+  - **COMPLETED**: Fixed packaging/linux/README.md to use latest download URL instead of hardcoded v1.0.0
+  - **COMPLETED**: Updated packaging/macos/version.rb URLs from v0.5.9 to current v1.4.3
+  - **COMPLETED**: Updated packaging/windows/scoop-bucket/version.json URLs from v1.4.2 to current v1.4.3
+  - **COMPLETED**: Ensured all download URLs point to current version for better user experience
+  - **COMPLETED**: Version bumped to v1.4.4 for documentation URL fixes
 - **Packaging Configuration Fixes**: Fixed all packaging files to use correct 'pre-push' binary name instead of 'version'
   - **COMPLETED**: Updated macOS Homebrew formula (version.rb) with correct class name, description, and test commands
   - **COMPLETED**: Fixed Windows Scoop manifest (version.json) to reference pre-push.exe instead of version.exe

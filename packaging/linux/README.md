@@ -37,9 +37,9 @@ Download and extract the archive manually:
 
 ```bash
 # Download and extract archive
-wget https://github.com/AlexBurnes/pre-push/releases/download/v1.0.0/pre-push_1.0.0_linux_amd64.tar.gz
-tar -xzf pre-push_1.0.0_linux_amd64.tar.gz
-cd pre-push_1.0.0_linux_amd64
+wget https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-linux-amd64.tar.gz
+tar -xzf pre-push-linux-amd64.tar.gz
+cd pre-push-linux-amd64
 
 # Install using the included install.sh
 ./install.sh /usr/local/bin
