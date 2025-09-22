@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2025-01-27
+
+### Added
+- **Buildfab v0.7.3 Integration**: Upgraded to buildfab v0.7.3 with slince mode output improvements
+  - Enhanced output formatting with slince mode improvements for better user experience
+  - Maintained full compatibility with existing .project.yml configuration format
+  - Improved step-by-step execution with enhanced visual feedback
+
 ### Documentation
 - **README Installation Instructions**: Enhanced README with comprehensive installation and usage instructions
   - Added detailed build prerequisites including version utility installation from version-go project
