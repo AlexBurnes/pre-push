@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "v1.4.2",
   "description": "git describe-like CLI",
   "homepage": "https://github.com/AlexBurnes/version-go",
   "license": "MIT",

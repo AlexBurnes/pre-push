@@ -1,0 +1,99 @@
+# Version Management Rules
+
+## Rule Description
+When bumping versions, always update the VERSION file and all package manager configurations (Homebrew formula and Scoop manifest) to ensure consistency across all distribution channels.
+
+## Version Bump Requirements
+
+### Mandatory Updates
+When bumping versions, the following files MUST be updated:
+1. **VERSION file** - Primary source of truth for version number
+2. **packaging/macos/version.rb** - Homebrew formula with correct URLs and version
+3. **packaging/windows/scoop-bucket/version.json** - Scoop manifest with correct URLs and version
+4. **CHANGELOG.md** - Add new version entry with current date
+
+### Version Bump Process
+1. **Use version bump script**: `./scripts/version-bump <type>`
+   - Types: `patch`, `minor`, `major`, `pre`, `alpha`, `beta`, `rc`, `fix`, `next`, `post`, `feat`
+   - Example: `./scripts/version-bump patch`
+
+2. **Script automatically updates**:
+   - VERSION file with new version (e.g., `v1.4.2`)
+   - Homebrew formula URLs and version
+   - Scoop manifest URLs and version
+   - CHANGELOG.md with new version entry
+
+3. **Manual verification**:
+   - Review changes: `git diff`
+   - Commit changes: `git add . && git commit -m "chore(version): bump to X.Y.Z"`
+   - Create tag: `git tag vX.Y.Z`
+   - Push: `git push origin master --tags`
+
+### Package Manager Configuration Updates
+
+#### Homebrew Formula (packaging/macos/version.rb)
+- Update `version` field to new version
+- Update URLs to use new version in download paths
+- Ensure URLs point to correct pre-push project releases
+- Verify binary name is `pre-push` (not `version`)
+
+#### Scoop Manifest (packaging/windows/scoop-bucket/version.json)
+- Update `version` field to new version
+- Update URLs to use new version in download paths
+- Ensure URLs point to correct pre-push project releases
+- Verify binary name is `pre-push.exe` (not `version.exe`)
+
+### URL Format Requirements
+All package manager URLs must follow this format:
+- **Homebrew**: `https://github.com/AlexBurnes/pre-push/releases/download/vX.Y.Z/pre-push_X.Y.Z_macos_ARCH.tar.gz`
+- **Scoop**: `https://github.com/AlexBurnes/pre-push/releases/download/vX.Y.Z/pre-push_X.Y.Z_windows_ARCH.zip`
+
+### Version Format
+- **VERSION file**: `vX.Y.Z` (with 'v' prefix)
+- **Package managers**: `vX.Y.Z` (with 'v' prefix)
+- **Git tags**: `vX.Y.Z` (with 'v' prefix)
+
+### Error Prevention
+- **Never bump version without updating all files**
+- **Always verify URLs point to correct project (pre-push, not version)**
+- **Always verify binary names are correct (pre-push, not version)**
+- **Always update CHANGELOG.md with new version entry**
+
+### Integration with GoReleaser
+- GoReleaser configuration (`.goreleaser.yml`) uses `{{ .Tag }}` and `{{ .Version }}` placeholders
+- Package manager files are updated by the version bump script
+- GoReleaser will use the updated package manager files during release
+
+### Validation
+Before committing version changes:
+1. Run `git diff` to review all changes
+2. Verify VERSION file has correct version
+3. Verify package manager files have correct URLs and versions
+4. Verify CHANGELOG.md has new version entry
+5. Test version bump script: `./scripts/version-bump --help`
+
+### Examples
+
+#### Patch Version Bump
+```bash
+./scripts/version-bump patch
+# Updates: v1.4.1 -> v1.4.2
+```
+
+#### Minor Version Bump
+```bash
+./scripts/version-bump minor
+# Updates: v1.4.1 -> v1.5.0
+```
+
+#### Major Version Bump
+```bash
+./scripts/version-bump major
+# Updates: v1.4.1 -> v2.0.0
+```
+
+### Troubleshooting
+- **Version utility not found**: Run `./scripts/check-version-status`
+- **Package manager files not updated**: Check sed commands in version bump script
+- **URLs incorrect**: Verify package manager files have correct project URLs
+- **Binary names incorrect**: Verify package manager files use `pre-push` not `version`
