@@ -1,107 +1,15 @@
-## [1.4.4] - 2025-01-27
-
-### Fixed
-- **Documentation URLs**: Updated all hardcoded version URLs to use latest releases
-  - Fixed packaging/linux/README.md to use latest download URL instead of hardcoded v1.0.0
-  - Updated packaging/macos/version.rb URLs from v0.5.9 to current v1.4.3
-  - Updated packaging/windows/scoop-bucket/version.json URLs from v1.4.2 to current v1.4.3
-  - Ensured all download URLs point to current version for better user experience
-
-## [1.4.2] - 2025-09-22
-
-### Fixed
-- **Packaging Configuration**: Fixed all packaging files to use correct 'pre-push' binary name instead of 'version'
-  - Updated macOS Homebrew formula (version.rb) with correct class name, description, and test commands
-  - Fixed Windows Scoop manifest (version.json) to reference pre-push.exe instead of version.exe
-  - Updated macOS README.md to reference pre-push CLI instead of version CLI
-  - Fixed Linux installer template to display correct pre-push CLI name
-  - Updated buildtools/create-goreleaser-backup.sh to use pre-push binary names
-  - Ensured all archive names, installer script prefixes, and binary references use 'pre-push'
+## [1.4.5] - 2025-09-23
 
 ### Added
-- **Version v1.4.2**: New release with improvements and bug fixes
+- **Version v1.4.5**: New release with buildfab library upgrade
 
-
-## [1.4.1] - 2025-01-27
-
-### Added
-- **Buildfab v0.7.3 Integration**: Upgraded to buildfab v0.7.3 with slince mode output improvements
-  - Enhanced output formatting with slince mode improvements for better user experience
+### Changed
+- **Buildfab Library Upgrade**: Updated from v0.7.3 to v0.8.7
+  - Enhanced output formatting and execution capabilities
+  - Improved step-by-step execution with latest buildfab features
   - Maintained full compatibility with existing .project.yml configuration format
-  - Improved step-by-step execution with enhanced visual feedback
+  - All tests passing with race detection enabled
 
-### Documentation
-- **README Installation Instructions**: Enhanced README with comprehensive installation and usage instructions
-  - Added detailed build prerequisites including version utility installation from version-go project
-  - Added installation scripts section with platform-specific installers (Linux, macOS, Windows)
-  - Added Git hook installation instructions and project configuration examples
-  - Referenced version utility installation for testing purposes in build section
-  - Updated build section with proper prerequisites and version utility setup instructions
-
-## [1.4.0] - 2025-01-27
-
-### Added
-- **Buildfab v0.7.2 Integration**: Upgraded to buildfab v0.7.2 with SimpleRunner for enhanced step output
-  - Implemented buildfab.SimpleRunner interface for clean step-by-step execution
-  - Added professional step output with proper status icons and summaries
-  - Maintained single stage execution as requested (not individual action execution)
-- **Version Module Fix**: Fixed version-module action version format mismatch
-  - Resolved version format mismatch between binary (`v1.3.0`) and scripts (`1.3.0`)
-  - Added version prefix stripping for consistent comparison
-  - Replaced template variable resolution with direct script calls
-
-### Fixed
-- **Duplicate Error Output**: Removed redundant error printing in main.go
-  - Eliminated duplicate error messages that were shown twice
-  - Achieved clean, professional output formatting
-  - Maintained proper error handling and exit codes
-
-### Changed
-- **Buildfab Integration**: Upgraded from buildfab v0.5.0 to v0.7.2
-  - Replaced custom step execution with buildfab.SimpleRunner
-  - Enhanced step output capabilities with internal buildfab handling
-  - Maintained full compatibility with existing .project.yml configuration
-
-## [1.3.0] - 2025-09-21
-
-### Added
-- **Version Library Integration**: Integrated `github.com/AlexBurnes/version-go/pkg/version` v0.8.22 library
-  - Replaced CLI utility calls with direct Go library integration
-  - Added support for `${{ version.version }}`, `${{ version.project }}`, `${{ version.module }}`, `${{ version.modules }}` variables
-  - Enhanced variable detection with proper version parsing and validation
-  - Improved version detection reliability and cross-platform compatibility
-- **Enhanced Variable Support**: Extended variable interpolation system
-  - Added `version.version` variable for current version (e.g., "v1.3.0")
-  - Added `version.project` variable for project name (e.g., "buildfab-pre-push")
-  - Added `version.module` variable for module name (e.g., "pre-push")
-  - Added `version.modules` variable for comma-separated modules list
-- **Version Integration Module**: Created `internal/version/integration.go`
-  - Direct integration with version-go library for semantic versioning
-  - Automatic version detection from VERSION file
-  - Project and module detection from go.mod file
-  - Comprehensive error handling and validation
-
-### Changed
-- **Variable Detection**: Enhanced `DetectGitVariables()` function
-  - Added version library variable detection alongside existing Git variables
-  - Improved variable resolution with proper error handling
-  - Updated configuration system to support all version library variables
-- **Project Configuration**: Updated .project.yml to use version library variables
-  - Replaced basic `${{ tag }}` with comprehensive `${{ version.version }}` support
-  - Enhanced variable interpolation for better project configuration flexibility
-
-### Documentation
-- **Memory Bank Updates**: Updated all memory bank files with version library integration
-  - Updated `activeContext.md` with recent changes and current work focus
-  - Updated `progress.md` to mark version library integration as completed
-  - Updated `systemPatterns.md` with version library integration path
-  - Updated `techContext.md` with version library dependency information
-- **Technical Documentation**: Enhanced system architecture documentation
-  - Added version library integration to system patterns
-  - Updated dependency information in technical context
-  - Documented new variable support and integration patterns
-
-## [Unreleased]
 
 ### Added
 - **Buildfab Integration**: Integrated [buildfab](https://github.com/AlexBurnes/buildfab) v0.5.0 as the core DAG execution engine

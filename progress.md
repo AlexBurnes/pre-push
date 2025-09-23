@@ -32,13 +32,14 @@
 - **Built-in Git actions**: git@untracked, git@uncommitted, git@modified with real Git operations
 - **Custom action execution**: Full shell command execution for run: actions with verbose output
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
-- **Buildfab v0.7.3 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.7.3 as core DAG execution engine
-  - **COMPLETED**: Upgraded from v0.7.2 to v0.7.3 for slince mode output improvements
+- **Buildfab v0.8.7 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.7 as core DAG execution engine
+  - **COMPLETED**: Upgraded from v0.7.3 to v0.8.7 for latest features and improvements
   - **COMPLETED**: Implemented buildfab.SimpleRunner for clean step-by-step execution
   - **COMPLETED**: Fixed duplicate error output and achieved professional output formatting
   - **COMPLETED**: Maintained single stage execution as requested (not individual actions)
   - **COMPLETED**: Fixed version-module action version format mismatch
-  - **COMPLETED**: Enhanced output formatting with slince mode improvements
+  - **COMPLETED**: Enhanced output formatting with latest buildfab improvements
+  - **COMPLETED**: All tests passing with race detection enabled
 - **UI system**: Complete colored output, status reporting, progress display, and error formatting with conditional coloring
 - **Enhanced error messages**: Improved built-in action error messages with inline reproduction commands and clean formatting
 - **Better user experience**: CLI utility name, version, and project information displayed at start of pre-push hook
