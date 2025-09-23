@@ -2,6 +2,13 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Verbose and debug mode support**: Comprehensive verbose and debug mode implementation for enhanced user experience
+  - **COMPLETED**: Environment variable support (`PRE_PUSH_VERBOSE=1`, `PRE_PUSH_DEBUG=1`)
+  - **COMPLETED**: Project.yml configuration support (`verbose: true`, `debug: true` in pre-push stage)
+  - **COMPLETED**: Enhanced buildfab integration with proper verbose output and command execution details
+  - **COMPLETED**: Debug output control (only shown when debug mode is enabled)
+  - **COMPLETED**: Works correctly in both CLI commands and Git hooks
+  - **COMPLETED**: Clean output for normal usage with detailed verbose output when requested
 - **Version display and retrieval system**: Pre-push utility now correctly shows versions with proper source separation
   - **COMPLETED**: Fixed version display to match buildfab project format
   - **COMPLETED**: Pre-push now shows "pre-push v1.4.8" at first line like buildfab project

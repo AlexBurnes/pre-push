@@ -31,6 +31,46 @@ func getVersion() string {
     return appVersion
 }
 
+// isVerboseEnabled checks if verbose mode should be enabled for Git hooks
+func isVerboseEnabled() bool {
+    // Check environment variable first
+    if os.Getenv("PRE_PUSH_VERBOSE") == "1" {
+        return true
+    }
+    
+    // Check if CLI verbose flag is set (for manual testing)
+    return verbose
+}
+
+// isDebugEnabled checks if debug mode should be enabled for Git hooks
+func isDebugEnabled() bool {
+    // Check environment variable first
+    if os.Getenv("PRE_PUSH_DEBUG") == "1" {
+        return true
+    }
+    
+    // Check if CLI debug flag is set (for manual testing)
+    return debug
+}
+
+// isStageVerboseEnabled checks if verbose mode is enabled in project configuration for a specific stage
+func isStageVerboseEnabled(cfg *prepush.Config, stageName string) bool {
+    stage, exists := cfg.GetStage(stageName)
+    if !exists {
+        return false
+    }
+    return stage.Verbose
+}
+
+// isStageDebugEnabled checks if debug mode is enabled in project configuration for a specific stage
+func isStageDebugEnabled(cfg *prepush.Config, stageName string) bool {
+    stage, exists := cfg.GetStage(stageName)
+    if !exists {
+        return false
+    }
+    return stage.Debug
+}
+
 // Global flags
 var (
     verbose bool
@@ -162,8 +202,19 @@ func runGitHook() error {
         return fmt.Errorf("failed to resolve variables: %w", err)
     }
     
-    // Create UI
-    ui := ui.New(verbose, debug)
+    // Determine verbose and debug modes for Git hooks
+    hookVerbose := isVerboseEnabled() || isStageVerboseEnabled(cfg, "pre-push")
+    hookDebug := isDebugEnabled() || isStageDebugEnabled(cfg, "pre-push")
+    
+    // Debug output (only when debug mode is enabled)
+    if hookDebug {
+        fmt.Fprintf(os.Stderr, "DEBUG: hookVerbose=%v, hookDebug=%v\n", hookVerbose, hookDebug)
+        fmt.Fprintf(os.Stderr, "DEBUG: env PRE_PUSH_VERBOSE=%s\n", os.Getenv("PRE_PUSH_VERBOSE"))
+        fmt.Fprintf(os.Stderr, "DEBUG: isVerboseEnabled()=%v\n", isVerboseEnabled())
+    }
+    
+    // Create UI with Git hook specific settings
+    ui := ui.New(hookVerbose, hookDebug)
     
     // Create buildfab executor with CLI version
     executor := exec.NewBuildfabExecutorWithCLIVersion(cfg, ui, getVersion())
@@ -236,7 +287,7 @@ func runTest(cmd *cobra.Command, args []string) error {
     // Create context with cancellation
     ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
     defer cancel()
-    
+
     // Load configuration
     cfg, err := config.Load(".project.yml")
     if err != nil {
@@ -250,6 +301,17 @@ func runTest(cmd *cobra.Command, args []string) error {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
+
+    // Determine verbose and debug modes for Git hooks
+    hookVerbose := isVerboseEnabled() || isStageVerboseEnabled(cfg, "pre-push")
+    hookDebug := isDebugEnabled() || isStageDebugEnabled(cfg, "pre-push")
+    
+    // Debug output (remove in production)
+    if hookDebug {
+        fmt.Fprintf(os.Stderr, "DEBUG: hookVerbose=%v, hookDebug=%v\n", hookVerbose, hookDebug)
+        fmt.Fprintf(os.Stderr, "DEBUG: env PRE_PUSH_VERBOSE=%s\n", os.Getenv("PRE_PUSH_VERBOSE"))
+        fmt.Fprintf(os.Stderr, "DEBUG: isVerboseEnabled()=%v\n", isVerboseEnabled())
+    }
     
     // Resolve variables in configuration
     if err := config.ResolveVariables(cfg, gitVars); err != nil {
@@ -257,8 +319,8 @@ func runTest(cmd *cobra.Command, args []string) error {
         os.Exit(1)
     }
     
-    // Create UI
-    ui := ui.New(verbose, debug)
+    // Create UI with detected verbose and debug modes
+    ui := ui.New(hookVerbose, hookDebug)
     
     // Create buildfab executor with CLI version
     executor := exec.NewBuildfabExecutorWithCLIVersion(cfg, ui, getVersion())

@@ -1,3 +1,27 @@
+## [1.5.0] - 2025-01-27
+
+### Added
+- **Verbose Mode Support**: Comprehensive verbose and debug mode implementation for enhanced user experience
+  - Environment variable support: `PRE_PUSH_VERBOSE=1` enables verbose mode
+  - Environment variable support: `PRE_PUSH_DEBUG=1` enables debug mode
+  - Project.yml configuration support: `verbose: true` and `debug: true` in pre-push stage
+  - Enhanced buildfab integration with detailed command execution output
+  - Debug output control (only shown when debug mode is enabled)
+  - Works correctly in both CLI commands and Git hooks
+  - Clean output for normal usage with detailed verbose output when requested
+- **Buildfab Library Upgrade**: Updated from v0.8.18 to v0.9.0
+  - Latest buildfab features and improvements
+  - Enhanced verbose output capabilities
+  - Improved command execution details display
+  - Maintained full compatibility with existing configuration
+
+### Changed
+- **Enhanced Output Formatting**: Verbose mode now shows detailed command execution
+  - Command execution details: `💻 action-name` for each step
+  - Full command output display with execution details
+  - Enhanced visual feedback for better debugging experience
+  - Maintained clean output for normal usage
+
 ## [1.4.9] - 2025-01-27
 
 ### Added

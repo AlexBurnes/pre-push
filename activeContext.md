@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.8.18 Integration + PRD Requirements + Version Compilation Fix + Version Display Improvements**
+**Core Implementation Complete - Enhanced with Buildfab v0.9.0 Integration + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -19,6 +19,18 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Verbose Mode Implementation**: Added comprehensive verbose and debug mode support for Git hooks
+  - **COMPLETED**: Implemented environment variable support (`PRE_PUSH_VERBOSE=1`, `PRE_PUSH_DEBUG=1`)
+  - **COMPLETED**: Added project.yml configuration support (`verbose: true`, `debug: true` in pre-push stage)
+  - **COMPLETED**: Enhanced buildfab integration to use proper verbose output with command execution details
+  - **COMPLETED**: Fixed verbose mode detection in both CLI commands and Git hooks
+  - **COMPLETED**: Added debug output control (only shown when debug mode is enabled)
+  - **COMPLETED**: Updated buildfab library from v0.8.18 to v0.9.0 for latest features
+  - **COMPLETED**: Enhanced UI output to show detailed command execution (`💻 action-name`)
+  - **COMPLETED**: Maintained clean output for normal usage with verbose details when requested
+  - **COMPLETED**: Tested both environment variable and project.yml configuration approaches
+  - **COMPLETED**: All verbose and debug modes working correctly in both CLI and Git hook contexts
+- **Version Bump to v1.5.0**: New minor release with verbose mode support and buildfab v0.9.0 upgrade
 - **Version Bump to v1.4.9**: Prepared new release with version display and retrieval improvements
   - **COMPLETED**: Bumped version from v1.4.8 to v1.4.9 for patch release
   - **COMPLETED**: Updated VERSION file with new version number

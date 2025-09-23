@@ -30,7 +30,9 @@ type Action struct {
 
 // Stage represents a collection of steps to execute
 type Stage struct {
-    Steps []Step `yaml:"steps"`
+    Steps   []Step `yaml:"steps"`
+    Verbose bool   `yaml:"verbose,omitempty"`
+    Debug   bool   `yaml:"debug,omitempty"`
 }
 
 // Step represents a single step in a stage

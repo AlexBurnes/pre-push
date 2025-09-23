@@ -54,9 +54,27 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     e.ui.PrintCLIHeader("pre-push", cliVersion)
     e.ui.PrintProjectCheck(e.config.Project.Name, projectVersion)
 
-    // Use buildfab RunStageSimple to execute the entire stage
-    // This handles all output internally, so we don't need to add our own
-    return buildfab.RunStageSimple(ctx, ".project.yml", stageName, e.ui.IsVerbose())
+    // Convert pre-push config to buildfab config
+    buildfabConfig := e.convertToBuildfabConfig()
+    
+    // Debug output (remove in production)
+    if e.ui.IsDebug() {
+        fmt.Fprintf(os.Stderr, "DEBUG: UI IsVerbose=%v, IsDebug=%v\n", e.ui.IsVerbose(), e.ui.IsDebug())
+    }
+    
+    // Create simple run options with verbose and debug settings
+    opts := buildfab.DefaultSimpleRunOptions()
+    opts.Verbose = e.ui.IsVerbose()  // Use UI verbose setting
+    opts.Debug = e.ui.IsDebug()
+    opts.WorkingDir = "."
+    opts.Output = os.Stdout
+    opts.ErrorOutput = os.Stderr
+    
+    // Create simple runner
+    runner := buildfab.NewSimpleRunner(buildfabConfig, opts)
+    
+    // Execute the stage - buildfab handles all output automatically
+    return runner.RunStage(ctx, stageName)
 }
 
 // RunAction executes a specific action using buildfab SimpleRunner

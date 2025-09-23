@@ -1,5 +1,5 @@
-github.com/AlexBurnes/buildfab v0.8.18 h1:fGWHtfUG/Wgs8vvi/Q5z9bVdykv+y/k1twsfRpFStvY=
-github.com/AlexBurnes/buildfab v0.8.18/go.mod h1:T+T/RiJmOrzQYsbWn85BNelQdW+C37zt9YxUkBBWtwg=
+github.com/AlexBurnes/buildfab v0.9.0 h1:kv/ewRHFSkDevFskmL6mCSq9S9UwvrxsiTUyXGmvw7Q=
+github.com/AlexBurnes/buildfab v0.9.0/go.mod h1:T+T/RiJmOrzQYsbWn85BNelQdW+C37zt9YxUkBBWtwg=
 github.com/AlexBurnes/version-go v0.8.22 h1:Y/Qz9nlPyNMJ3aU1a6AwhPFBFF/ywuvuwvR4A75MOws=
 github.com/AlexBurnes/version-go v0.8.22/go.mod h1:MfcPI9btq3zf9hW6rpM6J8QPVb17ffhhCvx44tMtjFk=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
