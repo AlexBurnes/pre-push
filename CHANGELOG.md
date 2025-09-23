@@ -1,3 +1,17 @@
+## [1.4.7] - 2025-09-23
+
+### Added
+- **Version v1.4.7**: New release with improvements and bug fixes
+
+
+### Changed
+- **Buildfab Library Upgrade**: Updated from v0.8.7 to v0.8.11
+  - Enhanced output formatting and execution capabilities
+  - Improved step-by-step execution with latest buildfab features
+  - Maintained full compatibility with existing .project.yml configuration format
+  - All tests passing with race detection enabled
+  - Updated documentation to reflect new buildfab version
+
 ## [1.4.6] - 2025-09-23
 
 ### Fixed

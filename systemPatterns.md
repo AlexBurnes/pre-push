@@ -19,13 +19,13 @@
 │                External Dependencies                        │
 │  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
 │  │   buildfab  │ version-go  │   YAML     │   Context   │  │
-│  │   v0.7.2    │  library    │  parsing   │  handling   │  │
+│  │   v0.8.11   │  library    │  parsing   │  handling   │  │
 │  └─────────────┴─────────────┴─────────────┴─────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Key Technical Decisions
-- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.7.2 for advanced DAG execution and workflow automation
+- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.11 for advanced DAG execution and workflow automation
 - **DAG-based execution**: Parallel execution of independent checks with explicit dependencies via buildfab
 - **YAML configuration**: GitHub Actions-inspired config format for familiarity and flexibility
 - **Context-aware execution**: All operations respect context cancellation and timeouts
@@ -129,11 +129,11 @@ VERSION File → version.Parse() → Version Validation → Variable Detection �
 ```
 ✅ Complete integration with `github.com/AlexBurnes/version-go/pkg/version` v0.8.22
 
-**10. Buildfab v0.7.2 Integration Path - IMPLEMENTED:**
+**10. Buildfab v0.8.11 Integration Path - IMPLEMENTED:**
 ```
 .project.yml → buildfab.SimpleRunner → Step Execution → Status Output → Summary
 ```
-✅ Enhanced step output with buildfab v0.7.2 SimpleRunner interface
+✅ Enhanced step output with buildfab v0.8.11 SimpleRunner interface
 ✅ Clean, professional step-by-step execution with proper status icons
 ✅ Single stage execution as requested (not individual action execution)
 ✅ Fixed version format mismatch and template variable resolution issues

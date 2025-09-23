@@ -8,7 +8,7 @@
   - **COMPLETED**: Updated main.go to use appVersion variable set via ldflags from GoReleaser
   - **COMPLETED**: GoReleaser automatically detects version from Git tags and compiles it correctly
   - **COMPLETED**: Both -V and --version flags now show correct compiled-in version
-  - **COMPLETED**: Version shows as "1.4.6-SNAPSHOT-<commit>" for snapshot builds and "1.4.6" for releases
+  - **COMPLETED**: Version shows as "1.4.7-SNAPSHOT-<commit>" for snapshot builds and "1.4.7" for releases
 - **Documentation and packaging**: Complete documentation and packaging system with correct URLs and binary naming
   - **COMPLETED**: Fixed all hardcoded version URLs to use latest releases for better user experience
   - **COMPLETED**: Updated packaging/linux/README.md to use latest download URL instead of hardcoded v1.0.0
@@ -38,14 +38,15 @@
 - **Built-in Git actions**: git@untracked, git@uncommitted, git@modified with real Git operations
 - **Custom action execution**: Full shell command execution for run: actions with verbose output
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
-- **Buildfab v0.8.7 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.7 as core DAG execution engine
-  - **COMPLETED**: Upgraded from v0.7.3 to v0.8.7 for latest features and improvements
+- **Buildfab v0.8.11 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.11 as core DAG execution engine
+  - **COMPLETED**: Upgraded from v0.8.7 to v0.8.11 for latest features and improvements
   - **COMPLETED**: Implemented buildfab.SimpleRunner for clean step-by-step execution
   - **COMPLETED**: Fixed duplicate error output and achieved professional output formatting
   - **COMPLETED**: Maintained single stage execution as requested (not individual actions)
   - **COMPLETED**: Fixed version-module action version format mismatch
   - **COMPLETED**: Enhanced output formatting with latest buildfab improvements
   - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Updated documentation to reflect new buildfab version
 - **UI system**: Complete colored output, status reporting, progress display, and error formatting with conditional coloring
 - **Enhanced error messages**: Improved built-in action error messages with inline reproduction commands and clean formatting
 - **Better user experience**: CLI utility name, version, and project information displayed at start of pre-push hook
