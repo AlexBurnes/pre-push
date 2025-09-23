@@ -17,6 +17,7 @@ type BuildfabExecutor struct {
     config *prepush.Config
     ui     UI
     versionDetector *version.Detector
+    cliVersion string
 }
 
 
@@ -26,6 +27,17 @@ func NewBuildfabExecutor(config *prepush.Config, ui UI) *BuildfabExecutor {
         config: config,
         ui:     ui,
         versionDetector: version.New(),
+        cliVersion: "unknown",
+    }
+}
+
+// NewBuildfabExecutorWithCLIVersion creates a new buildfab-based executor with CLI version
+func NewBuildfabExecutorWithCLIVersion(config *prepush.Config, ui UI, cliVersion string) *BuildfabExecutor {
+    return &BuildfabExecutor{
+        config: config,
+        ui:     ui,
+        versionDetector: version.New(),
+        cliVersion: cliVersion,
     }
 }
 
@@ -36,10 +48,11 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
         return fmt.Errorf("stage not found: %s", stageName)
     }
 
-    // Print CLI header and project check
-    version := e.getVersion()
-    e.ui.PrintCLIHeader("pre-push", version)
-    e.ui.PrintProjectCheck(e.config.Project.Name, version)
+    // Print CLI header and project check first
+    projectVersion := e.getVersion()
+    cliVersion := e.getCLIVersion()
+    e.ui.PrintCLIHeader("pre-push", cliVersion)
+    e.ui.PrintProjectCheck(e.config.Project.Name, projectVersion)
 
     // Use buildfab RunStageSimple to execute the entire stage
     // This handles all output internally, so we don't need to add our own
@@ -148,11 +161,11 @@ func (e *BuildfabExecutor) convertToBuildfabConfig() *buildfab.Config {
 }
 
 
-// getVersion returns the current version from the VERSION file
+// getVersion returns the current version using the version-go library
 func (e *BuildfabExecutor) getVersion() string {
-    // Try to read from VERSION file first
-    if version, err := e.readVersionFile(); err == nil {
-        return version
+    // Use the version library to get project version
+    if info, err := version.GetVersionInfo(context.Background()); err == nil && info != nil {
+        return info.Version
     }
     
     // Fallback to git tag detection
@@ -162,6 +175,11 @@ func (e *BuildfabExecutor) getVersion() string {
     
     // Final fallback
     return "unknown"
+}
+
+// getCLIVersion returns the CLI version (compiled-in version)
+func (e *BuildfabExecutor) getCLIVersion() string {
+    return e.cliVersion
 }
 
 // readVersionFile reads the version from the VERSION file

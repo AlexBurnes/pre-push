@@ -1,15 +1,26 @@
 ## [1.4.8] - 2025-09-23
 
 ### Added
-- **Version v1.4.8**: New release with buildfab library upgrade
+- **Version v1.4.8**: New release with buildfab library upgrade and version display fix
 
 ### Changed
-- **Buildfab Library Upgrade**: Updated from v0.8.11 to v0.8.12
+- **Buildfab Library Upgrade**: Updated from v0.8.11 to v0.8.18
   - Enhanced output formatting and execution capabilities
   - Improved step-by-step execution with latest buildfab features
   - Maintained full compatibility with existing .project.yml configuration format
   - All tests passing with race detection enabled
   - Updated documentation to reflect new buildfab version
+
+### Fixed
+- **Version Display and Retrieval**: Fixed pre-push utility version display and improved version retrieval system
+  - Pre-push now shows "pre-push v1.4.8" at first line like buildfab project
+  - Enhanced UI output to ensure custom header is displayed before buildfab execution
+  - Separated CLI version (compiled-in) from project version (version-go library)
+  - CLI version now uses compiled-in version from ldflags (build time)
+  - Project version now uses github.com/AlexBurnes/version-go library (runtime)
+  - Added NewBuildfabExecutorWithCLIVersion constructor to pass CLI version
+  - Updated getVersion() method to use version-go library instead of VERSION file
+  - Version display now consistent with expected format and proper source separation
 
 ## [1.4.7] - 2025-09-23
 

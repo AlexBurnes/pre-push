@@ -2,6 +2,17 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Version display and retrieval system**: Pre-push utility now correctly shows versions with proper source separation
+  - **COMPLETED**: Fixed version display to match buildfab project format
+  - **COMPLETED**: Pre-push now shows "pre-push v1.4.8" at first line like buildfab project
+  - **COMPLETED**: Enhanced UI output to ensure custom header is displayed before buildfab execution
+  - **COMPLETED**: Separated CLI version (compiled-in) from project version (version-go library)
+  - **COMPLETED**: CLI version now uses compiled-in version from ldflags (build time)
+  - **COMPLETED**: Project version now uses github.com/AlexBurnes/version-go library (runtime)
+  - **COMPLETED**: Added NewBuildfabExecutorWithCLIVersion constructor to pass CLI version
+  - **COMPLETED**: Updated getVersion() method to use version-go library instead of VERSION file
+  - **COMPLETED**: Tested fix in both original project and clean test environment
+  - **COMPLETED**: Version display now consistent with expected format and proper source separation
 - **All tests passing**: Comprehensive test suite with 100% test coverage and race detection
 - **Version compilation system**: Version is now properly compiled into the application at build time
   - **COMPLETED**: Fixed version handling to use compiled-in version instead of reading VERSION file at runtime
@@ -38,8 +49,8 @@
 - **Built-in Git actions**: git@untracked, git@uncommitted, git@modified with real Git operations
 - **Custom action execution**: Full shell command execution for run: actions with verbose output
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
-- **Buildfab v0.8.12 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.12 as core DAG execution engine
-  - **COMPLETED**: Upgraded from v0.8.11 to v0.8.12 for latest features and improvements
+- **Buildfab v0.8.18 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.18 as core DAG execution engine
+  - **COMPLETED**: Upgraded from v0.8.11 to v0.8.18 for latest features and improvements
   - **COMPLETED**: Implemented buildfab.SimpleRunner for clean step-by-step execution
   - **COMPLETED**: Fixed duplicate error output and achieved professional output formatting
   - **COMPLETED**: Maintained single stage execution as requested (not individual actions)

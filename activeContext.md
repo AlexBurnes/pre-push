@@ -19,6 +19,17 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Version Display and Retrieval Fix**: Fixed pre-push utility version display and improved version retrieval system
+  - **COMPLETED**: Fixed version display to match buildfab project format
+  - **COMPLETED**: Pre-push now shows "pre-push v1.4.8" at first line like buildfab project
+  - **COMPLETED**: Enhanced UI output to ensure custom header is displayed before buildfab execution
+  - **COMPLETED**: Separated CLI version (compiled-in) from project version (version-go library)
+  - **COMPLETED**: CLI version now uses compiled-in version from ldflags (build time)
+  - **COMPLETED**: Project version now uses github.com/AlexBurnes/version-go library (runtime)
+  - **COMPLETED**: Added NewBuildfabExecutorWithCLIVersion constructor to pass CLI version
+  - **COMPLETED**: Updated getVersion() method to use version-go library instead of VERSION file
+  - **COMPLETED**: Tested fix in both original project and clean test environment
+  - **COMPLETED**: Version display now consistent with expected format and proper source separation
 - **Version Compilation Fix**: Fixed version handling to use compiled-in version instead of reading VERSION file at runtime
   - **COMPLETED**: Updated main.go to use appVersion variable set via ldflags instead of reading VERSION file
   - **COMPLETED**: Removed unused strings import from main.go after removing VERSION file reading
@@ -48,15 +59,15 @@
   - **COMPLETED**: Ensured VERSION file and all package manager configurations are updated when bumping versions
   - **COMPLETED**: Tested installation process to ensure it works correctly across all platforms
   - **COMPLETED**: Version bumped to v1.4.2 for installer fixes and version management improvements
-- **Buildfab v0.8.12 Integration**: Upgraded to latest buildfab v0.8.12 with enhanced capabilities
-  - **COMPLETED**: Upgraded from buildfab v0.8.11 to v0.8.12 for latest features and improvements
+- **Buildfab v0.8.18 Integration**: Upgraded to latest buildfab v0.8.18 with enhanced capabilities
+  - **COMPLETED**: Upgraded from buildfab v0.8.11 to v0.8.18 for latest features and improvements
   - **COMPLETED**: Enhanced output formatting and execution capabilities
   - **COMPLETED**: Maintained full compatibility with existing .project.yml configuration format
   - **COMPLETED**: Improved step-by-step execution with enhanced visual feedback
   - **COMPLETED**: All tests passing with race detection enabled
-  - **COMPLETED**: Updated memory bank files to reflect v0.8.12 upgrade
+  - **COMPLETED**: Updated memory bank files to reflect v0.8.18 upgrade
   - **COMPLETED**: Updated documentation and CHANGELOG.md with buildfab version change
-- **COMPLETED**: Version bumped to v1.4.8 for buildfab v0.8.12 upgrade release
+- **COMPLETED**: Version bumped to v1.4.8 for buildfab v0.8.18 upgrade release
 - **README Documentation Enhancement**: Comprehensive installation and usage instructions added
   - **COMPLETED**: Added detailed build prerequisites including version utility installation from version-go project
   - **COMPLETED**: Added installation scripts section with platform-specific installers (Linux, macOS, Windows)
