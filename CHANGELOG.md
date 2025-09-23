@@ -1,3 +1,14 @@
+## [1.4.6] - 2025-09-23
+
+### Fixed
+- **Version Compilation**: Fixed version handling to use compiled-in version instead of reading VERSION file at runtime
+  - Updated main.go to use appVersion variable set via ldflags from GoReleaser
+  - Removed unused strings import after removing VERSION file reading
+  - GoReleaser automatically detects version from Git tags and compiles it correctly
+  - Both -V and --version flags now show correct compiled-in version
+  - Version shows as "1.4.6-SNAPSHOT-<commit>" for snapshot builds and "1.4.6" for releases
+  - VERSION file is still used for development process but not read at runtime
+
 ## [1.4.5] - 2025-09-23
 
 ### Added

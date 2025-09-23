@@ -9,7 +9,6 @@ import (
     "fmt"
     "os"
     "os/signal"
-    "strings"
     "syscall"
 
     "github.com/spf13/cobra"
@@ -24,19 +23,12 @@ const (
     appName = "pre-push"
 )
 
-// getVersion reads the version from the VERSION file
+// appVersion is set at build time via ldflags
+var appVersion = "unknown"
+
+// getVersion returns the compiled-in version
 func getVersion() string {
-    data, err := os.ReadFile("VERSION")
-    if err != nil {
-        return "unknown"
-    }
-    
-    version := strings.TrimSpace(string(data))
-    if version == "" {
-        return "unknown"
-    }
-    
-    return version
+    return appVersion
 }
 
 // Global flags

@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab Integration + PRD Requirements**
+**Core Implementation Complete - Enhanced with Buildfab Integration + PRD Requirements + Version Compilation Fix**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -10,6 +10,7 @@
 - **COMPLETED**: Added bin directory support for project configuration
 - **COMPLETED**: Implemented flexible shell script approach for version module validation
 - **COMPLETED**: Removed rigid built-in actions in favor of project-specific configuration
+- **COMPLETED**: Version compilation fix - version now compiled into application at build time
 - **COMPLETED: PRD parallel execution improvements**: Enhanced parallel execution for better user experience
   - Ordered output display (steps shown in project.yml declaration order) - ✅ IMPLEMENTED
   - Continue running independent steps on failure - ✅ IMPLEMENTED
@@ -18,6 +19,13 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Version Compilation Fix**: Fixed version handling to use compiled-in version instead of reading VERSION file at runtime
+  - **COMPLETED**: Updated main.go to use appVersion variable set via ldflags instead of reading VERSION file
+  - **COMPLETED**: Removed unused strings import from main.go after removing VERSION file reading
+  - **COMPLETED**: Verified GoReleaser automatically detects version from Git tags and compiles it correctly
+  - **COMPLETED**: Tested both -V and --version flags show correct compiled-in version
+  - **COMPLETED**: Confirmed GoReleaser dry-run builds successfully with proper version compilation
+  - **COMPLETED**: Version now shows as "1.4.5-SNAPSHOT-a36ce9c" for snapshot builds and "1.4.5" for releases
 - **Documentation URL Fixes**: Updated all hardcoded version URLs to use latest releases
   - **COMPLETED**: Fixed packaging/linux/README.md to use latest download URL instead of hardcoded v1.0.0
   - **COMPLETED**: Updated packaging/macos/version.rb URLs from v0.5.9 to current v1.4.3
