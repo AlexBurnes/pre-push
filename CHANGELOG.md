@@ -1,3 +1,8 @@
+## [1.4.9] - 2025-01-27
+
+### Added
+- **Version v1.4.9**: New release with version display and retrieval improvements
+
 ## [1.4.8] - 2025-09-23
 
 ### Added
