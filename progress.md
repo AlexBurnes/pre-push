@@ -38,8 +38,8 @@
 - **Built-in Git actions**: git@untracked, git@uncommitted, git@modified with real Git operations
 - **Custom action execution**: Full shell command execution for run: actions with verbose output
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
-- **Buildfab v0.8.11 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.11 as core DAG execution engine
-  - **COMPLETED**: Upgraded from v0.8.7 to v0.8.11 for latest features and improvements
+- **Buildfab v0.8.12 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.12 as core DAG execution engine
+  - **COMPLETED**: Upgraded from v0.8.11 to v0.8.12 for latest features and improvements
   - **COMPLETED**: Implemented buildfab.SimpleRunner for clean step-by-step execution
   - **COMPLETED**: Fixed duplicate error output and achieved professional output formatting
   - **COMPLETED**: Maintained single stage execution as requested (not individual actions)
