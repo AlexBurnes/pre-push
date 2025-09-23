@@ -23,7 +23,11 @@ When bumping versions, the following files MUST be updated:
    - Scoop manifest URLs and version
    - CHANGELOG.md with new version entry
 
-3. **Manual verification**:
+3. **Rebuild binary with version**:
+   - Rebuild with ldflags: `go build -ldflags "-X main.appVersion=$(cat VERSION)" -o bin/pre-push ./cmd/pre-push`
+   - This ensures the binary contains the correct version at build time
+
+4. **Manual verification**:
    - Review changes: `git diff`
    - Commit changes: `git add . && git commit -m "chore(version): bump to X.Y.Z"`
    - Create tag: `git tag vX.Y.Z`

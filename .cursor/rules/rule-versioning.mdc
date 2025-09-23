@@ -40,12 +40,13 @@ fi
 ### Mandatory Workflow Steps
 1. **Check version**: Ensure VERSION file is incremented from last tag
 2. **Make changes**: Implement features/fixes
-3. **Test**: Run `go test ./... -v`
-4. **Dry run**: `./buildtools/build-goreleaser.sh dry-run`
-5. **Commit**: Use conventional commit messages
-6. **Tag**: `git tag $(cat VERSION)`
-7. **Push**: `git push origin master && git push origin $(cat VERSION)`
-8. **Release**: `./buildtools/build-goreleaser.sh release`
+3. **Rebuild binary**: `go build -ldflags "-X main.appVersion=$(cat VERSION)" -o bin/pre-push ./cmd/pre-push`
+4. **Test**: Run `go test ./... -v`
+5. **Dry run**: `./buildtools/build-goreleaser.sh dry-run`
+6. **Commit**: Use conventional commit messages
+7. **Tag**: `git tag $(cat VERSION)`
+8. **Push**: `git push origin master && git push origin $(cat VERSION)`
+9. **Release**: `./buildtools/build-goreleaser.sh release`
 
 ## AI Assistant Version Check Protocol
 
