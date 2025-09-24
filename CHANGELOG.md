@@ -1,3 +1,30 @@
+## [1.6.0] - 2025-01-27
+
+### Added
+- **Platform Variable Detection**: Comprehensive platform variable detection and variable substitution
+  - Built-in platform variables: `platform`, `arch`, `os`, `os_version`, `cpu` (simple names)
+  - Environment variable support: All environment variables available as `env.*` variables
+  - Git variables: `tag`, `branch` for current repository state
+  - Version variables: `version`, `project`, `module`, `modules` (simple names)
+  - Variable interpolation in all action `run:` commands and step conditions
+  - Cross-platform variable detection for Linux, macOS, and Windows
+- **Buildfab Library Upgrade**: Updated from v0.9.0 to v0.10.0
+  - Latest buildfab features with built-in platform variable support
+  - Enhanced variable interpolation capabilities
+  - Improved platform detection across all supported operating systems
+  - Maintained full compatibility with existing configuration
+- **Version Library Upgrade**: Updated from v0.8.22 to v1.1.1
+  - Latest version detection capabilities
+  - Enhanced version parsing and validation
+  - Improved cross-platform version detection
+
+### Changed
+- **Enhanced Variable Substitution**: All actions and steps now support variable interpolation
+  - Actions can use `${{ os }}`, `${{ version }}`, `${{ tag }}`, `${{ branch }}` variables (simple names)
+  - Step conditions support platform-specific logic using variables
+  - Environment variables accessible as `${{ env.VARIABLE_NAME }}` in all contexts
+  - Automatic variable detection and substitution during configuration loading
+
 ## [1.5.0] - 2025-01-27
 
 ### Added

@@ -8,6 +8,7 @@ import (
     "os"
     "os/exec"
     "path/filepath"
+    "runtime"
     "strings"
 
     "gopkg.in/yaml.v3"
@@ -156,7 +157,44 @@ func GetDefaultVariables() map[string]string {
         "version.project":  "", // Will be set by version library
         "version.module":   "", // Will be set by version library
         "version.modules":  "", // Will be set by version library
+        // Platform variables
+        "platform.os":      "", // Will be set by platform detection
+        "platform.arch":    "", // Will be set by platform detection
+        "platform.goos":    "", // Will be set by platform detection
+        "platform.goarch":   "", // Will be set by platform detection
+        "platform.go":      "", // Will be set by platform detection
     }
+}
+
+// DetectAllVariables detects all available variables (Git, version, platform, environment)
+func DetectAllVariables(ctx context.Context) (map[string]string, error) {
+    variables := make(map[string]string)
+    
+    // Detect Git variables
+    gitVars, err := DetectGitVariables(ctx)
+    if err != nil {
+        return nil, fmt.Errorf("failed to detect Git variables: %w", err)
+    }
+    for k, v := range gitVars {
+        variables[k] = v
+    }
+    
+    // Detect platform variables
+    platformVars, err := DetectPlatformVariables(ctx)
+    if err != nil {
+        return nil, fmt.Errorf("failed to detect platform variables: %w", err)
+    }
+    for k, v := range platformVars {
+        variables[k] = v
+    }
+    
+    // Detect environment variables
+    envVars := DetectEnvironmentVariables()
+    for k, v := range envVars {
+        variables[k] = v
+    }
+    
+    return variables, nil
 }
 
 // DetectGitVariables detects Git-related variables from the current repository
@@ -192,6 +230,65 @@ func DetectGitVariables(ctx context.Context) (map[string]string, error) {
     return variables, nil
 }
 
+// DetectPlatformVariables detects platform-specific variables
+func DetectPlatformVariables(ctx context.Context) (map[string]string, error) {
+    variables := make(map[string]string)
+    
+    // Basic platform information
+    variables["platform.os"] = runtime.GOOS
+    variables["platform.arch"] = runtime.GOARCH
+    variables["platform.goos"] = runtime.GOOS
+    variables["platform.goarch"] = runtime.GOARCH
+    variables["platform.go"] = runtime.Version()
+    
+    // Detect operating system details
+    if osName, err := detectOSName(); err == nil {
+        variables["platform.os.name"] = osName
+    }
+    
+    // Detect architecture details
+    if archName, err := detectArchName(); err == nil {
+        variables["platform.arch.name"] = archName
+    }
+    
+    // Detect shell information
+    if shell, err := detectShell(); err == nil {
+        variables["platform.shell"] = shell
+    }
+    
+    return variables, nil
+}
+
+// DetectEnvironmentVariables detects environment variables for substitution
+func DetectEnvironmentVariables() map[string]string {
+    variables := make(map[string]string)
+    
+    // Common environment variables
+    envVars := []string{
+        "HOME", "USER", "USERNAME", "PATH", "PWD", "SHELL",
+        "GOPATH", "GOROOT", "GOBIN", "GOCACHE", "GOMODCACHE",
+        "CI", "GITHUB_ACTIONS", "GITLAB_CI", "JENKINS_URL",
+        "BUILD_NUMBER", "BUILD_ID", "JOB_NAME", "WORKSPACE",
+    }
+    
+    for _, envVar := range envVars {
+        if value := os.Getenv(envVar); value != "" {
+            variables["env."+strings.ToLower(envVar)] = value
+        }
+    }
+    
+    // Add all environment variables with env. prefix
+    for _, env := range os.Environ() {
+        if parts := strings.SplitN(env, "=", 2); len(parts) == 2 {
+            key := strings.ToLower(parts[0])
+            value := parts[1]
+            variables["env."+key] = value
+        }
+    }
+    
+    return variables
+}
+
 // detectGitTag detects the current Git tag
 func detectGitTag(ctx context.Context) (string, error) {
     cmd := exec.CommandContext(ctx, "git", "describe", "--tags", "--abbrev=0")
@@ -210,4 +307,62 @@ func detectGitBranch(ctx context.Context) (string, error) {
         return "", err
     }
     return strings.TrimSpace(string(output)), nil
+}
+
+// detectOSName detects the operating system name
+func detectOSName() (string, error) {
+    switch runtime.GOOS {
+    case "linux":
+        // Try to detect Linux distribution
+        if data, err := os.ReadFile("/etc/os-release"); err == nil {
+            lines := strings.Split(string(data), "\n")
+            for _, line := range lines {
+                if strings.HasPrefix(line, "PRETTY_NAME=") {
+                    name := strings.TrimPrefix(line, "PRETTY_NAME=")
+                    name = strings.Trim(name, "\"")
+                    return name, nil
+                }
+            }
+        }
+        return "Linux", nil
+    case "darwin":
+        return "macOS", nil
+    case "windows":
+        return "Windows", nil
+    default:
+        return runtime.GOOS, nil
+    }
+}
+
+// detectArchName detects the architecture name
+func detectArchName() (string, error) {
+    switch runtime.GOARCH {
+    case "amd64":
+        return "x86_64", nil
+    case "arm64":
+        return "aarch64", nil
+    case "386":
+        return "i386", nil
+    case "arm":
+        return "arm", nil
+    default:
+        return runtime.GOARCH, nil
+    }
+}
+
+// detectShell detects the current shell
+func detectShell() (string, error) {
+    if shell := os.Getenv("SHELL"); shell != "" {
+        return filepath.Base(shell), nil
+    }
+    
+    // Fallback detection
+    switch runtime.GOOS {
+    case "windows":
+        return "cmd", nil
+    case "darwin":
+        return "zsh", nil
+    default:
+        return "bash", nil
+    }
 }

@@ -5,6 +5,7 @@ import (
     "context"
     "fmt"
     "os"
+    "os/exec"
     "strings"
 
     "github.com/AlexBurnes/buildfab/pkg/buildfab"
@@ -147,29 +148,59 @@ func (e *BuildfabExecutor) convertToBuildfabConfig() *buildfab.Config {
     config.Project.Modules = e.config.Project.Modules
     config.Project.BinDir = e.config.Project.BinDir
     
-    // Convert actions
+    // Convert actions with variable interpolation
     config.Actions = make([]buildfab.Action, len(e.config.Actions))
     for i, action := range e.config.Actions {
-        config.Actions[i] = buildfab.Action{
+        // Get all variables (Git, version, platform, environment)
+        variables := e.GetAllVariables()
+        
+        // Interpolate action variables
+        interpolatedAction, err := buildfab.InterpolateAction(buildfab.Action{
             Name: action.Name,
             Run:  action.Run,
             Uses: action.Uses,
+        }, variables)
+        if err != nil {
+            // If interpolation fails, use original action
+            config.Actions[i] = buildfab.Action{
+                Name: action.Name,
+                Run:  action.Run,
+                Uses: action.Uses,
+            }
+        } else {
+            config.Actions[i] = interpolatedAction
         }
     }
     
-    // Convert stages
+    // Convert stages with variable interpolation
     config.Stages = make(map[string]buildfab.Stage)
     for name, stage := range e.config.Stages {
         buildfabStage := buildfab.Stage{
             Steps: make([]buildfab.Step, len(stage.Steps)),
         }
         for i, step := range stage.Steps {
-            buildfabStage.Steps[i] = buildfab.Step{
+            // Get all variables for step interpolation
+            variables := e.GetAllVariables()
+            
+            // Interpolate step variables
+            interpolatedStep, err := buildfab.InterpolateStep(buildfab.Step{
                 Action:  step.Action,
                 Require: step.Require,
                 OnError: step.OnError,
                 If:      step.If,
                 Only:    step.Only,
+            }, variables)
+            if err != nil {
+                // If interpolation fails, use original step
+                buildfabStage.Steps[i] = buildfab.Step{
+                    Action:  step.Action,
+                    Require: step.Require,
+                    OnError: step.OnError,
+                    If:      step.If,
+                    Only:    step.Only,
+                }
+            } else {
+                buildfabStage.Steps[i] = interpolatedStep
             }
         }
         config.Stages[name] = buildfabStage
@@ -198,6 +229,99 @@ func (e *BuildfabExecutor) getVersion() string {
 // getCLIVersion returns the CLI version (compiled-in version)
 func (e *BuildfabExecutor) getCLIVersion() string {
     return e.cliVersion
+}
+
+// GetAllVariables combines all available variables (Git, version, platform, environment)
+func (e *BuildfabExecutor) GetAllVariables() map[string]string {
+    variables := make(map[string]string)
+    
+    // Add buildfab platform variables with simple names
+    platformVars := buildfab.GetPlatformVariables()
+    if platformVars != nil {
+        variables["platform"] = platformVars.Platform
+        variables["arch"] = platformVars.Arch
+        variables["os"] = platformVars.OS
+        variables["os_version"] = platformVars.OSVersion
+        variables["cpu"] = fmt.Sprintf("%d", platformVars.CPU)
+    }
+    
+    // Add buildfab platform variables using the helper function (these will have platform. prefix)
+    variables = buildfab.AddPlatformVariables(variables)
+    
+    // Add Git and version variables
+    if gitVars, err := e.detectGitVariables(context.Background()); err == nil {
+        for k, v := range gitVars {
+            variables[k] = v
+        }
+    }
+    
+    // Add environment variables
+    for _, env := range os.Environ() {
+        if parts := strings.SplitN(env, "=", 2); len(parts) == 2 {
+            key := strings.ToLower(parts[0])
+            value := parts[1]
+            variables["env."+key] = value
+        }
+    }
+    
+    return variables
+}
+
+// detectGitVariables detects Git-related variables
+func (e *BuildfabExecutor) detectGitVariables(ctx context.Context) (map[string]string, error) {
+    variables := make(map[string]string)
+    
+    // Detect current tag
+    if tag, err := e.detectGitTag(ctx); err == nil {
+        variables["tag"] = tag
+    }
+    
+    // Detect current branch
+    if branch, err := e.detectGitBranch(ctx); err == nil {
+        variables["branch"] = branch
+    }
+    
+    // Detect version library variables with simple names
+    if versionInfo, err := version.GetVersionInfo(ctx); err == nil {
+        if versionInfo.Version != "" {
+            variables["version"] = versionInfo.Version
+            variables["version.version"] = versionInfo.Version  // Keep both for compatibility
+        }
+        if versionInfo.Project != "" {
+            variables["project"] = versionInfo.Project
+            variables["version.project"] = versionInfo.Project  // Keep both for compatibility
+        }
+        if versionInfo.Module != "" {
+            variables["module"] = versionInfo.Module
+            variables["version.module"] = versionInfo.Module  // Keep both for compatibility
+        }
+        if len(versionInfo.Modules) > 0 {
+            variables["modules"] = strings.Join(versionInfo.Modules, " ")
+            variables["version.modules"] = strings.Join(versionInfo.Modules, " ")  // Keep both for compatibility
+        }
+    }
+    
+    return variables, nil
+}
+
+// detectGitTag detects the current Git tag
+func (e *BuildfabExecutor) detectGitTag(ctx context.Context) (string, error) {
+    cmd := exec.CommandContext(ctx, "git", "describe", "--tags", "--abbrev=0")
+    output, err := cmd.Output()
+    if err != nil {
+        return "", err
+    }
+    return strings.TrimSpace(string(output)), nil
+}
+
+// detectGitBranch detects the current Git branch
+func (e *BuildfabExecutor) detectGitBranch(ctx context.Context) (string, error) {
+    cmd := exec.CommandContext(ctx, "git", "rev-parse", "--abbrev-ref", "HEAD")
+    output, err := cmd.Output()
+    if err != nil {
+        return "", err
+    }
+    return strings.TrimSpace(string(output)), nil
 }
 
 // readVersionFile reads the version from the VERSION file
