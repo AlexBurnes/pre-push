@@ -1,3 +1,14 @@
+## [1.6.2] - 2025-01-27
+
+### Fixed
+- **Buildfab Build System**: Fixed buildfab build error caused by missing configuration file copying
+  - Removed unnecessary config/version.yaml copying from CMake install targets
+  - Fixed CMakeLists.txt working directories from cmd/version to cmd/pre-push
+  - Removed broken bootstrap-version dependency
+  - Updated package name from "version" to "pre-push"
+  - Fixed test commands to use ./... for comprehensive testing
+  - Buildfab build now completes successfully without configuration file errors
+
 ## [1.6.1] - 2025-01-27
 
 ### Fixed

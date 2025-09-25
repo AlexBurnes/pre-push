@@ -6,6 +6,70 @@ project:
 include:
   - "config/update-checking-actions.yml"
 
+
+stages:
+  pre-push:
+    steps:
+      - action: check-pre-push-releases
+        onerror: warn
+
+      - action: version-check
+      - action: version-greatest
+
+      # Always run version module validation
+      - action: version-module
+      
+      # Run tests only for release versions
+      - action: run-tests
+        only: [release]
+        require: [version-module]
+      
+      # Run Git checks for all versions      
+      - action: git-untracked
+      - action: git-uncommitted
+      - action: git-modified
+        onerror: warn
+
+  build:
+    steps:
+      - action: check-conan
+      - action: check-cmake
+      - action: check-goreleaser
+      - action: install-conan-deps
+        require: [check-conan, check-cmake]
+      - action: configure-cmake
+        require: [install-conan-deps]
+      - action: build-binaries
+        require: [configure-cmake]
+      - action: install-binary
+        require: [build-binaries]
+      - action: run-tests
+        require: [install-binary]
+      - action: create-installers
+        require: [install-binary]
+      - action: goreleaser-dry-run
+        require: [create-installers, check-goreleaser]
+
+  release:
+    steps:
+      - action: check-conan
+      - action: check-cmake
+      - action: check-goreleaser
+      - action: install-conan-deps
+        require: [check-conan, check-cmake]
+      - action: configure-cmake
+        require: [install-conan-deps]
+      - action: build-all-platforms
+        require: [configure-cmake]
+      - action: install-binary
+        require: [build-all-platforms]
+      - action: run-tests
+        require: [install-binary]
+      - action: create-installers
+        require: [install-binary]
+      - action: goreleaser-release
+        require: [create-installers, check-goreleaser]
+
 actions:
 
   - name: version-check
@@ -47,25 +111,140 @@ actions:
   - name: git-modified
     uses: git@modified
 
-stages:
-  pre-push:
-    steps:
-      - action: check-pre-push-releases
-        onerror: warn
+  # Tool check actions
+  - name: check-conan
+    run: |
+      if ! which conan >/dev/null 2>&1; then
+        echo "Conan is not installed. Install with: pip install conan"
+        exit 1
+      fi
+      conan --version
 
-      - action: version-check
-      - action: version-greatest
+  - name: check-cmake
+    run: |
+      if ! which cmake >/dev/null 2>&1; then
+        echo "CMake not found in PATH, will use Conan's CMake"
+      else
+        cmake --version
+      fi
 
-      # Always run version module validation
-      - action: version-module
+  - name: check-goreleaser
+    run: |
+      if ! which goreleaser >/dev/null 2>&1; then
+        echo "GoReleaser not found, checking Go environment..."
+        if ! which go >/dev/null 2>&1; then
+          echo "Go is not installed. Please install Go first"
+          exit 1
+        fi
+        echo "Installing GoReleaser..."
+        go install github.com/goreleaser/goreleaser@latest
+        # Add Go bin to PATH
+        export PATH="$(go env GOPATH)/bin:$PATH"
+        if ! which goreleaser >/dev/null 2>&1; then
+          echo "Failed to install GoReleaser"
+          exit 1
+        fi
+      fi
+      goreleaser --version
+
+  # Dependency installation actions
+  - name: install-conan-deps
+    run: |
+      # Check for golang package in Conan
+      if ! conan search golang --remote=all 2>/dev/null | grep -q "golang/"; then
+        echo "Creating golang package locally..."
+        conan create conanfile-golang.py --build=missing
+      fi
+      conan install . --build=missing --profile=default
+
+  # Build actions
+  - name: configure-cmake
+    run: |
+      # Configure CMake with Conan preset
+      mkdir -p .build
+      # Try to use Conan preset first (CMake 3.23+)
+      if cmake --version | grep -q "3\.2[3-9]\|3\.[3-9]\|[4-9]\." && [ -f "./CMakeUserPresets.json" ]; then
+        echo "Using Conan CMake preset"
+        cmake --preset conan-release
+      else
+        echo "Using manual CMake configuration"
+        cmake -B .build -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="/usr/local" -G "Unix Makefiles"
+      fi
+
+  - name: build-binaries
+    run: |
+      # Build for current platform
+      if cmake --version | grep -q "3\.2[3-9]\|3\.[3-9]\|[4-9]\." && [ -f "./CMakeUserPresets.json" ]; then
+        echo "Building with CMake preset"
+        cmake --build --preset conan-release --target pre-push
+      else
+        echo "Building with manual configuration"
+        cmake --build .build --target pre-push
+      fi
+
+  - name: install-binary
+    run: |
+      # Install binary to project bin directory using CMake
+      if cmake --version | grep -q "3\.2[3-9]\|3\.[3-9]\|[4-9]\." && [ -f "./CMakeUserPresets.json" ]; then
+        echo "Installing with CMake preset"
+        cmake --build --preset conan-release --target install-current
+      else
+        echo "Installing with manual configuration"
+        cmake --build .build --target install-current
+      fi
       
-      # Run tests only for release versions
-      - action: run-tests
-        only: [release]
-        require: [version-module]
+      # Verify installation
+      if [ -f "bin/pre-push" ]; then
+        echo "✓ Binary installed successfully: bin/pre-push"
+        bin/pre-push --version
+      else
+        echo "✗ Binary installation failed"
+        exit 1
+      fi
+
+  - name: build-all-platforms
+    run: |
+      # Build for all platforms
+      if cmake --version | grep -q "3\.2[3-9]\|3\.[3-9]\|[4-9]\." && [ -f "./CMakeUserPresets.json" ]; then
+        echo "Building with CMake preset"
+        cmake --build --preset conan-release --target pre-push-all
+      else
+        echo "Building with manual configuration"
+        cmake --build .build --target pre-push-all
+      fi
+
+  - name: build-cross-platform-binaries
+    run: |
+      # Build cross-platform binaries for testing
+      echo "Building cross-platform binaries for testing..."
       
-      # Run Git checks for all versions      
-      - action: git-untracked
-      - action: git-uncommitted
-      - action: git-modified
-        onerror: warn
+      # Build Linux AMD64
+      echo "Building Linux AMD64..."
+      GOOS=linux GOARCH=amd64 go build -o bin/pre-push-linux-amd64 ./cmd/pre-push
+      
+      # Build Windows AMD64
+      echo "Building Windows AMD64..."
+      GOOS=windows GOARCH=amd64 go build -o bin/pre-push-windows-amd64.exe ./cmd/pre-push
+      
+      # Build macOS AMD64
+      echo "Building macOS AMD64..."
+      GOOS=darwin GOARCH=amd64 go build -o bin/pre-push-darwin-amd64 ./cmd/pre-push
+      
+      echo "✓ Cross-platform binaries built successfully"
+
+  # Installer creation actions
+  - name: create-installers
+    run: |
+      # Create install scripts
+      ./buildtools/create-all-installers.sh "$(scripts/version version)" "installers"
+
+  # GoReleaser actions
+  - name: goreleaser-dry-run
+    run: |
+      export PATH="$(go env GOPATH)/bin:$PATH"
+      goreleaser release --snapshot --skip-publish --clean
+
+  - name: goreleaser-release
+    run: |
+      export PATH="$(go env GOPATH)/bin:$PATH"
+      goreleaser release --clean
