@@ -91,10 +91,20 @@ jobs:
       run: |
         cmake --build --preset conan-release --target pre-push
 
-        # On Linux, the pre-push target creates bin/pre-push-linux-amd64-static
-        # We need to copy it to bin/pre-push for artifact upload
-        if [[ -f "bin/pre-push-linux-amd64-static" ]]; then
-          cp bin/pre-push-linux-amd64-static bin/pre-push
+    - name: Install binary
+      run: |
+        # Use CMake install-current target to properly install binary
+        cmake --build --preset conan-release --target install-current
+        
+        # Verify installation
+        if [ -f "bin/pre-push" ]; then
+          echo "✓ Binary installed successfully: bin/pre-push"
+          bin/pre-push --version
+        else
+          echo "❌ Binary installation failed"
+          echo "Available files in bin/:"
+          ls -la bin/
+          exit 1
         fi
 
     - name: Get version

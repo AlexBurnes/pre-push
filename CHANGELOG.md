@@ -1,6 +1,14 @@
 ## [1.6.6] - 2025-09-25
 
 ### Fixed
+- **GitHub Actions CI Workflow**: Fixed CI workflow artifact upload issue by using proper CMake install-current target
+  - **CI Workflow**: Updated .github/workflows/ci.yml to use CMake install-current target
+    - Fixed "No files were found with the provided path: bin/pre-push" error
+    - Replaced manual file copying with proper CMake target usage
+    - Added verification step to ensure binary installation succeeds
+    - Enhanced error reporting with directory listing for debugging
+    - CI workflow now follows project configuration patterns from .project.yml
+    - Ensures bin/pre-push binary is properly created for artifact upload
 - **Git Hook Binary Installation**: Fixed Git hook installation to copy binary directly instead of shell script wrapper
   - **Install Package**: Updated to copy binary directly to .git/hooks/pre-push
     - Removed shell script wrapper approach that was creating bash scripts instead of binaries
