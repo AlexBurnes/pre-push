@@ -1,3 +1,15 @@
+## [1.6.6] - 2025-09-25
+
+### Fixed
+- **Git Hook Binary Installation**: Fixed Git hook installation to copy binary directly instead of shell script wrapper
+  - **Install Package**: Updated to copy binary directly to .git/hooks/pre-push
+    - Removed shell script wrapper approach that was creating bash scripts instead of binaries
+    - Updated isHookUpToDate() method to compare binary MD5 hashes directly
+    - Added calculateHookMD5() method for proper binary comparison
+    - Removed unused strings import from install package
+    - Verified binary and Git hook now have identical MD5 hashes
+    - Git hook is now a proper ELF binary instead of shell script
+
 ## [1.6.5] - 2025-09-25
 
 ### Changed

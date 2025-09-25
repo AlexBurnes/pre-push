@@ -2,6 +2,15 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Git Hook Binary Installation**: Fixed Git hook installation to copy binary directly instead of shell script wrapper
+  - **COMPLETED**: Updated install package to copy binary directly to .git/hooks/pre-push
+  - **COMPLETED**: Removed shell script wrapper approach that was creating bash scripts instead of binaries
+  - **COMPLETED**: Updated isHookUpToDate() method to compare binary MD5 hashes directly
+  - **COMPLETED**: Added calculateHookMD5() method for proper binary comparison
+  - **COMPLETED**: Verified binary and Git hook now have identical MD5 hashes
+  - **COMPLETED**: Git hook is now a proper ELF binary instead of shell script
+  - **COMPLETED**: Version bumped to v1.6.6 for Git hook binary installation fix
+  - **COMPLETED**: Updated CHANGELOG.md with comprehensive fix documentation
 - **Darwin/MacOS Naming Consistency**: Fixed platform naming inconsistency in build system
   - **COMPLETED**: Removed darwin->macos replacement in GoReleaser name_template for consistent binary naming
   - **COMPLETED**: Updated CMakeLists.txt platform detection to use darwin instead of macos
