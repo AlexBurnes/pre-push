@@ -206,23 +206,29 @@ set(PLATFORMS
     "windows/amd64"
 )
 
-# Default build target (current platform) - static build for Linux
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_custom_target(${BINARY_NAME}
-        COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-        ${GO_EXECUTABLE} build -a -ldflags "-extldflags \"-static\"" ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${BINARY_NAME}-linux-amd64-static .
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
-        COMMENT "Building static ${BINARY_NAME} for current platform (linux/amd64)"
-        VERBATIM
-    )
-else()
-    add_custom_target(${BINARY_NAME}
-        COMMAND ${GO_EXECUTABLE} build ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${BINARY_NAME} .
-        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
-        COMMENT "Building ${BINARY_NAME} for current platform"
-        VERBATIM
-    )
+# Set current binary name based on detected platform and architecture
+set(CURRENT_BINARY_NAME "${BINARY_NAME}-${GO_OS}-${GO_ARCH}")
+if(GO_OS STREQUAL "windows")
+    set(CURRENT_BINARY_NAME "${CURRENT_BINARY_NAME}.exe")
 endif()
+
+# Default build target (current platform) - use detected platform and architecture
+set(BUILD_COMMAND ${GO_EXECUTABLE} build ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${CURRENT_BINARY_NAME} .)
+set(BUILD_COMMENT "Building ${BINARY_NAME} for current platform (${GO_OS}/${GO_ARCH})")
+
+# Add static build flags for Linux and macOS
+if(GO_OS STREQUAL "linux" OR GO_OS STREQUAL "darwin")
+    set(BUILD_COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOOS=${GO_OS} GOARCH=${GO_ARCH}
+        ${GO_EXECUTABLE} build -a -ldflags "-extldflags \"-static\"" ${GO_BUILD_FLAGS} -o ${BUILD_DIR}/${CURRENT_BINARY_NAME} .)
+    set(BUILD_COMMENT "Building static ${BINARY_NAME} for current platform (${GO_OS}/${GO_ARCH})")
+endif()
+
+add_custom_target(${BINARY_NAME}
+    COMMAND ${BUILD_COMMAND}
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/cmd/pre-push
+    COMMENT "${BUILD_COMMENT}"
+    VERBATIM
+)
 
 # Cross-compilation targets
 foreach(PLATFORM ${PLATFORMS})
@@ -336,49 +342,13 @@ add_custom_target(clean-build
 )
 
 # Install current target - install current OS binary to project bin directory
-if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    add_custom_target(install-current
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/${BINARY_NAME}-linux-amd64-static ${BUILD_DIR}/
-        DEPENDS ${BINARY_NAME}
-        COMMENT "Installing current OS binary (static Linux) to project bin directory"
-        VERBATIM
-    )
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if(CMAKE_SYSTEM_PROCESSOR STREQUAL "arm64")
-        add_custom_target(install-current
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/${BINARY_NAME}-darwin-arm64 ${BUILD_DIR}/
-            DEPENDS ${BINARY_NAME}
-            COMMENT "Installing current OS binary (macOS ARM64) to project bin directory"
-            VERBATIM
-        )
-    else()
-        add_custom_target(install-current
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR}
-            COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/${BINARY_NAME}-darwin-amd64 ${BUILD_DIR}/
-            DEPENDS ${BINARY_NAME}
-            COMMENT "Installing current OS binary (macOS Intel) to project bin directory"
-            VERBATIM
-        )
-    endif()
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Windows")
-    add_custom_target(install-current
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/${BINARY_NAME}-windows-amd64.exe ${BUILD_DIR}/
-        DEPENDS ${BINARY_NAME}
-        COMMENT "Installing current OS binary (Windows) to project bin directory"
-        VERBATIM
-    )
-else()
-    add_custom_target(install-current
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR}
-        COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/${BINARY_NAME} ${BUILD_DIR}/
-        DEPENDS ${BINARY_NAME}
-        COMMENT "Installing current OS binary to project bin directory"
-        VERBATIM
-    )
-endif()
+add_custom_target(install-current
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${BUILD_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different ${BUILD_DIR}/${CURRENT_BINARY_NAME} ${BUILD_DIR}/${BINARY_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+    DEPENDS ${BINARY_NAME}
+    COMMENT "Installing current OS binary (${GO_OS}/${GO_ARCH}) to project bin directory"
+    VERBATIM
+)
 
 # Install all target - install all platform binaries to project bin directory
 add_custom_target(install-all

@@ -6,9 +6,12 @@ package main
 import (
     "bufio"
     "context"
+    "crypto/md5"
     "fmt"
+    "io"
     "os"
     "os/signal"
+    "path/filepath"
     "syscall"
 
     "github.com/spf13/cobra"
@@ -71,6 +74,138 @@ func isStageDebugEnabled(cfg *prepush.Config, stageName string) bool {
     return stage.Debug
 }
 
+// getCurrentBinaryPath returns the path to the current running binary
+func getCurrentBinaryPath() (string, error) {
+    return os.Executable()
+}
+
+// getGitHookPath returns the path to the Git pre-push hook
+func getGitHookPath() (string, error) {
+    // Find .git directory
+    cwd, err := os.Getwd()
+    if err != nil {
+        return "", fmt.Errorf("failed to get current directory: %w", err)
+    }
+    
+    // Walk up the directory tree to find .git
+    for {
+        gitDir := filepath.Join(cwd, ".git")
+        if _, err := os.Stat(gitDir); err == nil {
+            return filepath.Join(gitDir, "hooks", "pre-push"), nil
+        }
+        
+        parent := filepath.Dir(cwd)
+        if parent == cwd {
+            break // Reached root directory
+        }
+        cwd = parent
+    }
+    
+    return "", fmt.Errorf("not in a git repository")
+}
+
+// calculateFileMD5 calculates the MD5 hash of a file
+func calculateFileMD5(filePath string) (string, error) {
+    file, err := os.Open(filePath)
+    if err != nil {
+        return "", err
+    }
+    defer file.Close()
+    
+    hash := md5.New()
+    if _, err := io.Copy(hash, file); err != nil {
+        return "", err
+    }
+    
+    return fmt.Sprintf("%x", hash.Sum(nil)), nil
+}
+
+// isBinaryDifferent checks if the Git hook binary is different from the current binary
+func isBinaryDifferent() (bool, error) {
+    currentBinary, err := getCurrentBinaryPath()
+    if err != nil {
+        return false, fmt.Errorf("failed to get current binary path: %w", err)
+    }
+    
+    hookPath, err := getGitHookPath()
+    if err != nil {
+        return false, fmt.Errorf("failed to get git hook path: %w", err)
+    }
+    
+    // Check if hook file exists
+    if _, err := os.Stat(hookPath); os.IsNotExist(err) {
+        return true, nil // Hook doesn't exist, so it's different
+    }
+    
+    // Calculate MD5 hashes
+    currentHash, err := calculateFileMD5(currentBinary)
+    if err != nil {
+        return false, fmt.Errorf("failed to calculate current binary hash: %w", err)
+    }
+    
+    hookHash, err := calculateFileMD5(hookPath)
+    if err != nil {
+        return false, fmt.Errorf("failed to calculate hook binary hash: %w", err)
+    }
+    
+    return currentHash != hookHash, nil
+}
+
+// updateGitHook copies the current binary to the Git hook location
+func updateGitHook() error {
+    currentBinary, err := getCurrentBinaryPath()
+    if err != nil {
+        return fmt.Errorf("failed to get current binary path: %w", err)
+    }
+    
+    hookPath, err := getGitHookPath()
+    if err != nil {
+        return fmt.Errorf("failed to get git hook path: %w", err)
+    }
+    
+    // Ensure hooks directory exists
+    hooksDir := filepath.Dir(hookPath)
+    if err := os.MkdirAll(hooksDir, 0755); err != nil {
+        return fmt.Errorf("failed to create hooks directory: %w", err)
+    }
+    
+    // Copy current binary to hook location
+    sourceFile, err := os.Open(currentBinary)
+    if err != nil {
+        return fmt.Errorf("failed to open current binary: %w", err)
+    }
+    defer sourceFile.Close()
+    
+    destFile, err := os.OpenFile(hookPath, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0755)
+    if err != nil {
+        return fmt.Errorf("failed to create hook file: %w", err)
+    }
+    defer destFile.Close()
+    
+    if _, err := io.Copy(destFile, sourceFile); err != nil {
+        return fmt.Errorf("failed to copy binary to hook: %w", err)
+    }
+    
+    return nil
+}
+
+// checkAndUpdateGitHook checks if the Git hook needs updating and updates it if necessary
+func checkAndUpdateGitHook() error {
+    different, err := isBinaryDifferent()
+    if err != nil {
+        return fmt.Errorf("failed to check if binary is different: %w", err)
+    }
+    
+    if different {
+        if err := updateGitHook(); err != nil {
+            return fmt.Errorf("failed to update git hook: %w", err)
+        }
+        fmt.Printf("Updated Git pre-push hook with current binary\n")
+    }
+    
+    return nil
+}
+
 // Global flags
 var (
     verbose bool
@@ -115,12 +250,18 @@ of your configuration. Each action includes a brief description of what it does.
 func main() {
     // Check if we're being called by Git as a hook
     if isGitHook() {
-        // When called by Git, run the hook directly
+        // When called by Git, run the hook directly (no update checks)
         if err := runGitHook(); err != nil {
             fmt.Fprintf(os.Stderr, "Error: %v\n", err)
             os.Exit(1)
         }
         return
+    }
+    
+    // When running as CLI, check and update Git hook if needed
+    if err := checkAndUpdateGitHook(); err != nil {
+        // Don't fail the CLI command if hook update fails, just warn
+        fmt.Fprintf(os.Stderr, "Warning: failed to update Git hook: %v\n", err)
     }
     
     // Add global flags

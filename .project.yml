@@ -10,8 +10,6 @@ include:
 stages:
   pre-push:
     steps:
-      - action: check-pre-push-releases
-        onerror: warn
 
       - action: version-check
       - action: version-greatest
