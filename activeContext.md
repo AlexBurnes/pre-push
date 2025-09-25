@@ -30,6 +30,10 @@
   - **COMPLETED**: Git hook is now a proper ELF binary instead of shell script
   - **COMPLETED**: Version bumped to v1.6.6 for Git hook binary installation fix
   - **COMPLETED**: Updated CHANGELOG.md with comprehensive fix documentation
+  - **COMPLETED**: Fixed CMakeLists.txt to read VERSION file first (highest priority)
+  - **COMPLETED**: Binary now correctly shows v1.6.6 instead of old version
+  - **COMPLETED**: All pre-push checks pass including version-module validation
+  - **COMPLETED**: Successfully pushed v1.6.6 tag to remote repository
 - **Buildfab Library Update**: Updated buildfab library to latest stable release
   - **COMPLETED**: Updated buildfab library from v0.15.1 to v0.16.0 for latest features and improvements
   - **COMPLETED**: All tests passing with updated buildfab library

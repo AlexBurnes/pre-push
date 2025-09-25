@@ -11,6 +11,10 @@
   - **COMPLETED**: Git hook is now a proper ELF binary instead of shell script
   - **COMPLETED**: Version bumped to v1.6.6 for Git hook binary installation fix
   - **COMPLETED**: Updated CHANGELOG.md with comprehensive fix documentation
+  - **COMPLETED**: Fixed CMakeLists.txt to read VERSION file first (highest priority)
+  - **COMPLETED**: Binary now correctly shows v1.6.6 instead of old version
+  - **COMPLETED**: All pre-push checks pass including version-module validation
+  - **COMPLETED**: Successfully pushed v1.6.6 tag to remote repository
 - **Darwin/MacOS Naming Consistency**: Fixed platform naming inconsistency in build system
   - **COMPLETED**: Removed darwin->macos replacement in GoReleaser name_template for consistent binary naming
   - **COMPLETED**: Updated CMakeLists.txt platform detection to use darwin instead of macos
