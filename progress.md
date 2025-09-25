@@ -8,6 +8,7 @@
   - **COMPLETED**: Added proper verification and error reporting for binary installation
   - **COMPLETED**: CI workflow now follows project configuration patterns from .project.yml
   - **COMPLETED**: Ensures bin/pre-push binary is properly created for artifact upload
+  - **COMPLETED**: Version bumped to v1.6.7 for CI workflow fix
 - **Git Hook Binary Installation**: Fixed Git hook installation to copy binary directly instead of shell script wrapper
   - **COMPLETED**: Updated install package to copy binary directly to .git/hooks/pre-push
   - **COMPLETED**: Removed shell script wrapper approach that was creating bash scripts instead of binaries
