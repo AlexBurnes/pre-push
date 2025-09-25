@@ -84,9 +84,9 @@ var rootCmd = &cobra.Command{
     Long: `pre-push is a cross-platform, configurable Git pre-push hook runner that
 provides built-in checks and supports custom actions via YAML configuration.
 
-When invoked without arguments, it installs or updates itself as a Git
-pre-push hook. When invoked by Git as a hook, it reads the standard
-pre-push input and runs configured checks.
+When invoked without arguments, it checks and installs or updates itself as a Git
+pre-push hook with MD5 verification. When invoked by Git as a hook, it reads the 
+standard pre-push input and runs configured checks.
 
 Configuration is provided via .project.yml file in the repository root.`,
     RunE: runRoot,
@@ -110,6 +110,7 @@ var listUsesCmd = &cobra.Command{
 of your configuration. Each action includes a brief description of what it does.`,
     RunE: runListUses,
 }
+
 
 func main() {
     // Check if we're being called by Git as a hook
@@ -233,7 +234,7 @@ func readGitRefs() ([]string, error) {
     return refs, nil
 }
 
-// runRoot handles the root command (install or update hook)
+// runRoot handles the root command (check and install hook)
 func runRoot(cmd *cobra.Command, args []string) error {
     // Check if version flags were set
     if versionFlag, _ := cmd.Flags().GetBool("version"); versionFlag {
@@ -253,25 +254,6 @@ func runRoot(cmd *cobra.Command, args []string) error {
     return installer.Install(ctx)
 }
 
-// runInstall installs or updates the pre-push hook
-func runInstall(cmd *cobra.Command, args []string) error {
-    // Check if version flags were set
-    if versionFlag, _ := cmd.Flags().GetBool("version"); versionFlag {
-        fmt.Printf("%s version %s\n", appName, getVersion())
-        return nil
-    }
-    if versionOnlyFlag, _ := cmd.Flags().GetBool("version-only"); versionOnlyFlag {
-        fmt.Printf("%s\n", getVersion())
-        return nil
-    }
-    
-    // Create context with cancellation
-    ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-    defer cancel()
-    
-    installer := install.New()
-    return installer.Install(ctx)
-}
 
 // runTest runs all checks in dry-run mode
 func runTest(cmd *cobra.Command, args []string) error {
