@@ -1,3 +1,19 @@
+## [1.6.5] - 2025-09-25
+
+### Changed
+- **Buildfab Library Update**: Updated buildfab library to latest stable release
+  - **Buildfab Library**: Updated from v0.15.1 to v0.16.0
+    - Latest features and improvements from buildfab project
+    - Enhanced execution capabilities and performance optimizations
+    - Improved error handling and output formatting
+    - Maintained full compatibility with existing configuration
+    - All tests passing with new buildfab version
+
+## [1.6.4] - 2025-01-27
+
+### Changed
+- **Version Bump**: Version incremented for buildfab library update preparation
+
 ## [1.6.3] - 2025-01-27
 
 ### Fixed
