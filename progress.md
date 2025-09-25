@@ -2,6 +2,16 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Darwin/MacOS Naming Consistency**: Fixed platform naming inconsistency in build system
+  - **COMPLETED**: Removed darwin->macos replacement in GoReleaser name_template for consistent binary naming
+  - **COMPLETED**: Updated CMakeLists.txt platform detection to use darwin instead of macos
+  - **COMPLETED**: Fixed buildtools scripts to use darwin platform naming consistently
+  - **COMPLETED**: Updated documentation to reference darwin binaries instead of macos
+  - **COMPLETED**: Ensured all installer scripts and URLs use consistent darwin naming
+  - **COMPLETED**: Fixed README.md download links to use pre-push_darwin_* archives
+  - **COMPLETED**: Updated packaging/macos/README.md to reference darwin binary names
+  - **COMPLETED**: Updated CHANGELOG.md with comprehensive fix documentation
+  - **COMPLETED**: Version bumped to v1.6.4 for darwin/macos naming consistency fix
 - **Smart Hook Update System**: Elegant self-updating Git hook system implemented
   - **COMPLETED**: Pre-push manages its own updates using MD5 hash comparison
   - **COMPLETED**: CLI mode checks and updates Git hook if binary differs

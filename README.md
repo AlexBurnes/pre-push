@@ -57,7 +57,7 @@ scoop install pre-push
 Download the latest release from [GitHub Releases](https://github.com/AlexBurnes/pre-push/releases) and extract the binary for your platform:
 
 - **Linux**: `pre-push_linux_amd64.tar.gz` or `pre-push_linux_arm64.tar.gz`
-- **macOS**: `pre-push_macos_amd64.tar.gz` or `pre-push_macos_arm64.tar.gz`
+- **macOS**: `pre-push_darwin_amd64.tar.gz` or `pre-push_darwin_arm64.tar.gz`
 - **Windows**: `pre-push_windows_amd64.zip`
 
 ### Installation Scripts
@@ -78,7 +78,7 @@ chmod +x install-linux.sh
 #### macOS Installation
 ```bash
 # Download and run the macOS installer
-curl -sSL https://github.com/AlexBurnes/pre-push/releases/latest/download/install-macos.sh | bash
+curl -sSL https://github.com/AlexBurnes/pre-push/releases/latest/download/install-darwin.sh | bash
 ```
 
 #### Windows Installation
@@ -155,10 +155,10 @@ Before building, you need to install the required utilities:
    **macOS Installation:**
    ```bash
    # For Intel Macs (x86_64/amd64)
-   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-macos-amd64-install.sh | sh
+   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-darwin-amd64-install.sh | sh
    
    # For Apple Silicon Macs (ARM64)
-   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-macos-arm64-install.sh | sh
+   wget -O - https://github.com/AlexBurnes/version-go/releases/latest/download/version-darwin-arm64-install.sh | sh
    
    # For build requirements, install into ./scripts/ directory
    mkdir -p ./scripts

@@ -45,11 +45,11 @@ If you prefer not to use Homebrew, you can download the binary directly:
 
 ```bash
 # For Intel Macs
-curl -L https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-macos-amd64.tar.gz | tar -xz
+curl -L https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-darwin-amd64.tar.gz | tar -xz
 sudo mv pre-push /usr/local/bin/
 
 # For Apple Silicon Macs
-curl -L https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-macos-arm64.tar.gz | tar -xz
+curl -L https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-darwin-arm64.tar.gz | tar -xz
 sudo mv pre-push /usr/local/bin/
 ```
 
@@ -59,10 +59,10 @@ You can also use the self-extracting installer scripts:
 
 ```bash
 # For Intel Macs
-wget -O - https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-macos-amd64-install.sh | sh
+wget -O - https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-darwin-amd64-install.sh | sh
 
 # For Apple Silicon Macs
-wget -O - https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-macos-arm64-install.sh | sh
+wget -O - https://github.com/AlexBurnes/pre-push/releases/latest/download/pre-push-darwin-arm64-install.sh | sh
 ```
 
 ## Verification

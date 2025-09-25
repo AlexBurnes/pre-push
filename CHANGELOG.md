@@ -1,30 +1,23 @@
 ## [1.6.3] - 2025-01-27
 
+### Fixed
+- **Platform Naming Consistency**: Fixed darwin/macos naming inconsistency in build system
+  - Removed darwin->macos replacement in GoReleaser name_template
+  - Updated CMakeLists.txt platform detection to use darwin instead of macos
+  - Fixed buildtools scripts to use darwin platform naming consistently
+  - Updated documentation to reference darwin binaries instead of macos
+  - Ensured all installer scripts and URLs use consistent darwin naming
+  - Fixed README.md download links to use pre-push_darwin_* archives
+  - Updated packaging/macos/README.md to reference darwin binary names
+
 ### Added
 - **Smart Hook Update System**: Elegant self-updating Git hook system
   - Pre-push now manages its own updates using MD5 hash comparison
   - CLI mode automatically checks and updates Git hook if binary differs
   - Git hook mode executes without update checks for optimal performance
   - No complex shell scripts needed - all logic contained in pre-push binary
-
-### Fixed
-- **Buildfab Build System**: Fixed buildfab build error and improved CMake configuration
-  - Removed unnecessary config/version.yaml copying from CMake install targets
-  - Fixed CMakeLists.txt working directories from cmd/version to cmd/pre-push
-  - Removed broken bootstrap-version dependency
-  - Updated package name from "version" to "pre-push"
-  - Fixed test commands to use ./... for comprehensive testing
-  - CMake install target now uses detected platform/architecture automatically
-  - Buildfab build system works correctly with platform detection
 
 ## [1.6.2] - 2025-01-27
-
-### Added
-- **Smart Hook Update System**: Elegant self-updating Git hook system
-  - Pre-push now manages its own updates using MD5 hash comparison
-  - CLI mode automatically checks and updates Git hook if binary differs
-  - Git hook mode executes without update checks for optimal performance
-  - No complex shell scripts needed - all logic contained in pre-push binary
 
 ### Fixed
 - **Buildfab Build System**: Fixed buildfab build error and improved CMake configuration

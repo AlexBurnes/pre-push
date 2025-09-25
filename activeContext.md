@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.15.1 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements**
+**Core Implementation Complete - Enhanced with Buildfab v0.15.1 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Version v1.6.4 Release**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -19,6 +19,15 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Darwin/MacOS Naming Consistency Fix**: Fixed platform naming inconsistency in build system
+  - **COMPLETED**: Removed darwin->macos replacement in GoReleaser name_template for consistent binary naming
+  - **COMPLETED**: Updated CMakeLists.txt platform detection to use darwin instead of macos
+  - **COMPLETED**: Fixed buildtools scripts to use darwin platform naming consistently
+  - **COMPLETED**: Updated documentation to reference darwin binaries instead of macos
+  - **COMPLETED**: Ensured all installer scripts and URLs use consistent darwin naming
+  - **COMPLETED**: Fixed README.md download links to use pre-push_darwin_* archives
+  - **COMPLETED**: Updated packaging/macos/README.md to reference darwin binary names
+  - **COMPLETED**: Updated CHANGELOG.md with comprehensive fix documentation
 - **Smart Hook Update System**: Implemented elegant self-updating Git hook system
   - **COMPLETED**: Pre-push now manages its own updates using MD5 hash comparison
   - **COMPLETED**: When running as CLI - checks and updates Git hook if different
