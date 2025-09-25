@@ -148,59 +148,29 @@ func (e *BuildfabExecutor) convertToBuildfabConfig() *buildfab.Config {
     config.Project.Modules = e.config.Project.Modules
     config.Project.BinDir = e.config.Project.BinDir
     
-    // Convert actions with variable interpolation
+    // Convert actions (buildfab will handle variable interpolation)
     config.Actions = make([]buildfab.Action, len(e.config.Actions))
     for i, action := range e.config.Actions {
-        // Get all variables (Git, version, platform, environment)
-        variables := e.GetAllVariables()
-        
-        // Interpolate action variables
-        interpolatedAction, err := buildfab.InterpolateAction(buildfab.Action{
+        config.Actions[i] = buildfab.Action{
             Name: action.Name,
             Run:  action.Run,
             Uses: action.Uses,
-        }, variables)
-        if err != nil {
-            // If interpolation fails, use original action
-            config.Actions[i] = buildfab.Action{
-                Name: action.Name,
-                Run:  action.Run,
-                Uses: action.Uses,
-            }
-        } else {
-            config.Actions[i] = interpolatedAction
         }
     }
     
-    // Convert stages with variable interpolation
+    // Convert stages (buildfab will handle variable interpolation)
     config.Stages = make(map[string]buildfab.Stage)
     for name, stage := range e.config.Stages {
         buildfabStage := buildfab.Stage{
             Steps: make([]buildfab.Step, len(stage.Steps)),
         }
         for i, step := range stage.Steps {
-            // Get all variables for step interpolation
-            variables := e.GetAllVariables()
-            
-            // Interpolate step variables
-            interpolatedStep, err := buildfab.InterpolateStep(buildfab.Step{
+            buildfabStage.Steps[i] = buildfab.Step{
                 Action:  step.Action,
                 Require: step.Require,
                 OnError: step.OnError,
                 If:      step.If,
                 Only:    step.Only,
-            }, variables)
-            if err != nil {
-                // If interpolation fails, use original step
-                buildfabStage.Steps[i] = buildfab.Step{
-                    Action:  step.Action,
-                    Require: step.Require,
-                    OnError: step.OnError,
-                    If:      step.If,
-                    Only:    step.Only,
-                }
-            } else {
-                buildfabStage.Steps[i] = interpolatedStep
             }
         }
         config.Stages[name] = buildfabStage

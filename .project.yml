@@ -3,7 +3,11 @@ project:
   modules: ["pre-push"]
   bin: "bin"
 
+include:
+  - "config/update-checking-actions.yml"
+
 actions:
+
   - name: version-check
     run: scripts/version check
 
@@ -46,6 +50,9 @@ actions:
 stages:
   pre-push:
     steps:
+      - action: check-pre-push-releases
+        onerror: warn
+
       - action: version-check
       - action: version-greatest
 

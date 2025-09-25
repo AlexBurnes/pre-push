@@ -12,6 +12,7 @@ import (
     "strings"
 
     "gopkg.in/yaml.v3"
+    "github.com/AlexBurnes/buildfab/pkg/buildfab"
     "github.com/AlexBurnes/pre-push/internal/version"
     "github.com/AlexBurnes/pre-push/pkg/prepush"
 )
@@ -32,6 +33,58 @@ func New(configPath string) *Loader {
 func Load(configPath string) (*prepush.Config, error) {
     loader := New(configPath)
     return loader.Load()
+}
+
+// LoadWithBuildfab loads configuration using buildfab's LoadConfig (supports includes)
+func LoadWithBuildfab(configPath string) (*prepush.Config, error) {
+    // Use buildfab's LoadConfig which handles includes
+    buildfabConfig, err := buildfab.LoadConfig(configPath)
+    if err != nil {
+        return nil, fmt.Errorf("failed to load configuration with buildfab: %w", err)
+    }
+    
+    // Convert buildfab.Config to prepush.Config
+    return convertBuildfabToPrepushConfig(buildfabConfig), nil
+}
+
+// convertBuildfabToPrepushConfig converts buildfab.Config to prepush.Config
+func convertBuildfabToPrepushConfig(buildfabConfig *buildfab.Config) *prepush.Config {
+    config := &prepush.Config{}
+    
+    // Convert project
+    config.Project.Name = buildfabConfig.Project.Name
+    config.Project.Modules = buildfabConfig.Project.Modules
+    config.Project.BinDir = buildfabConfig.Project.BinDir
+    
+    // Convert actions
+    config.Actions = make([]prepush.Action, len(buildfabConfig.Actions))
+    for i, action := range buildfabConfig.Actions {
+        config.Actions[i] = prepush.Action{
+            Name: action.Name,
+            Run:  action.Run,
+            Uses: action.Uses,
+        }
+    }
+    
+    // Convert stages
+    config.Stages = make(map[string]prepush.Stage)
+    for name, stage := range buildfabConfig.Stages {
+        prepushStage := prepush.Stage{
+            Steps: make([]prepush.Step, len(stage.Steps)),
+        }
+        for i, step := range stage.Steps {
+            prepushStage.Steps[i] = prepush.Step{
+                Action:  step.Action,
+                Require: step.Require,
+                OnError: step.OnError,
+                If:      step.If,
+                Only:    step.Only,
+            }
+        }
+        config.Stages[name] = prepushStage
+    }
+    
+    return config
 }
 
 // Load loads and parses the configuration file

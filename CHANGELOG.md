@@ -1,3 +1,26 @@
+## [1.6.1] - 2025-01-27
+
+### Fixed
+- **Include Functionality**: Fixed buildfab include functionality not working in pre-push tool
+  - Updated pre-push tool to use buildfab.LoadConfig() which properly handles include statements
+  - Created LoadWithBuildfab() function in config package to convert buildfab.Config to prepush.Config
+  - Removed manual variable resolution since buildfab handles it automatically
+  - check-pre-push-releases action now properly loaded from config/update-checking-actions.yml
+  - All tests passing with include functionality working correctly
+
+### Changed
+- **Library Updates**: Updated core dependencies to latest stable releases
+  - **Buildfab Library**: Updated from v0.10.0 to v0.15.1
+    - Latest features and improvements from buildfab project
+    - Enhanced execution capabilities and performance optimizations
+    - Improved error handling and output formatting
+    - Maintained full compatibility with existing configuration
+  - **Version Library**: Updated from v1.1.1 to v1.2.2
+    - Enhanced version detection and parsing capabilities
+    - Improved stability and cross-platform compatibility
+    - Better error handling for version operations
+    - Latest features from version-go project
+
 ## [1.6.0] - 2025-01-27
 
 ### Added

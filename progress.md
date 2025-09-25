@@ -2,6 +2,18 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Include Functionality**: Fixed buildfab include functionality not working in pre-push tool
+  - **COMPLETED**: Updated pre-push tool to use buildfab.LoadConfig() which properly handles include statements
+  - **COMPLETED**: Created LoadWithBuildfab() function in config package to convert buildfab.Config to prepush.Config
+  - **COMPLETED**: Removed manual variable resolution since buildfab handles it automatically
+  - **COMPLETED**: All tests passing with include functionality working correctly
+  - **COMPLETED**: check-pre-push-releases action now properly loaded from config/update-checking-actions.yml
+  - **COMPLETED**: Version bumped to v1.6.1 for include functionality fix
+- **Library Updates**: Updated core dependencies to latest stable releases
+  - **COMPLETED**: Updated buildfab library from v0.10.0 to v0.15.1 for latest features and improvements
+  - **COMPLETED**: Updated version-go library from v1.1.1 to v1.2.2 for enhanced version detection and stability
+  - **COMPLETED**: All tests passing with updated libraries
+  - **COMPLETED**: Version bumped to v1.6.1 for library updates
 - **Platform Variable Detection and Variable Substitution**: Comprehensive platform variable detection and variable substitution system
   - **COMPLETED**: Updated buildfab library from v0.9.0 to v0.10.0 for latest platform variable support
   - **COMPLETED**: Updated version-go library from v0.8.22 to v1.1.1 for enhanced version detection

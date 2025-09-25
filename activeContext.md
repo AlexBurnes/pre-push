@@ -1,11 +1,11 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.10.0 Integration + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements**
+**Core Implementation Complete - Enhanced with Buildfab v0.15.1 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
-- **COMPLETED**: Buildfab v0.5.0 integration as core DAG execution engine
+- **COMPLETED**: Buildfab v0.15.1 integration as core DAG execution engine
 - **COMPLETED**: Enhanced version flag handling (-V outputs only version, --version outputs full info)
 - **COMPLETED**: Added bin directory support for project configuration
 - **COMPLETED**: Implemented flexible shell script approach for version module validation
@@ -19,6 +19,18 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Include Functionality Fix**: Fixed buildfab include functionality not working in pre-push tool
+  - **COMPLETED**: Identified that pre-push tool was using custom YAML parser instead of buildfab's LoadConfig
+  - **COMPLETED**: Updated pre-push tool to use buildfab.LoadConfig() which properly handles include statements
+  - **COMPLETED**: Created LoadWithBuildfab() function in config package to convert buildfab.Config to prepush.Config
+  - **COMPLETED**: Removed manual variable resolution since buildfab handles it automatically
+  - **COMPLETED**: All tests passing with include functionality working correctly
+  - **COMPLETED**: check-pre-push-releases action now properly loaded from config/update-checking-actions.yml
+- **Library Updates**: Updated core dependencies to latest stable releases
+  - **COMPLETED**: Updated buildfab library from v0.10.0 to v0.15.1 for latest features and improvements
+  - **COMPLETED**: Updated version-go library from v1.1.1 to v1.2.2 for enhanced version detection and stability
+  - **COMPLETED**: All tests passing with updated libraries
+  - **COMPLETED**: Version bumped to v1.6.1 for library updates
 - **Platform Variable Detection and Variable Substitution**: Comprehensive platform variable detection and variable substitution system
   - **COMPLETED**: Updated buildfab library from v0.9.0 to v0.10.0 for latest platform variable support
   - **COMPLETED**: Updated version-go library from v0.8.22 to v1.1.1 for enhanced version detection

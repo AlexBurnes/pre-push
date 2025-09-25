@@ -185,22 +185,13 @@ func runGitHook() error {
         return nil
     }
     
-    // Load configuration
-    cfg, err := config.Load(".project.yml")
+    // Load configuration using buildfab (supports includes)
+    cfg, err := config.LoadWithBuildfab(".project.yml")
     if err != nil {
         return fmt.Errorf("failed to load configuration: %w", err)
     }
     
-    // Detect Git variables
-    gitVars, err := config.DetectGitVariables(ctx)
-    if err != nil {
-        return fmt.Errorf("failed to detect Git variables: %w", err)
-    }
-    
-    // Resolve variables in configuration
-    if err := config.ResolveVariables(cfg, gitVars); err != nil {
-        return fmt.Errorf("failed to resolve variables: %w", err)
-    }
+    // Variables will be resolved by buildfab automatically
     
     // Determine verbose and debug modes for Git hooks
     hookVerbose := isVerboseEnabled() || isStageVerboseEnabled(cfg, "pre-push")
@@ -288,20 +279,13 @@ func runTest(cmd *cobra.Command, args []string) error {
     ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
     defer cancel()
 
-    // Load configuration
-    cfg, err := config.Load(".project.yml")
+    // Load configuration using buildfab (supports includes)
+    cfg, err := config.LoadWithBuildfab(".project.yml")
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
     
-    // Detect Git variables
-    gitVars, err := config.DetectGitVariables(ctx)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-        os.Exit(1)
-    }
-
     // Determine verbose and debug modes for Git hooks
     hookVerbose := isVerboseEnabled() || isStageVerboseEnabled(cfg, "pre-push")
     hookDebug := isDebugEnabled() || isStageDebugEnabled(cfg, "pre-push")
@@ -313,11 +297,7 @@ func runTest(cmd *cobra.Command, args []string) error {
         fmt.Fprintf(os.Stderr, "DEBUG: isVerboseEnabled()=%v\n", isVerboseEnabled())
     }
     
-    // Resolve variables in configuration
-    if err := config.ResolveVariables(cfg, gitVars); err != nil {
-        fmt.Fprintf(os.Stderr, "Error: %v\n", err)
-        os.Exit(1)
-    }
+    // Variables will be resolved by buildfab automatically
     
     // Create UI with detected verbose and debug modes
     ui := ui.New(hookVerbose, hookDebug)
