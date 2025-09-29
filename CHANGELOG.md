@@ -1,3 +1,14 @@
+## [1.6.8] - 2025-09-29
+
+### Fixed
+- **Static Builds for Linux and Darwin**: Fixed static builds for cross-platform compatibility
+  - **GoReleaser Configuration**: Updated .goreleaser.yml with proper static build settings
+    - Added CGO_ENABLED=0 to environment variables to disable CGO and enable static builds
+    - Added -extldflags "-static" to ldflags to tell the linker to create static binaries
+    - Ensured cross-platform static binaries work correctly on Linux and Darwin platforms
+    - Resolves issues with dynamic linking dependencies in static environments
+    - Improves binary portability and reduces external dependencies
+
 ## [1.6.7] - 2025-09-25
 
 ### Fixed

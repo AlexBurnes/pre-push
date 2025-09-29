@@ -2,6 +2,12 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Static Builds for Linux and Darwin**: Fixed static builds for cross-platform compatibility
+  - **COMPLETED**: Added CGO_ENABLED=0 to GoReleaser configuration to disable CGO
+  - **COMPLETED**: Added -extldflags "-static" to ldflags for static binary creation
+  - **COMPLETED**: Ensured static binaries work correctly on Linux and Darwin platforms
+  - **COMPLETED**: Updated .goreleaser.yml with proper static build configuration
+  - **COMPLETED**: Version bumped to v1.6.8 for static builds fix
 - **GitHub Actions CI Workflow**: Fixed CI workflow artifact upload issue using proper CMake targets
   - **COMPLETED**: Fixed "No files were found with the provided path: bin/pre-push" error in CI workflow
   - **COMPLETED**: Updated CI workflow to use CMake 'install-current' target instead of manual file copying

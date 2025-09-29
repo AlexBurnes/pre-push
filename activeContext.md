@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.16.0 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Version v1.6.7 Release**
+**Core Implementation Complete - Enhanced with Buildfab v0.16.0 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Version v1.6.8 Release**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,12 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Static Builds Fix**: Fixed static builds for Linux and Darwin platforms
+  - **COMPLETED**: Added CGO_ENABLED=0 to GoReleaser configuration to disable CGO and enable static builds
+  - **COMPLETED**: Added -extldflags "-static" to ldflags to tell the linker to create static binaries
+  - **COMPLETED**: Ensured cross-platform static binaries for Linux and Darwin platforms
+  - **COMPLETED**: Updated .goreleaser.yml with proper static build configuration
+  - **COMPLETED**: Version bumped to v1.6.8 for static builds fix
 - **GitHub Actions CI Workflow Fix**: Fixed CI workflow artifact upload issue by using proper CMake install-current target
   - **COMPLETED**: Identified that CI workflow was failing due to incorrect binary path handling
   - **COMPLETED**: Found that CMake target 'pre-push' creates platform-specific binary names (e.g., pre-push-linux-amd64)
