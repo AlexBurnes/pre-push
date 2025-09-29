@@ -3,9 +3,38 @@ package exec
 import (
     "context"
     "testing"
+    "time"
 
     "github.com/AlexBurnes/buildfab/pkg/buildfab"
+    "github.com/AlexBurnes/pre-push/pkg/prepush"
 )
+
+// mockUI is a mock implementation of the UI interface for testing
+type mockUI struct {
+    verboseLevel int
+    debug        bool
+}
+
+func (m *mockUI) Printf(format string, args ...interface{}) {}
+func (m *mockUI) Println(args ...interface{}) {}
+func (m *mockUI) PrintStepStatus(stepName string, status prepush.Status, message string) {}
+func (m *mockUI) PrintCLIHeader(name, version string) {}
+func (m *mockUI) PrintProjectCheck(projectName, version string) {}
+func (m *mockUI) PrintStageHeader(stageName string) {}
+func (m *mockUI) PrintStageResult(stageName string, success bool, duration time.Duration) {}
+func (m *mockUI) PrintError(err error) {}
+func (m *mockUI) PrintWarning(message string) {}
+func (m *mockUI) PrintInfo(message string) {}
+func (m *mockUI) PrintDebug(message string) {}
+func (m *mockUI) PrintVerbose(message string) {}
+func (m *mockUI) PrintCommand(command string) {}
+func (m *mockUI) PrintCommandOutput(output string) {}
+func (m *mockUI) PrintRepro(stepName, repro string) {}
+func (m *mockUI) PrintReproInline(stepName, repro string) {}
+func (m *mockUI) PrintSummary(results []prepush.Result) {}
+func (m *mockUI) IsVerbose() bool { return m.verboseLevel > 0 }
+func (m *mockUI) GetVerboseLevel() int { return m.verboseLevel }
+func (m *mockUI) IsDebug() bool { return m.debug }
 
 // TestBuildfabExecutor tests the buildfab executor functionality
 func TestBuildfabExecutor(t *testing.T) {

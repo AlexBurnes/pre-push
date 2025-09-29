@@ -13,17 +13,30 @@ import (
 
 // UI handles user interface output and formatting
 type UI struct {
-    verbose bool
-    debug   bool
-    output  io.Writer
+    verboseLevel int
+    debug        bool
+    output       io.Writer
 }
 
-// New creates a new UI instance
+// New creates a new UI instance with boolean verbose (for backward compatibility)
 func New(verbose, debug bool) *UI {
+    verboseLevel := 0
+    if verbose {
+        verboseLevel = 1
+    }
     return &UI{
-        verbose: verbose,
-        debug:   debug,
-        output:  os.Stdout,
+        verboseLevel: verboseLevel,
+        debug:        debug,
+        output:       os.Stdout,
+    }
+}
+
+// NewWithVerboseLevel creates a new UI instance with specific verbose level
+func NewWithVerboseLevel(verboseLevel int, debug bool) *UI {
+    return &UI{
+        verboseLevel: verboseLevel,
+        debug:        debug,
+        output:       os.Stdout,
     }
 }
 
@@ -122,23 +135,23 @@ func (u *UI) PrintDebug(message string) {
     }
 }
 
-// PrintVerbose prints a verbose message (only if verbose is enabled)
+// PrintVerbose prints a verbose message (only if verbose level > 0)
 func (u *UI) PrintVerbose(message string) {
-    if u.verbose {
+    if u.verboseLevel > 0 {
         u.Printf("📝 Verbose: %s\n", message)
     }
 }
 
 // PrintCommand prints a command that will be executed
 func (u *UI) PrintCommand(command string) {
-    if u.verbose {
+    if u.verboseLevel > 0 {
         u.Printf("🔧 Running: %s\n", command)
     }
 }
 
 // PrintCommandOutput prints the output of a command
 func (u *UI) PrintCommandOutput(output string) {
-    if u.verbose && output != "" {
+    if u.verboseLevel > 0 && output != "" {
         u.Printf("📤 Output:\n%s\n", output)
     }
 }
@@ -210,9 +223,14 @@ func (u *UI) PrintSummary(results []prepush.Result) {
     }
 }
 
-// IsVerbose returns true if verbose mode is enabled
+// IsVerbose returns true if verbose mode is enabled (for backward compatibility)
 func (u *UI) IsVerbose() bool {
-    return u.verbose
+    return u.verboseLevel > 0
+}
+
+// GetVerboseLevel returns the current verbose level
+func (u *UI) GetVerboseLevel() int {
+    return u.verboseLevel
 }
 
 // IsDebug returns true if debug mode is enabled

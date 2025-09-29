@@ -42,11 +42,8 @@ The `RunStage` method should execute the specified stage and return an error if 
 Switched to using the regular `exec.Executor` instead of `exec.BuildfabExecutor` in `cmd/pre-push/main.go`:
 
 ```go
-// Changed from:
-executor := exec.NewBuildfabExecutor(cfg, ui)
-
-// To:
-executor := exec.New(cfg, ui)
+// Current implementation (using buildfab executor):
+executor := exec.BuildfabExecutorWithCLIVersion(cfg, ui, cliVersion)
 ```
 
 ## Files Affected

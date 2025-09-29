@@ -12,6 +12,7 @@ import (
     "os"
     "os/signal"
     "path/filepath"
+    "strconv"
     "syscall"
 
     "github.com/spf13/cobra"
@@ -34,15 +35,29 @@ func getVersion() string {
     return appVersion
 }
 
-// isVerboseEnabled checks if verbose mode should be enabled for Git hooks
+// isVerboseEnabled checks if verbose mode should be enabled for Git hooks (for backward compatibility)
 func isVerboseEnabled() bool {
+    return getVerboseLevel() > 0
+}
+
+// getVerboseLevel gets the verbose level from environment variable or CLI flag
+func getVerboseLevel() int {
     // Check environment variable first
-    if os.Getenv("PRE_PUSH_VERBOSE") == "1" {
-        return true
+    if envVerbose := os.Getenv("PRE_PUSH_VERBOSE"); envVerbose != "" {
+        // Parse as integer, default to 0 if invalid
+        if level, err := strconv.Atoi(envVerbose); err == nil && level >= 0 {
+            return level
+        }
+        // If invalid, default to 0 (quiet mode)
+        return 0
     }
     
     // Check if CLI verbose flag is set (for manual testing)
-    return verbose
+    if verbose {
+        return 1
+    }
+    
+    return 0
 }
 
 // isDebugEnabled checks if debug mode should be enabled for Git hooks
@@ -319,21 +334,21 @@ func runGitHook() error {
     // Variables will be resolved by buildfab automatically
     
     // Determine verbose and debug modes for Git hooks
-    hookVerbose := isVerboseEnabled()
+    hookVerboseLevel := getVerboseLevel()
     hookDebug := isDebugEnabled()
     
     // Debug output (only when debug mode is enabled)
     if hookDebug {
-        fmt.Fprintf(os.Stderr, "DEBUG: hookVerbose=%v, hookDebug=%v\n", hookVerbose, hookDebug)
+        fmt.Fprintf(os.Stderr, "DEBUG: hookVerboseLevel=%d, hookDebug=%v\n", hookVerboseLevel, hookDebug)
         fmt.Fprintf(os.Stderr, "DEBUG: env PRE_PUSH_VERBOSE=%s\n", os.Getenv("PRE_PUSH_VERBOSE"))
-        fmt.Fprintf(os.Stderr, "DEBUG: isVerboseEnabled()=%v\n", isVerboseEnabled())
+        fmt.Fprintf(os.Stderr, "DEBUG: getVerboseLevel()=%d\n", getVerboseLevel())
     }
     
     // Create UI with Git hook specific settings
-    ui := ui.New(hookVerbose, hookDebug)
+    ui := ui.NewWithVerboseLevel(hookVerboseLevel, hookDebug)
     
     // Create buildfab executor with CLI version
-    executor := exec.NewBuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
+    executor := exec.BuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
     
     // Run pre-push stage
     return executor.RunStage(ctx, "pre-push")
@@ -393,23 +408,23 @@ func runTest(cmd *cobra.Command, args []string) error {
     }
     
     // Determine verbose and debug modes for Git hooks
-    hookVerbose := isVerboseEnabled()
+    hookVerboseLevel := getVerboseLevel()
     hookDebug := isDebugEnabled()
     
     // Debug output (remove in production)
     if hookDebug {
-        fmt.Fprintf(os.Stderr, "DEBUG: hookVerbose=%v, hookDebug=%v\n", hookVerbose, hookDebug)
+        fmt.Fprintf(os.Stderr, "DEBUG: hookVerboseLevel=%d, hookDebug=%v\n", hookVerboseLevel, hookDebug)
         fmt.Fprintf(os.Stderr, "DEBUG: env PRE_PUSH_VERBOSE=%s\n", os.Getenv("PRE_PUSH_VERBOSE"))
-        fmt.Fprintf(os.Stderr, "DEBUG: isVerboseEnabled()=%v\n", isVerboseEnabled())
+        fmt.Fprintf(os.Stderr, "DEBUG: getVerboseLevel()=%d\n", getVerboseLevel())
     }
     
     // Variables will be resolved by buildfab automatically
     
     // Create UI with detected verbose and debug modes
-    ui := ui.New(hookVerbose, hookDebug)
+    ui := ui.NewWithVerboseLevel(hookVerboseLevel, hookDebug)
     
     // Create buildfab executor with CLI version
-    executor := exec.NewBuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
+    executor := exec.BuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
     
     // Run pre-push stage
     if err := executor.RunStage(ctx, "pre-push"); err != nil {

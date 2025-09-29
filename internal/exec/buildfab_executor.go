@@ -7,11 +7,29 @@ import (
     "os"
     "os/exec"
     "strings"
+    "time"
 
     "github.com/AlexBurnes/buildfab/pkg/buildfab"
     "github.com/AlexBurnes/pre-push/internal/version"
     "github.com/AlexBurnes/pre-push/pkg/prepush"
 )
+
+// UI defines the interface for user interface operations
+type UI interface {
+    PrintCLIHeader(name, version string)
+    PrintProjectCheck(projectName, version string)
+    PrintStepStatus(stepName string, status prepush.Status, message string)
+    PrintStageHeader(stageName string)
+    PrintStageResult(stageName string, success bool, duration time.Duration)
+    PrintCommand(command string)
+    PrintCommandOutput(output string)
+    PrintRepro(stepName, repro string)
+    PrintReproInline(stepName, repro string)
+    PrintSummary(results []prepush.Result)
+    IsVerbose() bool
+    GetVerboseLevel() int
+    IsDebug() bool
+}
 
 // BuildfabExecutor handles execution of pre-push stages and actions using buildfab DAG executor
 type BuildfabExecutor struct {
@@ -32,8 +50,8 @@ func NewBuildfabExecutor(config *buildfab.Config, ui UI) *BuildfabExecutor {
     }
 }
 
-// NewBuildfabExecutorWithCLIVersion creates a new buildfab-based executor with CLI version
-func NewBuildfabExecutorWithCLIVersion(config *buildfab.Config, ui UI, cliVersion string) *BuildfabExecutor {
+// BuildfabExecutorWithCLIVersion creates a new buildfab-based executor with CLI version
+func BuildfabExecutorWithCLIVersion(config *buildfab.Config, ui UI, cliVersion string) *BuildfabExecutor {
     return &BuildfabExecutor{
         config: config,
         ui:     ui,
@@ -62,7 +80,7 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     
     // Create simple run options with verbose and debug settings
     opts := buildfab.DefaultSimpleRunOptions()
-    opts.Verbose = e.ui.IsVerbose()  // Use UI verbose setting
+    opts.VerboseLevel = e.ui.GetVerboseLevel()  // Use UI verbose level directly
     opts.Debug = e.ui.IsDebug()
     opts.WorkingDir = "."
     opts.Output = os.Stdout
@@ -79,7 +97,7 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
 func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) error {
     // Create simple run options
     opts := buildfab.DefaultSimpleRunOptions()
-    opts.Verbose = e.ui.IsVerbose()
+    opts.VerboseLevel = e.ui.GetVerboseLevel()  // Use UI verbose level directly
     opts.Debug = e.ui.IsDebug()
     opts.WorkingDir = "."
     

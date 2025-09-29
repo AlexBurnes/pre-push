@@ -21,7 +21,7 @@ actions:
       exit 1
 
   - name: test_bash
-    shell: bash
+    shell: sh
     run: |
       rm -fr ./tests/test_shell/
       mkdir -p ./tests/test_shell/{one,two}

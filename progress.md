@@ -91,12 +91,18 @@
   - **COMPLETED**: Separated CLI version (compiled-in) from project version (version-go library)
   - **COMPLETED**: CLI version now uses compiled-in version from ldflags (build time)
   - **COMPLETED**: Project version now uses github.com/AlexBurnes/version-go library (runtime)
-  - **COMPLETED**: Added NewBuildfabExecutorWithCLIVersion constructor to pass CLI version
+  - **COMPLETED**: Added BuildfabExecutorWithCLIVersion constructor to pass CLI version
   - **COMPLETED**: Updated getVersion() method to use version-go library instead of VERSION file
   - **COMPLETED**: Tested fix in both original project and clean test environment
   - **COMPLETED**: Version display now consistent with expected format and proper source separation
 - **All tests passing**: Comprehensive test suite with 100% test coverage and race detection
 - **Version compilation system**: Version is now properly compiled into the application at build time
+- **Legacy code cleanup**: Removed old executor code and simplified architecture
+  - **COMPLETED**: Removed duplicate executor implementations (old custom + buildfab)
+  - **COMPLETED**: Pre-push now uses ONLY buildfab executor architecture
+  - **COMPLETED**: Renamed function to `BuildfabExecutorWithCLIVersion` for cleaner API
+  - **COMPLETED**: Updated all documentation and references
+  - **COMPLETED**: Version bumped to v1.6.10 for cleanup and improvements
   - **COMPLETED**: Fixed version handling to use compiled-in version instead of reading VERSION file at runtime
   - **COMPLETED**: Updated main.go to use appVersion variable set via ldflags from GoReleaser
   - **COMPLETED**: GoReleaser automatically detects version from Git tags and compiles it correctly

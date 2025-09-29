@@ -1,11 +1,11 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.16.0 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + Version v1.6.9 Release**
+**Core Implementation Complete - Enhanced with Buildfab v0.16.7 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + Version v1.6.9 Release**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
-- **COMPLETED**: Buildfab v0.16.0 integration as core DAG execution engine
+- **COMPLETED**: Buildfab v0.16.7 integration as core DAG execution engine
 - **COMPLETED**: Enhanced version flag handling (-V outputs only version, --version outputs full info)
 - **COMPLETED**: Added bin directory support for project configuration
 - **COMPLETED**: Implemented flexible shell script approach for version module validation
@@ -20,6 +20,36 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Buildfab Library Update to v0.16.7**: Updated buildfab library to latest release with enhanced verbose parameter support
+  - **COMPLETED**: Updated buildfab library from v0.16.0 to v0.16.7 for latest features and improvements
+  - **COMPLETED**: Updated version-go library from v1.2.2 to v1.2.5 as transitive dependency
+  - **COMPLETED**: Fixed verbose parameter usage - changed from boolean `Verbose` to integer `VerboseLevel`
+  - **COMPLETED**: Implemented proper verbose level mapping: 0=quiet, 1=-v, 2=-vv, 3=-vvv
+  - **COMPLETED**: Enhanced PRE_PUSH_VERBOSE environment variable to support integer values directly
+  - **COMPLETED**: Added integer parsing with validation (defaults to 0 for invalid values)
+  - **COMPLETED**: Updated UI interface to support VerboseLevel instead of boolean verbose
+  - **COMPLETED**: Updated BuildfabExecutor to use VerboseLevel directly from UI
+  - **COMPLETED**: Maintained backward compatibility with existing verbose mode behavior
+  - **COMPLETED**: All tests passing with updated buildfab library and new verbose parameter
+  - **COMPLETED**: Verified all VerboseLevel values work correctly:
+    - VerboseLevel=0: Quiet mode (no verbose output)
+    - VerboseLevel=1: Basic verbose mode (💻 icons, some command output)
+    - VerboseLevel=2: Detailed verbose mode (💻 icons, detailed command output)
+    - VerboseLevel=3: Maximum verbose mode (💻 icons, step-by-step execution, reproduction commands)
+  - **COMPLETED**: Error handling for invalid PRE_PUSH_VERBOSE values (defaults to 0)
+  - **COMPLETED**: Enhanced debug output to show VerboseLevel values correctly
+- **Legacy Code Cleanup**: Removed old executor code to simplify architecture
+  - **COMPLETED**: Removed `internal/exec/executor.go` - old custom executor (legacy)
+  - **COMPLETED**: Removed `internal/exec/executor_test.go` - tests for old executor
+  - **COMPLETED**: Moved UI interface definition to `buildfab_executor.go`
+  - **COMPLETED**: Added mockUI implementation to `buildfab_executor_test.go`
+  - **COMPLETED**: Verified pre-push uses ONLY buildfab executor architecture
+  - **COMPLETED**: All tests passing after cleanup (including race detection)
+  - **COMPLETED**: Updated documentation to reflect current buildfab-only architecture
+  - **COMPLETED**: Simplified codebase by removing duplicate executor implementations
+  - **COMPLETED**: Renamed `NewBuildfabExecutorWithCLIVersion` to `BuildfabExecutorWithCLIVersion` for cleaner API
+  - **COMPLETED**: Updated all references and documentation to use new function name
+  - **COMPLETED**: Version bumped to v1.6.10 for legacy code cleanup and API improvements
 - **Shell Option Support Fix**: Fixed shell option not being respected in action configuration
   - **COMPLETED**: Updated pre-push to use buildfab configuration directly instead of custom conversion
   - **COMPLETED**: Modified BuildfabExecutor to accept buildfab.Config directly instead of prepush.Config
@@ -129,7 +159,7 @@
   - **COMPLETED**: Separated CLI version (compiled-in) from project version (version-go library)
   - **COMPLETED**: CLI version now uses compiled-in version from ldflags (build time)
   - **COMPLETED**: Project version now uses github.com/AlexBurnes/version-go library (runtime)
-  - **COMPLETED**: Added NewBuildfabExecutorWithCLIVersion constructor to pass CLI version
+  - **COMPLETED**: Added BuildfabExecutorWithCLIVersion constructor to pass CLI version
   - **COMPLETED**: Updated getVersion() method to use version-go library instead of VERSION file
   - **COMPLETED**: Tested fix in both original project and clean test environment
   - **COMPLETED**: Version display now consistent with expected format and proper source separation

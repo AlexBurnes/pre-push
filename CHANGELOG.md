@@ -1,3 +1,25 @@
+## [1.6.10] - 2025-09-29
+
+### Changed
+- **Legacy Code Cleanup**: Removed old executor code to simplify architecture
+  - Removed `internal/exec/executor.go` - old custom executor (legacy)
+  - Removed `internal/exec/executor_test.go` - tests for old executor
+  - Moved UI interface definition to `buildfab_executor.go`
+  - Added mockUI implementation to `buildfab_executor_test.go`
+  - Pre-push now uses ONLY buildfab executor architecture
+  - Simplified codebase by removing duplicate executor implementations
+
+### Refactored
+- **API Improvements**: Renamed function for cleaner API
+  - Renamed `NewBuildfabExecutorWithCLIVersion` to `BuildfabExecutorWithCLIVersion`
+  - Updated all references and documentation to use new function name
+  - More concise and modern Go naming convention
+
+### Documentation
+- Updated documentation to reflect current buildfab-only architecture
+- Updated memory bank files with cleanup progress
+- Updated CHANGELOG.md with version changes
+
 ## [1.6.9] - 2025-09-29
 
 ### Fixed
@@ -191,7 +213,7 @@
   - Separated CLI version (compiled-in) from project version (version-go library)
   - CLI version now uses compiled-in version from ldflags (build time)
   - Project version now uses github.com/AlexBurnes/version-go library (runtime)
-  - Added NewBuildfabExecutorWithCLIVersion constructor to pass CLI version
+  - Added BuildfabExecutorWithCLIVersion constructor to pass CLI version
   - Updated getVersion() method to use version-go library instead of VERSION file
   - Version display now consistent with expected format and proper source separation
 
