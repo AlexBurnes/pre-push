@@ -4,12 +4,12 @@ import (
     "context"
     "testing"
 
-    "github.com/AlexBurnes/pre-push/pkg/prepush"
+    "github.com/AlexBurnes/buildfab/pkg/buildfab"
 )
 
 // TestBuildfabExecutor tests the buildfab executor functionality
 func TestBuildfabExecutor(t *testing.T) {
-    config := &prepush.Config{
+    config := &buildfab.Config{
         Project: struct {
             Name    string   `yaml:"name"`
             Modules []string `yaml:"modules"`
@@ -17,14 +17,14 @@ func TestBuildfabExecutor(t *testing.T) {
         }{
             Name: "test-project",
         },
-        Actions: []prepush.Action{
+        Actions: []buildfab.Action{
             {Name: "action1", Run: "echo 1"},
             {Name: "action2", Run: "echo 2"},
             {Name: "action3", Run: "echo 3"},
         },
-        Stages: map[string]prepush.Stage{
+        Stages: map[string]buildfab.Stage{
             "test-stage": {
-                Steps: []prepush.Step{
+                Steps: []buildfab.Step{
                     {Action: "action1"},
                     {Action: "action2", Require: []string{"action1"}},
                 },
@@ -57,8 +57,8 @@ func TestBuildfabExecutor(t *testing.T) {
 
 // TestRunAction tests action execution using buildfab
 func TestRunAction(t *testing.T) {
-    config := &prepush.Config{
-        Actions: []prepush.Action{
+    config := &buildfab.Config{
+        Actions: []buildfab.Action{
             {Name: "test-action", Run: "echo 'test output'"},
         },
     }
