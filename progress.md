@@ -2,6 +2,16 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **CLI Behavior Improvements**: Enhanced CLI behavior for better user experience and clearer command structure
+  - **COMPLETED**: Modified CLI to only check/update Git hooks when 'install' command is provided
+  - **COMPLETED**: Added usage printing when no command is provided in CLI arguments
+  - **COMPLETED**: Created 'install' command that handles Git hook installation/update
+  - **COMPLETED**: Updated root command to print usage instead of auto-installing
+  - **COMPLETED**: Enhanced install command output with version information and clear status messages
+  - **COMPLETED**: Fixed redundant output messages - only shows "installed successfully" when actually updating
+  - **COMPLETED**: Added version display in "already up to date" message for consistency
+  - **COMPLETED**: Updated Git hook detection to exclude 'install' command from being detected as Git hook
+  - **COMPLETED**: Version bumped to v1.6.12 for CLI behavior improvements
 - **Shell Option Support**: Fixed shell option not being respected in action configuration
   - **COMPLETED**: Updated pre-push to use buildfab configuration directly instead of custom conversion
   - **COMPLETED**: Modified BuildfabExecutor to accept buildfab.Config directly instead of prepush.Config

@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.16.9 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + Version v1.6.11 Release**
+**Core Implementation Complete - Enhanced with Buildfab v0.16.9 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.6.12 Release**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,16 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **CLI Behavior Improvements**: Enhanced CLI behavior for better user experience and clearer command structure
+  - **COMPLETED**: Modified CLI to only check/update Git hooks when 'install' command is provided
+  - **COMPLETED**: Added usage printing when no command is provided in CLI arguments
+  - **COMPLETED**: Created 'install' command that handles Git hook installation/update
+  - **COMPLETED**: Updated root command to print usage instead of auto-installing
+  - **COMPLETED**: Enhanced install command output with version information and clear status messages
+  - **COMPLETED**: Fixed redundant output messages - only shows "installed successfully" when actually updating
+  - **COMPLETED**: Added version display in "already up to date" message for consistency
+  - **COMPLETED**: Updated Git hook detection to exclude 'install' command from being detected as Git hook
+  - **COMPLETED**: Version bumped to v1.6.12 for CLI behavior improvements
 - **Buildfab Library Update to v0.16.9**: Updated buildfab library to latest release with enhanced features and improvements
   - **COMPLETED**: Updated buildfab library from v0.16.7 to v0.16.9 for latest features and improvements
   - **COMPLETED**: All tests passing with updated buildfab library

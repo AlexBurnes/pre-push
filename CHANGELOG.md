@@ -1,3 +1,31 @@
+## [1.6.12] - 2025-09-30
+
+### Added
+- **Install Command**: Added dedicated `install` command for Git hook management
+  - **Command**: `pre-push install` - Install or update Git pre-push hook
+  - **Smart Detection**: Checks if Git hook needs updating using MD5 hash comparison
+  - **Clear Output**: Provides informative status messages with version information
+  - **Version Display**: Shows version in both update and up-to-date messages
+
+### Changed
+- **CLI Behavior**: Modified CLI behavior for better user experience
+  - **No Auto-Install**: CLI no longer automatically checks/updates Git hooks when run without arguments
+  - **Usage Display**: Shows usage information when no command is provided
+  - **Explicit Control**: Git hook management now requires explicit `install` command
+  - **Clearer Intent**: Separates CLI usage from Git hook installation
+
+### Fixed
+- **Output Redundancy**: Fixed redundant output messages in install command
+  - **Smart Messaging**: Only shows "installed successfully" when actually updating
+  - **Status Clarity**: "Already up to date" message includes version for consistency
+  - **User Experience**: Eliminates confusing duplicate success messages
+
+### Enhanced
+- **Git Hook Detection**: Updated Git hook detection logic
+  - **Command Exclusion**: Added 'install' to list of commands that should not be detected as Git hook calls
+  - **Better Separation**: Clear distinction between CLI usage and Git hook execution
+  - **Improved Reliability**: More accurate detection of execution context
+
 ## [1.6.11] - 2025-09-30
 
 ### Updated

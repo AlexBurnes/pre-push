@@ -18,7 +18,6 @@ import (
     "github.com/spf13/cobra"
     "github.com/AlexBurnes/buildfab/pkg/buildfab"
     "github.com/AlexBurnes/pre-push/internal/exec"
-    "github.com/AlexBurnes/pre-push/internal/install"
     "github.com/AlexBurnes/pre-push/internal/ui"
     "github.com/AlexBurnes/pre-push/pkg/prepush"
 )
@@ -188,20 +187,22 @@ func updateGitHook() error {
 }
 
 // checkAndUpdateGitHook checks if the Git hook needs updating and updates it if necessary
-func checkAndUpdateGitHook() error {
+func checkAndUpdateGitHook() (bool, error) {
     different, err := isBinaryDifferent()
     if err != nil {
-        return fmt.Errorf("failed to check if binary is different: %w", err)
+        return false, fmt.Errorf("failed to check if binary is different: %w", err)
     }
     
     if different {
         if err := updateGitHook(); err != nil {
-            return fmt.Errorf("failed to update git hook: %w", err)
+            return false, fmt.Errorf("failed to update git hook: %w", err)
         }
         fmt.Printf("Updated Git pre-push hook with current binary\n")
+        return true, nil
+    } else {
+        fmt.Printf("Git pre-push hook is already up to date (version %s)\n", getVersion())
+        return false, nil
     }
-    
-    return nil
 }
 
 // Global flags
@@ -244,6 +245,17 @@ of your configuration. Each action includes a brief description of what it does.
     RunE: runListUses,
 }
 
+// installCmd represents the install command
+var installCmd = &cobra.Command{
+    Use:   "install",
+    Short: "Install or update Git pre-push hook",
+    Long: `Install or update the Git pre-push hook with the current binary.
+This command checks if the Git hook needs updating and updates it if necessary.
+The hook is installed in .git/hooks/pre-push and will be called automatically
+by Git before pushing changes.`,
+    RunE: runInstall,
+}
+
 
 func main() {
     // Check if we're being called by Git as a hook
@@ -254,12 +266,6 @@ func main() {
             os.Exit(1)
         }
         return
-    }
-    
-    // When running as CLI, check and update Git hook if needed
-    if err := checkAndUpdateGitHook(); err != nil {
-        // Don't fail the CLI command if hook update fails, just warn
-        fmt.Fprintf(os.Stderr, "Warning: failed to update Git hook: %v\n", err)
     }
     
     // Add global flags
@@ -273,6 +279,7 @@ func main() {
     // Add subcommands
     rootCmd.AddCommand(testCmd)
     rootCmd.AddCommand(listUsesCmd)
+    rootCmd.AddCommand(installCmd)
     
     // Execute the root command
     if err := rootCmd.Execute(); err != nil {
@@ -289,7 +296,7 @@ func isGitHook() bool {
     if len(os.Args) > 1 {
         // Check if the first argument is a known pre-push subcommand
         firstArg := os.Args[1]
-        if firstArg == "test" || firstArg == "list-uses" || 
+        if firstArg == "test" || firstArg == "list-uses" || firstArg == "install" ||
            firstArg == "-h" || firstArg == "--help" ||
            firstArg == "-v" || firstArg == "--version" ||
            firstArg == "-d" || firstArg == "--debug" {
@@ -373,7 +380,7 @@ func readGitRefs() ([]string, error) {
     return refs, nil
 }
 
-// runRoot handles the root command (check and install hook)
+// runRoot handles the root command (print usage)
 func runRoot(cmd *cobra.Command, args []string) error {
     // Check if version flags were set
     if versionFlag, _ := cmd.Flags().GetBool("version"); versionFlag {
@@ -385,12 +392,8 @@ func runRoot(cmd *cobra.Command, args []string) error {
         return nil
     }
     
-    // Create context with cancellation
-    ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-    defer cancel()
-    
-    installer := install.New()
-    return installer.Install(ctx)
+    // Print usage when no command is provided
+    return cmd.Usage()
 }
 
 
@@ -443,6 +446,22 @@ func runListUses(cmd *cobra.Command, args []string) error {
     
     for name, description := range uses {
         fmt.Printf("  %-20s %s\n", name, description)
+    }
+    
+    return nil
+}
+
+// runInstall handles the install command (check and update Git hook)
+func runInstall(cmd *cobra.Command, args []string) error {
+    // Check and update Git hook if needed
+    updated, err := checkAndUpdateGitHook()
+    if err != nil {
+        return fmt.Errorf("failed to update Git hook: %w", err)
+    }
+    
+    // Only print success message if we actually updated the hook
+    if updated {
+        fmt.Printf("Git pre-push hook installed successfully (version %s)\n", getVersion())
     }
     
     return nil
