@@ -2,23 +2,33 @@
 
 ### Changed
 - **Legacy Code Cleanup**: Removed old executor code to simplify architecture
-  - Removed `internal/exec/executor.go` - old custom executor (legacy)
-  - Removed `internal/exec/executor_test.go` - tests for old executor
-  - Moved UI interface definition to `buildfab_executor.go`
-  - Added mockUI implementation to `buildfab_executor_test.go`
-  - Pre-push now uses ONLY buildfab executor architecture
-  - Simplified codebase by removing duplicate executor implementations
+  - **Removed Files**: Deleted `internal/exec/executor.go` (752 lines) and `internal/exec/executor_test.go` (272 lines)
+  - **UI Interface Migration**: Moved UI interface definition from old executor.go to `buildfab_executor.go`
+  - **Test Infrastructure**: Added comprehensive mockUI implementation to `buildfab_executor_test.go`
+  - **Architecture Simplification**: Pre-push now uses ONLY buildfab executor architecture
+  - **Code Reduction**: Removed 1,024 lines of duplicate executor code
+  - **Maintainability**: Eliminated confusion between two executor implementations
 
 ### Refactored
-- **API Improvements**: Renamed function for cleaner API
-  - Renamed `NewBuildfabExecutorWithCLIVersion` to `BuildfabExecutorWithCLIVersion`
-  - Updated all references and documentation to use new function name
-  - More concise and modern Go naming convention
+- **API Modernization**: Renamed constructor function for cleaner API
+  - **Function Rename**: `NewBuildfabExecutorWithCLIVersion` → `BuildfabExecutorWithCLIVersion`
+  - **Reference Updates**: Updated all calls in `cmd/pre-push/main.go` (2 locations)
+  - **Documentation Updates**: Updated all documentation files to use new function name
+  - **Naming Convention**: More concise and follows modern Go naming standards
 
-### Documentation
-- Updated documentation to reflect current buildfab-only architecture
-- Updated memory bank files with cleanup progress
-- Updated CHANGELOG.md with version changes
+### Enhanced
+- **Verbose Level Support**: Enhanced UI to support integer verbose levels from buildfab v0.16.7
+  - **VerboseLevel=0**: Quiet mode (no verbose output)
+  - **VerboseLevel=1**: Basic verbose mode (💻 icons, some command output)
+  - **VerboseLevel=2**: Detailed verbose mode (💻 icons, detailed command output)
+  - **VerboseLevel=3**: Maximum verbose mode (💻 icons, step-by-step execution)
+  - **Backward Compatibility**: Maintained existing boolean verbose API for compatibility
+
+### Updated
+- **Dependencies**: Updated buildfab to v0.16.7 and version-go to v1.2.5
+- **Packaging**: Updated Windows Scoop and macOS Homebrew configurations for v1.6.10
+- **Documentation**: Updated memory bank files (activeContext.md, progress.md) with cleanup progress
+- **Version**: Bumped to v1.6.10 for legacy code cleanup and API improvements
 
 ## [1.6.9] - 2025-09-29
 
