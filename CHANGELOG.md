@@ -1,3 +1,12 @@
+## [1.6.11] - 2025-09-30
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.16.7 to v0.16.9 for latest features and improvements
+  - **Enhanced Features**: Latest buildfab release includes performance improvements and bug fixes
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests passing with race detection enabled
+  - **Version**: Bumped to v1.6.11 for buildfab library update
+
 ## [1.6.10] - 2025-09-29
 
 ### Changed
