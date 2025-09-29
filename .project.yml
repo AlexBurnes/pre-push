@@ -6,10 +6,13 @@ project:
 include:
   - "config/update-checking-stages.yml"
   - "config/update-checking-actions.yml"
+  - "tests/test_shell.yml"
 
 stages:
   pre-push:
     steps:
+      - action: test_shell
+      - action: test_bash
       - action: version-check
       - action: version-greatest
 

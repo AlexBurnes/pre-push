@@ -15,7 +15,7 @@ import (
 
 // BuildfabExecutor handles execution of pre-push stages and actions using buildfab DAG executor
 type BuildfabExecutor struct {
-    config *prepush.Config
+    config *buildfab.Config
     ui     UI
     versionDetector *version.Detector
     cliVersion string
@@ -23,7 +23,7 @@ type BuildfabExecutor struct {
 
 
 // NewBuildfabExecutor creates a new buildfab-based executor
-func NewBuildfabExecutor(config *prepush.Config, ui UI) *BuildfabExecutor {
+func NewBuildfabExecutor(config *buildfab.Config, ui UI) *BuildfabExecutor {
     return &BuildfabExecutor{
         config: config,
         ui:     ui,
@@ -33,7 +33,7 @@ func NewBuildfabExecutor(config *prepush.Config, ui UI) *BuildfabExecutor {
 }
 
 // NewBuildfabExecutorWithCLIVersion creates a new buildfab-based executor with CLI version
-func NewBuildfabExecutorWithCLIVersion(config *prepush.Config, ui UI, cliVersion string) *BuildfabExecutor {
+func NewBuildfabExecutorWithCLIVersion(config *buildfab.Config, ui UI, cliVersion string) *BuildfabExecutor {
     return &BuildfabExecutor{
         config: config,
         ui:     ui,
@@ -54,9 +54,6 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     cliVersion := e.getCLIVersion()
     e.ui.PrintCLIHeader("pre-push", cliVersion)
     e.ui.PrintProjectCheck(e.config.Project.Name, projectVersion)
-
-    // Convert pre-push config to buildfab config
-    buildfabConfig := e.convertToBuildfabConfig()
     
     // Debug output (remove in production)
     if e.ui.IsDebug() {
@@ -72,7 +69,7 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     opts.ErrorOutput = os.Stderr
     
     // Create simple runner
-    runner := buildfab.NewSimpleRunner(buildfabConfig, opts)
+    runner := buildfab.NewSimpleRunner(e.config, opts)
     
     // Execute the stage - buildfab handles all output automatically
     return runner.RunStage(ctx, stageName)
@@ -80,9 +77,6 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
 
 // RunAction executes a specific action using buildfab SimpleRunner
 func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) error {
-    // Convert pre-push config to buildfab config
-    buildfabConfig := e.convertToBuildfabConfig()
-    
     // Create simple run options
     opts := buildfab.DefaultSimpleRunOptions()
     opts.Verbose = e.ui.IsVerbose()
@@ -90,7 +84,7 @@ func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) err
     opts.WorkingDir = "."
     
     // Create simple runner (handles all output internally)
-    runner := buildfab.NewSimpleRunner(buildfabConfig, opts)
+    runner := buildfab.NewSimpleRunner(e.config, opts)
 
     // Execute using buildfab SimpleRunner
     err := runner.RunAction(ctx, actionName)
@@ -105,79 +99,17 @@ func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) err
 
 // ListActions returns all available actions
 func (e *BuildfabExecutor) ListActions() []prepush.Action {
-    return e.config.Actions
-}
-
-// executeActionWithBuildfab executes a single action using buildfab
-func (e *BuildfabExecutor) executeActionWithBuildfab(ctx context.Context, action prepush.Action) prepush.Result {
-    // Convert pre-push config to buildfab config
-    buildfabConfig := e.convertToBuildfabConfig()
-    
-    // Create simple run options
-    opts := buildfab.DefaultSimpleRunOptions()
-    opts.Verbose = e.ui.IsVerbose()
-    opts.Debug = e.ui.IsDebug()
-    opts.WorkingDir = "."
-    
-    // Create simple runner
-    runner := buildfab.NewSimpleRunner(buildfabConfig, opts)
-
-    // Execute the action
-    err := runner.RunAction(ctx, action.Name)
-    
-    if err != nil {
-        return prepush.Result{
-            Status:  prepush.StatusError,
-            Message: err.Error(),
-            Error:   err,
-        }
-    }
-    
-    return prepush.Result{
-        Status:  prepush.StatusOK,
-        Message: "executed successfully",
-    }
-}
-
-// convertToBuildfabConfig converts pre-push config to buildfab config
-func (e *BuildfabExecutor) convertToBuildfabConfig() *buildfab.Config {
-    config := &buildfab.Config{}
-    
-    // Convert project
-    config.Project.Name = e.config.Project.Name
-    config.Project.Modules = e.config.Project.Modules
-    config.Project.BinDir = e.config.Project.BinDir
-    
-    // Convert actions (buildfab will handle variable interpolation)
-    config.Actions = make([]buildfab.Action, len(e.config.Actions))
+    actions := make([]prepush.Action, len(e.config.Actions))
     for i, action := range e.config.Actions {
-        config.Actions[i] = buildfab.Action{
+        actions[i] = prepush.Action{
             Name: action.Name,
             Run:  action.Run,
             Uses: action.Uses,
         }
     }
-    
-    // Convert stages (buildfab will handle variable interpolation)
-    config.Stages = make(map[string]buildfab.Stage)
-    for name, stage := range e.config.Stages {
-        buildfabStage := buildfab.Stage{
-            Steps: make([]buildfab.Step, len(stage.Steps)),
-        }
-        for i, step := range stage.Steps {
-            buildfabStage.Steps[i] = buildfab.Step{
-                Action:  step.Action,
-                Require: step.Require,
-                OnError: step.OnError,
-                If:      step.If,
-                Only:    step.Only,
-            }
-        }
-        config.Stages[name] = buildfabStage
-    }
-    
-    return config
+    return actions
 }
+
 
 
 // getVersion returns the current version using the version-go library

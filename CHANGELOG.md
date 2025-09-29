@@ -1,3 +1,15 @@
+## [1.6.9] - 2025-09-29
+
+### Fixed
+- **Shell Option Support**: Fixed shell option not being respected in action configuration
+  - **Buildfab Integration**: Updated pre-push to use buildfab configuration directly instead of custom conversion
+    - Modified BuildfabExecutor to accept buildfab.Config directly instead of prepush.Config
+    - Removed custom configuration conversion that was losing shell field information
+    - Updated main.go to use buildfab.LoadConfig() directly for proper shell option handling
+    - Shell option now properly respected for actions with `shell: bash` configuration
+    - Resolves issue where test_bash action was not using bash shell as specified
+    - Ensures consistent behavior between pre-push and buildfab commands
+
 ## [1.6.8] - 2025-09-29
 
 ### Fixed

@@ -2,6 +2,15 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Shell Option Support**: Fixed shell option not being respected in action configuration
+  - **COMPLETED**: Updated pre-push to use buildfab configuration directly instead of custom conversion
+  - **COMPLETED**: Modified BuildfabExecutor to accept buildfab.Config directly instead of prepush.Config
+  - **COMPLETED**: Removed custom configuration conversion that was losing shell field information
+  - **COMPLETED**: Updated main.go to use buildfab.LoadConfig() directly for proper shell option handling
+  - **COMPLETED**: Shell option now properly respected for actions with `shell: bash` configuration
+  - **COMPLETED**: Resolves issue where test_bash action was not using bash shell as specified
+  - **COMPLETED**: Ensures consistent behavior between pre-push and buildfab commands
+  - **COMPLETED**: Version bumped to v1.6.9 for shell option support fix
 - **Static Builds for Linux and Darwin**: Fixed static builds for cross-platform compatibility
   - **COMPLETED**: Added CGO_ENABLED=0 to GoReleaser configuration to disable CGO
   - **COMPLETED**: Added -extldflags "-static" to ldflags for static binary creation

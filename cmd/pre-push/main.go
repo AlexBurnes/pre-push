@@ -15,7 +15,7 @@ import (
     "syscall"
 
     "github.com/spf13/cobra"
-    "github.com/AlexBurnes/pre-push/internal/config"
+    "github.com/AlexBurnes/buildfab/pkg/buildfab"
     "github.com/AlexBurnes/pre-push/internal/exec"
     "github.com/AlexBurnes/pre-push/internal/install"
     "github.com/AlexBurnes/pre-push/internal/ui"
@@ -56,23 +56,6 @@ func isDebugEnabled() bool {
     return debug
 }
 
-// isStageVerboseEnabled checks if verbose mode is enabled in project configuration for a specific stage
-func isStageVerboseEnabled(cfg *prepush.Config, stageName string) bool {
-    stage, exists := cfg.GetStage(stageName)
-    if !exists {
-        return false
-    }
-    return stage.Verbose
-}
-
-// isStageDebugEnabled checks if debug mode is enabled in project configuration for a specific stage
-func isStageDebugEnabled(cfg *prepush.Config, stageName string) bool {
-    stage, exists := cfg.GetStage(stageName)
-    if !exists {
-        return false
-    }
-    return stage.Debug
-}
 
 // getCurrentBinaryPath returns the path to the current running binary
 func getCurrentBinaryPath() (string, error) {
@@ -328,7 +311,7 @@ func runGitHook() error {
     }
     
     // Load configuration using buildfab (supports includes)
-    cfg, err := config.LoadWithBuildfab(".project.yml")
+    buildfabConfig, err := buildfab.LoadConfig(".project.yml")
     if err != nil {
         return fmt.Errorf("failed to load configuration: %w", err)
     }
@@ -336,8 +319,8 @@ func runGitHook() error {
     // Variables will be resolved by buildfab automatically
     
     // Determine verbose and debug modes for Git hooks
-    hookVerbose := isVerboseEnabled() || isStageVerboseEnabled(cfg, "pre-push")
-    hookDebug := isDebugEnabled() || isStageDebugEnabled(cfg, "pre-push")
+    hookVerbose := isVerboseEnabled()
+    hookDebug := isDebugEnabled()
     
     // Debug output (only when debug mode is enabled)
     if hookDebug {
@@ -350,7 +333,7 @@ func runGitHook() error {
     ui := ui.New(hookVerbose, hookDebug)
     
     // Create buildfab executor with CLI version
-    executor := exec.NewBuildfabExecutorWithCLIVersion(cfg, ui, getVersion())
+    executor := exec.NewBuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
     
     // Run pre-push stage
     return executor.RunStage(ctx, "pre-push")
@@ -403,15 +386,15 @@ func runTest(cmd *cobra.Command, args []string) error {
     defer cancel()
 
     // Load configuration using buildfab (supports includes)
-    cfg, err := config.LoadWithBuildfab(".project.yml")
+    buildfabConfig, err := buildfab.LoadConfig(".project.yml")
     if err != nil {
         fmt.Fprintf(os.Stderr, "Error: %v\n", err)
         os.Exit(1)
     }
     
     // Determine verbose and debug modes for Git hooks
-    hookVerbose := isVerboseEnabled() || isStageVerboseEnabled(cfg, "pre-push")
-    hookDebug := isDebugEnabled() || isStageDebugEnabled(cfg, "pre-push")
+    hookVerbose := isVerboseEnabled()
+    hookDebug := isDebugEnabled()
     
     // Debug output (remove in production)
     if hookDebug {
@@ -426,7 +409,7 @@ func runTest(cmd *cobra.Command, args []string) error {
     ui := ui.New(hookVerbose, hookDebug)
     
     // Create buildfab executor with CLI version
-    executor := exec.NewBuildfabExecutorWithCLIVersion(cfg, ui, getVersion())
+    executor := exec.NewBuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
     
     // Run pre-push stage
     if err := executor.RunStage(ctx, "pre-push"); err != nil {
