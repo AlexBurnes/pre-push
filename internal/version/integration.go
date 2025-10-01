@@ -47,16 +47,17 @@ func GetVersionInfo(ctx context.Context) (*VersionInfo, error) {
 
 // getVersionFromLibrary gets the current version using the version-go library
 func getVersionFromLibrary(ctx context.Context) (string, error) {
-    // First try to read from VERSION file
-    if versionStr, err := readVersionFile(); err == nil {
-        // Validate the version using the library
-        if err := version.Validate(versionStr); err == nil {
-            return versionStr, nil
-        }
+    // Use version-go library to get version from git
+    versionStr, err := version.GetVersion()
+    if err != nil {
+        return "", fmt.Errorf("failed to get version from git: %w", err)
     }
     
-    // Fallback to git describe
-    return getVersionFromGit(ctx)
+    if versionStr == "" {
+        return "", fmt.Errorf("no version found")
+    }
+    
+    return versionStr, nil
 }
 
 // readVersionFile reads version from VERSION file
@@ -81,11 +82,11 @@ func readVersionFile() (string, error) {
     return "", fmt.Errorf("VERSION file not found")
 }
 
-// getVersionFromGit gets version from git describe
+// getVersionFromGit gets version from git describe (deprecated, use getVersionFromLibrary instead)
 func getVersionFromGit(ctx context.Context) (string, error) {
-    // This would require implementing git integration
-    // For now, return empty to indicate no version found
-    return "", fmt.Errorf("git version detection not implemented")
+    // Deprecated: This function is no longer used
+    // Version detection is now handled by version-go library
+    return "", fmt.Errorf("git version detection deprecated")
 }
 
 // getProjectFromLibrary gets the project name using the version-go library

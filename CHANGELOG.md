@@ -1,3 +1,19 @@
+## [1.6.13] - 2025-10-01
+
+### Fixed
+- **Project Version Detection**: Fixed project version detection to use git instead of VERSION file
+  - **Issue**: Project version was incorrectly reading from VERSION file (showing pre-push tool version)
+  - **Solution**: Updated version-go library to v1.3.0 and use GetVersion() method for git-based detection
+  - **Result**: Project version now correctly detected from git tags instead of VERSION file
+  - **Impact**: `pre-push test` now shows correct project version (e.g., "Checking buildfab-pre-push (1.6.12)" from git)
+  - **Library**: Updated github.com/AlexBurnes/version-go from v1.2.5 to v1.3.0
+
+### Changed
+- **Version Library**: Updated version-go library API usage
+  - **Old API**: Used VERSION file reading with fallback to git
+  - **New API**: Direct GetVersion() function call for git-based detection
+  - **Benefit**: Simpler code and more accurate version detection
+
 ## [1.6.12] - 2025-09-30
 
 ### Added

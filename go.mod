@@ -4,7 +4,7 @@ go 1.23.1
 
 require (
 	github.com/AlexBurnes/buildfab v0.16.9
-	github.com/AlexBurnes/version-go v1.2.5
+	github.com/AlexBurnes/version-go v1.3.0
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v3 v3.0.1
 )

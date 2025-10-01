@@ -2,6 +2,12 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Project Version Detection**: Fixed project version detection to use git-based version detection
+  - **COMPLETED**: Updated version-go library from v1.2.5 to v1.3.0
+  - **COMPLETED**: Implemented GetVersion() API for git-based version detection
+  - **COMPLETED**: Project version now correctly detected from git tags instead of VERSION file
+  - **COMPLETED**: Simplified version detection code with new API
+  - **COMPLETED**: All tests passing with updated library
 - **CLI Behavior Improvements**: Enhanced CLI behavior for better user experience and clearer command structure
   - **COMPLETED**: Modified CLI to only check/update Git hooks when 'install' command is provided
   - **COMPLETED**: Added usage printing when no command is provided in CLI arguments

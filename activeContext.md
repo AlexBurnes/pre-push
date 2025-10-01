@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.16.9 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.6.12 Release**
+**Core Implementation Complete - Enhanced with Buildfab v0.16.9 Integration + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.6.12 Release + Project Version Detection Fix**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,13 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Project Version Detection Fix**: Fixed project version detection to use git instead of VERSION file
+  - **COMPLETED**: Updated version-go library from v1.2.5 to v1.3.0 with new GetVersion() API
+  - **COMPLETED**: Modified getVersionFromLibrary() to use version.GetVersion() for git-based detection
+  - **COMPLETED**: Removed VERSION file reading that was showing pre-push tool version instead of project version
+  - **COMPLETED**: Project version now correctly detected from git tags
+  - **COMPLETED**: All tests passing with updated library
+  - **COMPLETED**: Version detection simplified with direct GetVersion() function call
 - **CLI Behavior Improvements**: Enhanced CLI behavior for better user experience and clearer command structure
   - **COMPLETED**: Modified CLI to only check/update Git hooks when 'install' command is provided
   - **COMPLETED**: Added usage printing when no command is provided in CLI arguments

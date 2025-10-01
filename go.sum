@@ -1,9 +1,7 @@
-github.com/AlexBurnes/buildfab v0.16.7 h1:D6h30RPaVDBn1ub5gD9K38KTOX4LYSgtAnV9V3pnNJk=
-github.com/AlexBurnes/buildfab v0.16.7/go.mod h1:41s4ipwrSexnKqZwSFZRBWGeLCP3zwMSZglCnxexTio=
 github.com/AlexBurnes/buildfab v0.16.9 h1:oYUpqRS5mj28Ohi2MEjVV/mj2Ef0ftStMdVe30fRFgU=
 github.com/AlexBurnes/buildfab v0.16.9/go.mod h1:41s4ipwrSexnKqZwSFZRBWGeLCP3zwMSZglCnxexTio=
-github.com/AlexBurnes/version-go v1.2.5 h1:O667YJ5mJbdEFgGCPeIlAigYuxyb9Bkeg3vM5FE17no=
-github.com/AlexBurnes/version-go v1.2.5/go.mod h1:MfcPI9btq3zf9hW6rpM6J8QPVb17ffhhCvx44tMtjFk=
+github.com/AlexBurnes/version-go v1.3.0 h1:7GbqcUA068EcfTLSUVlpn/L4QohSO41EjBXyTxZ3RD4=
+github.com/AlexBurnes/version-go v1.3.0/go.mod h1:MfcPI9btq3zf9hW6rpM6J8QPVb17ffhhCvx44tMtjFk=
 github.com/cpuguy83/go-md2man/v2 v2.0.3/go.mod h1:tgQtvFlXSQOSOSIRvRPT7W67SCa46tRHOmNcaadrF8o=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/inconshreveable/mousetrap v1.1.0 h1:wN+x4NVGpMsO7ErUn/mUI3vEoE6Jt13X2s0bqwp9tc8=
