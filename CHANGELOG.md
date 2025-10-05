@@ -1,3 +1,12 @@
+## [1.6.14] - 2025-10-05
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.16.9 to v0.17.0 for latest features and improvements
+  - **Enhanced Features**: Latest buildfab release includes performance improvements and bug fixes
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests pass with updated library version
+  - **Library**: Updated github.com/AlexBurnes/buildfab from v0.16.9 to v0.17.0
+
 ## [1.6.13] - 2025-10-01
 
 ### Fixed
