@@ -1,3 +1,36 @@
+## [1.8.0] - 2025-10-06
+
+### Added
+- **Enhanced Git Pre-Push Behavior**: Comprehensive Git push operation handling with intelligent validation
+  - **Buildfab Library Update**: Updated buildfab library from v0.17.0 to v0.18.0 for latest features
+  - **Git Delete Detection**: Automatically detects and skips checks for delete operations (`git push :tag` or `git push :branch`)
+  - **Tag Semantic Validation**: Validates pushed tags using version library for proper semantic versioning
+  - **Smart Pre-Push Skipping**: Skips pre-push stage when pushing tag/branch that is not current
+  - **Enhanced Git Variables**: Added comprehensive Git variables for interpolation:
+    - `${{ tag }}` - single pushed tag (most common case)
+    - `${{ branch }}` - single pushed branch (most common case)  
+    - `${{ tags }}` - comma-separated list of pushed tags
+    - `${{ branches }}` - comma-separated list of pushed branches
+    - `${{ version.tag }}` - current repository tag
+    - `${{ version.branch }}` - current repository branch
+
+### Changed
+- **Git Ref Processing**: Enhanced Git ref parsing with comprehensive push information extraction
+  - **Delete Operation Detection**: Detects zero SHA in local ref as delete operation indicator
+  - **Tag/Branch Classification**: Automatically classifies refs as tags or branches
+  - **Push Information Structure**: Structured Git push information with remote details and ref metadata
+- **Pre-Push Hook Logic**: Intelligent pre-push hook behavior based on push operation type
+  - **Validation Flow**: Tag validation happens before pre-push stage execution
+  - **Skip Logic**: Smart skipping of pre-push stage for non-current tag/branch pushes
+  - **Error Handling**: Clear error messages for invalid tag semantics
+
+### Technical Details
+- **Git Ref Parsing**: Enhanced parsing of Git stdin format with proper ref classification
+- **Version Library Integration**: Uses existing version library for tag semantic validation
+- **Variable Enhancement**: BuildfabExecutor now includes comprehensive Git push variables
+- **Flow Control**: Proper flow control with early exits for delete operations and invalid tags
+- **Debug Support**: Debug output includes push information for troubleshooting
+
 ## [1.7.0] - 2025-10-06
 
 ### Added

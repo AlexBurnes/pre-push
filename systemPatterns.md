@@ -25,14 +25,19 @@
 ```
 
 ## Key Technical Decisions
-- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.11 for advanced DAG execution and workflow automation
+- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.18.0 for advanced DAG execution and workflow automation
 - **DAG-based execution**: Parallel execution of independent checks with explicit dependencies via buildfab
 - **YAML configuration**: GitHub Actions-inspired config format for familiarity and flexibility
 - **Context-aware execution**: All operations respect context cancellation and timeouts
 - **Error policy system**: Configurable stop/warn behavior per check step
-- **Variable interpolation**: GitHub-style `${{ }}` syntax for dynamic configuration
+- **Variable interpolation**: GitHub-style `${{ }}` syntax for dynamic configuration with enhanced Git variables
 - **Self-installing hooks**: Automatic installation and update of Git pre-push hooks
 - **Static binary distribution**: CGO-disabled builds for maximum compatibility
+- **Enhanced Git Pre-Push Behavior**: Intelligent Git push operation handling with validation and smart skipping
+  - **Delete Operation Detection**: Automatically detects and skips checks for delete operations
+  - **Tag Semantic Validation**: Validates pushed tags using version library for proper semantic versioning
+  - **Smart Pre-Push Skipping**: Skips pre-push stage when pushing non-current tag/branch
+  - **Enhanced Git Variables**: Comprehensive Git variables for interpolation (tag, branch, tags, version.tag, version.branch)
 - **PRD Requirements**: Enhanced parallel execution with ordered output and failure resilience
   - Steps displayed in project.yml declaration order (not execution order)
   - Independent steps continue running even when other steps fail
