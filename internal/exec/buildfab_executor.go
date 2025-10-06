@@ -31,12 +31,34 @@ type UI interface {
     IsDebug() bool
 }
 
+// GitPushInfo contains information about the Git push operation
+type GitPushInfo struct {
+    RemoteName string
+    RemoteURL  string
+    Refs       []GitRef
+    Tags       []string
+    Branches   []string
+    IsDelete   bool
+}
+
+// GitRef represents a Git reference being pushed
+type GitRef struct {
+    LocalRef  string
+    LocalSHA  string
+    RemoteRef string
+    RemoteSHA string
+    IsDelete  bool
+    IsTag     bool
+    IsBranch  bool
+}
+
 // BuildfabExecutor handles execution of pre-push stages and actions using buildfab DAG executor
 type BuildfabExecutor struct {
     config *buildfab.Config
     ui     UI
     versionDetector *version.Detector
     cliVersion string
+    gitPushInfo *GitPushInfo
 }
 
 
@@ -57,7 +79,13 @@ func BuildfabExecutorWithCLIVersion(config *buildfab.Config, ui UI, cliVersion s
         ui:     ui,
         versionDetector: version.New(),
         cliVersion: cliVersion,
+        gitPushInfo: nil,
     }
+}
+
+// SetGitPushInfo sets the Git push information for enhanced variable interpolation
+func (e *BuildfabExecutor) SetGitPushInfo(pushInfo *GitPushInfo) {
+    e.gitPushInfo = pushInfo
 }
 
 // RunStage executes a specific stage using buildfab SimpleRunner
@@ -202,12 +230,42 @@ func (e *BuildfabExecutor) GetAllVariables() map[string]string {
         }
     }
     
-    // Add Git-based variables
-    if tag, err := e.versionDetector.DetectCurrentVersion(context.Background()); err == nil && tag != "" {
-        variables["tag"] = tag
-    }
-    if branch, err := e.versionDetector.DetectCurrentBranch(context.Background()); err == nil && branch != "" {
-        variables["branch"] = branch
+    // Add enhanced Git variables from push information
+    if e.gitPushInfo != nil {
+        // Current push information
+        if len(e.gitPushInfo.Tags) > 0 {
+            // Single tag (most common case)
+            if len(e.gitPushInfo.Tags) == 1 {
+                variables["tag"] = e.gitPushInfo.Tags[0]
+            }
+            // Multiple tags as comma-separated list
+            variables["tags"] = strings.Join(e.gitPushInfo.Tags, ",")
+        }
+        
+        if len(e.gitPushInfo.Branches) > 0 {
+            // Single branch (most common case)
+            if len(e.gitPushInfo.Branches) == 1 {
+                variables["branch"] = e.gitPushInfo.Branches[0]
+            }
+            // Multiple branches as comma-separated list
+            variables["branches"] = strings.Join(e.gitPushInfo.Branches, ",")
+        }
+        
+        // Version-specific variables for current branch and tag
+        if currentBranch, err := e.versionDetector.DetectCurrentBranch(context.Background()); err == nil && currentBranch != "" {
+            variables["version.branch"] = currentBranch
+        }
+        if currentTag, err := e.versionDetector.DetectCurrentVersion(context.Background()); err == nil && currentTag != "" {
+            variables["version.tag"] = currentTag
+        }
+    } else {
+        // Fallback to legacy Git detection if no push info available
+        if tag, err := e.versionDetector.DetectCurrentVersion(context.Background()); err == nil && tag != "" {
+            variables["tag"] = tag
+        }
+        if branch, err := e.versionDetector.DetectCurrentBranch(context.Background()); err == nil && branch != "" {
+            variables["branch"] = branch
+        }
     }
     
     // Add environment variables

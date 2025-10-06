@@ -10,15 +10,18 @@ import (
     "fmt"
     "io"
     "os"
+    "os/exec"
     "os/signal"
     "path/filepath"
     "strconv"
+    "strings"
     "syscall"
 
     "github.com/spf13/cobra"
     "github.com/AlexBurnes/buildfab/pkg/buildfab"
-    "github.com/AlexBurnes/pre-push/internal/exec"
+    preexec "github.com/AlexBurnes/pre-push/internal/exec"
     "github.com/AlexBurnes/pre-push/internal/ui"
+    "github.com/AlexBurnes/pre-push/internal/version"
     "github.com/AlexBurnes/pre-push/pkg/prepush"
 )
 
@@ -321,7 +324,7 @@ func runGitHook() error {
     ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
     defer cancel()
     
-    // Read ref information from stdin
+    // Read and parse ref information from stdin
     refs, err := readGitRefs()
     if err != nil {
         return fmt.Errorf("failed to read Git refs: %w", err)
@@ -332,13 +335,38 @@ func runGitHook() error {
         return nil
     }
     
+    // Parse Git push information
+    pushInfo, err := parseGitPushInfo(refs)
+    if err != nil {
+        return fmt.Errorf("failed to parse Git push info: %w", err)
+    }
+    
+    // 1. Check if this is a delete operation - if so, skip all checks
+    if pushInfo.IsDelete {
+        fmt.Fprintf(os.Stderr, "Delete operation detected, skipping pre-push checks\n")
+        return nil
+    }
+    
+    // 2. Validate pushed tags for semantic versioning
+    if len(pushInfo.Tags) > 0 {
+        for _, tag := range pushInfo.Tags {
+            if err := validateTagSemantics(tag); err != nil {
+                return fmt.Errorf("invalid tag semantics for %s: %w", tag, err)
+            }
+        }
+    }
+    
+    // 3. Check if pushing tag/branch that is not current - if so, skip pre-push stage
+    if shouldSkipPrePushStage(pushInfo) {
+        fmt.Fprintf(os.Stderr, "Pushing tag/branch that is not current, skipping pre-push stage\n")
+        return nil
+    }
+    
     // Load configuration using buildfab (supports includes)
     buildfabConfig, err := buildfab.LoadConfig(".project.yml")
     if err != nil {
         return fmt.Errorf("failed to load configuration: %w", err)
     }
-    
-    // Variables will be resolved by buildfab automatically
     
     // Determine verbose and debug modes for Git hooks
     hookVerboseLevel := getVerboseLevel()
@@ -349,27 +377,63 @@ func runGitHook() error {
         fmt.Fprintf(os.Stderr, "DEBUG: hookVerboseLevel=%d, hookDebug=%v\n", hookVerboseLevel, hookDebug)
         fmt.Fprintf(os.Stderr, "DEBUG: env PRE_PUSH_VERBOSE=%s\n", os.Getenv("PRE_PUSH_VERBOSE"))
         fmt.Fprintf(os.Stderr, "DEBUG: getVerboseLevel()=%d\n", getVerboseLevel())
+        fmt.Fprintf(os.Stderr, "DEBUG: pushInfo=%+v\n", pushInfo)
     }
     
     // Create UI with Git hook specific settings
     ui := ui.NewWithVerboseLevel(hookVerboseLevel, hookDebug)
     
-    // Create buildfab executor with CLI version
-    executor := exec.BuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
+    // Create buildfab executor with CLI version and enhanced Git variables
+    executor := preexec.BuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
+    
+    // Enhance executor with Git push information for variable interpolation
+    executor.SetGitPushInfo(&preexec.GitPushInfo{
+        RemoteName: pushInfo.RemoteName,
+        RemoteURL:  pushInfo.RemoteURL,
+        Refs:       convertGitRefs(pushInfo.Refs),
+        Tags:       pushInfo.Tags,
+        Branches:   pushInfo.Branches,
+        IsDelete:   pushInfo.IsDelete,
+    })
     
     // Run pre-push stage
     return executor.RunStage(ctx, "pre-push")
 }
 
-// readGitRefs reads Git ref information from stdin
-func readGitRefs() ([]string, error) {
-    var refs []string
+// GitRef represents a Git reference being pushed
+type GitRef struct {
+    LocalRef  string
+    LocalSHA  string
+    RemoteRef string
+    RemoteSHA string
+    IsDelete  bool
+    IsTag     bool
+    IsBranch  bool
+}
+
+// GitPushInfo contains information about the Git push operation
+type GitPushInfo struct {
+    RemoteName string
+    RemoteURL  string
+    Refs       []GitRef
+    Tags       []string
+    Branches   []string
+    IsDelete   bool
+}
+
+// readGitRefs reads Git ref information from stdin and parses it
+func readGitRefs() ([]GitRef, error) {
+    var refs []GitRef
     scanner := bufio.NewScanner(os.Stdin)
     
     for scanner.Scan() {
         line := scanner.Text()
         if line != "" {
-            refs = append(refs, line)
+            ref, err := parseGitRef(line)
+            if err != nil {
+                return nil, fmt.Errorf("failed to parse Git ref line %q: %w", line, err)
+            }
+            refs = append(refs, ref)
         }
     }
     
@@ -378,6 +442,173 @@ func readGitRefs() ([]string, error) {
     }
     
     return refs, nil
+}
+
+// parseGitRef parses a single Git ref line from stdin
+// Format: <local_ref> <local_sha> <remote_ref> <remote_sha>
+// For delete operations: <local_ref> <zero_sha> <remote_ref> <remote_sha>
+func parseGitRef(line string) (GitRef, error) {
+    parts := strings.Fields(line)
+    if len(parts) != 4 {
+        return GitRef{}, fmt.Errorf("invalid Git ref format, expected 4 fields, got %d", len(parts))
+    }
+    
+    localRef := parts[0]
+    localSHA := parts[1]
+    remoteRef := parts[2]
+    remoteSHA := parts[3]
+    
+    // Detect delete operation (local SHA is all zeros)
+    isDelete := localSHA == "0000000000000000000000000000000000000000"
+    
+    // Detect if it's a tag or branch
+    isTag := strings.HasPrefix(localRef, "refs/tags/")
+    isBranch := strings.HasPrefix(localRef, "refs/heads/")
+    
+    return GitRef{
+        LocalRef:  localRef,
+        LocalSHA:  localSHA,
+        RemoteRef: remoteRef,
+        RemoteSHA: remoteSHA,
+        IsDelete:  isDelete,
+        IsTag:     isTag,
+        IsBranch:  isBranch,
+    }, nil
+}
+
+// parseGitPushInfo parses Git push information from refs and command line arguments
+func parseGitPushInfo(refs []GitRef) (*GitPushInfo, error) {
+    if len(os.Args) < 2 {
+        return nil, fmt.Errorf("insufficient arguments for Git hook")
+    }
+    
+    remoteName := os.Args[1]
+    remoteURL := ""
+    if len(os.Args) > 2 {
+        remoteURL = os.Args[2]
+    }
+    
+    var tags []string
+    var branches []string
+    isDelete := false
+    
+    for _, ref := range refs {
+        if ref.IsDelete {
+            isDelete = true
+            // Extract tag/branch name from local ref
+            if ref.IsTag {
+                tagName := strings.TrimPrefix(ref.LocalRef, "refs/tags/")
+                tags = append(tags, tagName)
+            } else if ref.IsBranch {
+                branchName := strings.TrimPrefix(ref.LocalRef, "refs/heads/")
+                branches = append(branches, branchName)
+            }
+        } else {
+            // Extract tag/branch name from local ref
+            if ref.IsTag {
+                tagName := strings.TrimPrefix(ref.LocalRef, "refs/tags/")
+                tags = append(tags, tagName)
+            } else if ref.IsBranch {
+                branchName := strings.TrimPrefix(ref.LocalRef, "refs/heads/")
+                branches = append(branches, branchName)
+            }
+        }
+    }
+    
+    return &GitPushInfo{
+        RemoteName: remoteName,
+        RemoteURL:  remoteURL,
+        Refs:       refs,
+        Tags:       tags,
+        Branches:   branches,
+        IsDelete:   isDelete,
+    }, nil
+}
+
+// validateTagSemantics validates that a tag follows semantic versioning
+func validateTagSemantics(tag string) error {
+    // Use version library to validate tag semantics
+    detector := version.New()
+    
+    // Check if tag is a valid semantic version
+    if err := detector.ValidateVersion(tag); err != nil {
+        return fmt.Errorf("tag %s is not a valid semantic version: %w", tag, err)
+    }
+    
+    return nil
+}
+
+// shouldSkipPrePushStage determines if we should skip the pre-push stage
+func shouldSkipPrePushStage(pushInfo *GitPushInfo) bool {
+    // Get current branch and tag
+    currentBranch, err := getCurrentBranch()
+    if err != nil {
+        // If we can't get current branch, don't skip
+        return false
+    }
+    
+    currentTag, err := getCurrentTag()
+    if err != nil {
+        // If we can't get current tag, don't skip
+        return false
+    }
+    
+    // Check if we're pushing tags that are not the current tag
+    if len(pushInfo.Tags) > 0 {
+        for _, tag := range pushInfo.Tags {
+            if tag != currentTag {
+                return true
+            }
+        }
+    }
+    
+    // Check if we're pushing branches that are not the current branch
+    if len(pushInfo.Branches) > 0 {
+        for _, branch := range pushInfo.Branches {
+            if branch != currentBranch {
+                return true
+            }
+        }
+    }
+    
+    return false
+}
+
+// getCurrentBranch gets the current Git branch
+func getCurrentBranch() (string, error) {
+    cmd := exec.Command("git", "rev-parse", "--abbrev-ref", "HEAD")
+    output, err := cmd.Output()
+    if err != nil {
+        return "", err
+    }
+    return strings.TrimSpace(string(output)), nil
+}
+
+// getCurrentTag gets the current Git tag
+func getCurrentTag() (string, error) {
+    cmd := exec.Command("git", "describe", "--tags", "--abbrev=0")
+    output, err := cmd.Output()
+    if err != nil {
+        return "", err
+    }
+    return strings.TrimSpace(string(output)), nil
+}
+
+// convertGitRefs converts GitRef to preexec.GitRef
+func convertGitRefs(refs []GitRef) []preexec.GitRef {
+    result := make([]preexec.GitRef, len(refs))
+    for i, ref := range refs {
+        result[i] = preexec.GitRef{
+            LocalRef:  ref.LocalRef,
+            LocalSHA:  ref.LocalSHA,
+            RemoteRef: ref.RemoteRef,
+            RemoteSHA: ref.RemoteSHA,
+            IsDelete:  ref.IsDelete,
+            IsTag:     ref.IsTag,
+            IsBranch:  ref.IsBranch,
+        }
+    }
+    return result
 }
 
 // runRoot handles the root command (print usage)
@@ -427,7 +658,7 @@ func runTest(cmd *cobra.Command, args []string) error {
     ui := ui.NewWithVerboseLevel(hookVerboseLevel, hookDebug)
     
     // Create buildfab executor with CLI version
-    executor := exec.BuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
+    executor := preexec.BuildfabExecutorWithCLIVersion(buildfabConfig, ui, getVersion())
     
     // Run pre-push stage
     if err := executor.RunStage(ctx, "pre-push"); err != nil {
