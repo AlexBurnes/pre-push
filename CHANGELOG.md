@@ -1,3 +1,29 @@
+## [1.7.0] - 2025-10-06
+
+### Added
+- **Variable Interpolation Enhancement**: Comprehensive variable documentation and implementation
+  - **Documentation**: Updated docs/Project-specification.md with complete variable reference
+  - **Documentation**: Updated docs/Implementation-summary.md with all available variables
+  - **Variables**: Added `${{ version.build-type }}` for build type detection (Release/Debug)
+  - **Variables**: Added `${{ version.version-type }}` for version type detection (release/prerelease/etc)
+  - **Integration**: Updated BuildfabExecutor to include new variables in GetAllVariables()
+  - **Fix**: Fixed variable interpolation by passing variables to buildfab SimpleRunner
+  - **Testing**: Verified all variables work correctly with proper interpolation
+
+### Changed
+- **Version Library Update**: Updated version-go library from v1.3.0 to v1.4.0
+  - **Methods**: Now using official `version.GetVersionType()` method instead of custom implementation
+  - **Methods**: Now using official `version.GetBuildType()` method instead of custom implementation
+  - **Accuracy**: Improved accuracy and consistency with CLI commands
+  - **Results**: Build type now correctly shows "Release" instead of custom "debug" logic
+  - **Results**: Version type now correctly shows "release" instead of custom "semantic" logic
+
+### Technical Details
+- **Variable Interpolation**: Variables are now properly interpolated before shell execution
+- **Library Integration**: Uses official library methods for better maintainability and reliability
+- **Documentation**: Complete variable reference with examples and usage patterns
+- **Testing**: All variables tested and working correctly in action run blocks
+
 ## [1.6.14] - 2025-10-05
 
 ### Updated

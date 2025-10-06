@@ -86,6 +86,10 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     opts.Output = os.Stdout
     opts.ErrorOutput = os.Stderr
     
+    // Pass variables to buildfab for interpolation
+    variables := e.GetAllVariables()
+    opts.Variables = variables
+    
     // Create simple runner
     runner := buildfab.NewSimpleRunner(e.config, opts)
     
@@ -100,6 +104,10 @@ func (e *BuildfabExecutor) RunAction(ctx context.Context, actionName string) err
     opts.VerboseLevel = e.ui.GetVerboseLevel()  // Use UI verbose level directly
     opts.Debug = e.ui.IsDebug()
     opts.WorkingDir = "."
+    
+    // Pass variables to buildfab for interpolation
+    variables := e.GetAllVariables()
+    opts.Variables = variables
     
     // Create simple runner (handles all output internally)
     runner := buildfab.NewSimpleRunner(e.config, opts)
@@ -165,24 +173,53 @@ func (e *BuildfabExecutor) GetAllVariables() map[string]string {
         variables["cpu"] = fmt.Sprintf("%d", platformVars.CPU)
     }
     
-    // Add buildfab platform variables using the helper function (these will have platform. prefix)
-    variables = buildfab.AddPlatformVariables(variables)
-    
-    // Add Git and version variables
-    if gitVars, err := e.detectGitVariables(context.Background()); err == nil {
-        for k, v := range gitVars {
-            variables[k] = v
+    // Add version library variables
+    if versionInfo, err := version.GetVersionInfo(context.Background()); err == nil && versionInfo != nil {
+        // Standard version variables
+        if versionInfo.Version != "" {
+            variables["version"] = versionInfo.Version
+            variables["version.version"] = versionInfo.Version
         }
+        if versionInfo.Project != "" {
+            variables["project"] = versionInfo.Project
+            variables["version.project"] = versionInfo.Project
+        }
+        if versionInfo.Module != "" {
+            variables["module"] = versionInfo.Module
+            variables["version.module"] = versionInfo.Module
+        }
+        if len(versionInfo.Modules) > 0 {
+            modulesStr := strings.Join(versionInfo.Modules, ",")
+            variables["modules"] = modulesStr
+            variables["version.modules"] = modulesStr
+        }
+        // New build-type and version-type variables
+        if versionInfo.BuildType != "" {
+            variables["version.build-type"] = versionInfo.BuildType
+        }
+        if versionInfo.VersionType != "" {
+            variables["version.version-type"] = versionInfo.VersionType
+        }
+    }
+    
+    // Add Git-based variables
+    if tag, err := e.versionDetector.DetectCurrentVersion(context.Background()); err == nil && tag != "" {
+        variables["tag"] = tag
+    }
+    if branch, err := e.versionDetector.DetectCurrentBranch(context.Background()); err == nil && branch != "" {
+        variables["branch"] = branch
     }
     
     // Add environment variables
     for _, env := range os.Environ() {
-        if parts := strings.SplitN(env, "=", 2); len(parts) == 2 {
-            key := strings.ToLower(parts[0])
-            value := parts[1]
-            variables["env."+key] = value
+        parts := strings.SplitN(env, "=", 2)
+        if len(parts) == 2 {
+            variables["env."+parts[0]] = parts[1]
         }
     }
+    
+    // Add buildfab platform variables using the helper function (these will have platform. prefix)
+    variables = buildfab.AddPlatformVariables(variables)
     
     return variables
 }

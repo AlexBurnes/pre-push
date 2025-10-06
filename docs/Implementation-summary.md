@@ -155,11 +155,35 @@ stages:
 
 ### Variable Interpolation
 
-Supports GitHub-style variable interpolation:
+Supports GitHub-style variable interpolation with comprehensive variable support:
 
+**Repository State:**
 - `${{ tag }}` - Current git tag
 - `${{ branch }}` - Current git branch
+
+**Version Library Variables:**
 - `${{ version.version }}` - Version from version-go library
+- `${{ version.project }}` - Project name from version-go library
+- `${{ version.module }}` - Module name from version-go library
+- `${{ version.modules }}` - Modules list from version-go library
+- `${{ version.build-type }}` - Build type (release, debug, snapshot)
+- `${{ version.version-type }}` - Version type (semantic, prerelease, etc.)
+
+**Alternative Version Variables:**
+- `${{ version }}` - Current version (alternative to version.version)
+- `${{ project }}` - Project name (alternative to version.project)
+- `${{ module }}` - Primary module name (alternative to version.module)
+- `${{ modules }}` - Comma-separated list of modules (alternative to version.modules)
+
+**Platform Variables (from buildfab):**
+- `${{ platform }}` - Platform name (linux, darwin, windows)
+- `${{ arch }}` - Architecture (amd64, arm64)
+- `${{ os }}` - Operating system name
+- `${{ os_version }}` - Operating system version
+- `${{ cpu }}` - CPU count as string
+
+**Environment Variables:**
+- `${{ env.VARIABLE_NAME }}` - Any environment variable
 
 ### Error Policies
 

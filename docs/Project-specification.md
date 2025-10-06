@@ -158,8 +158,34 @@ When stage `pre-push` starts, print module banner line with **green check** on s
 
 * Resolve `${{ ... }}` placeholders in `run:` blocks and action inputs:
 
-  * Repo state: `tag`, `branch` (current).
-  * `version-go` library values: `version.version`, `version.project`, `version.module`, `version.modules`.
+### 6.1 Repository State Variables
+  * `${{ tag }}` - Current git tag
+  * `${{ branch }}` - Current git branch
+
+### 6.2 Version Library Variables (from version-go library)
+  * `${{ version.version }}` - Version from version-go library
+  * `${{ version.project }}` - Project name from version-go library  
+  * `${{ version.module }}` - Module name from version-go library
+  * `${{ version.modules }}` - Modules list from version-go library
+  * `${{ version.build-type }}` - Build type (release, debug, snapshot)
+  * `${{ version.version-type }}` - Version type (semantic, prerelease, etc.)
+
+### 6.3 Alternative Version Variable Names
+  * `${{ version }}` - Current version (alternative to version.version)
+  * `${{ project }}` - Project name (alternative to version.project)
+  * `${{ module }}` - Primary module name (alternative to version.module)
+  * `${{ modules }}` - Comma-separated list of modules (alternative to version.modules)
+
+### 6.4 Platform Variables (from buildfab library)
+  * `${{ platform }}` - Platform name (linux, darwin, windows)
+  * `${{ arch }}` - Architecture (amd64, arm64)
+  * `${{ os }}` - Operating system name
+  * `${{ os_version }}` - Operating system version
+  * `${{ cpu }}` - CPU count as string
+
+### 6.5 Environment Variables
+  * `${{ env.VARIABLE_NAME }}` - Any environment variable (e.g., `${{ env.PATH }}`, `${{ env.HOME }}`)
+
 * Fail with clear message for unresolved variables; suggest available keys.
 
 ## 7) Self-Install Logic
