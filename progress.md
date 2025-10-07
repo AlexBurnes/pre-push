@@ -2,7 +2,15 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
-- **Buildfab Library Update**: Updated buildfab library to latest release with enhanced features
+- **Buildfab Library Update to v0.20.0**: Updated buildfab library to latest release v0.20.0 with enhanced features
+  - **COMPLETED**: Updated buildfab library from v0.18.10 to v0.20.0 for latest features and improvements
+  - **COMPLETED**: Fixed test file to use `buildfab.Project` as proper type instead of inline anonymous struct
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Maintained full compatibility with existing configuration
+  - **COMPLETED**: Enhanced execution capabilities and performance optimizations
+  - **COMPLETED**: Updated CHANGELOG.md with comprehensive update documentation
+  - **COMPLETED**: Updated memory bank files with new buildfab version
+- **Buildfab Library Update to v0.18.10**: Updated buildfab library to previous release with enhanced features
   - **COMPLETED**: Updated buildfab library from v0.18.0 to v0.18.10 for latest features and improvements
   - **COMPLETED**: All tests passing with race detection enabled
   - **COMPLETED**: Maintained full compatibility with existing configuration
@@ -180,6 +188,9 @@
 - **Built-in Git actions**: git@untracked, git@uncommitted, git@modified with real Git operations
 - **Custom action execution**: Full shell command execution for run: actions with verbose output
 - **Variable interpolation**: Complete ${{ }} syntax with Git tag/branch detection and resolution
+- **Buildfab v0.20.0 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.20.0 as core DAG execution engine
+  - **COMPLETED**: Upgraded from v0.18.10 to v0.20.0 for latest features and improvements
+  - **COMPLETED**: Fixed test compatibility with new buildfab.Project type
 - **Buildfab v0.8.18 Integration**: Complete integration with [buildfab](https://github.com/AlexBurnes/buildfab) v0.8.18 as core DAG execution engine
   - **COMPLETED**: Upgraded from v0.8.11 to v0.8.18 for latest features and improvements
   - **COMPLETED**: Implemented buildfab.SimpleRunner for clean step-by-step execution

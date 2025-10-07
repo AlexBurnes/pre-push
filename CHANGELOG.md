@@ -1,3 +1,14 @@
+## [1.8.2] - 2025-10-07
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.18.10 to v0.20.0 for latest features and improvements
+  - **Enhanced Features**: Latest buildfab release includes performance improvements and bug fixes
+  - **API Changes**: Updated to use `buildfab.Project` as proper type instead of inline struct
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests pass with race detection enabled with updated library version
+  - **Test Fix**: Fixed test to use `buildfab.Project{}` instead of inline anonymous struct
+  - **Library**: Updated github.com/AlexBurnes/buildfab from v0.18.10 to v0.20.0
+
 ## [1.8.1] - 2025-10-07
 
 ### Updated

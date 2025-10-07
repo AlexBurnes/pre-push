@@ -39,11 +39,7 @@ func (m *mockUI) IsDebug() bool { return m.debug }
 // TestBuildfabExecutor tests the buildfab executor functionality
 func TestBuildfabExecutor(t *testing.T) {
     config := &buildfab.Config{
-        Project: struct {
-            Name    string   `yaml:"name"`
-            Modules []string `yaml:"modules"`
-            BinDir  string   `yaml:"bin,omitempty"`
-        }{
+        Project: buildfab.Project{
             Name: "test-project",
         },
         Actions: []buildfab.Action{
