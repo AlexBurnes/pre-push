@@ -3,7 +3,7 @@ module github.com/AlexBurnes/pre-push
 go 1.23.1
 
 require (
-	github.com/AlexBurnes/buildfab v0.18.0
+	github.com/AlexBurnes/buildfab v0.18.10
 	github.com/AlexBurnes/version-go v1.4.0
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v3 v3.0.1

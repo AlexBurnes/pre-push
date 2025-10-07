@@ -1,3 +1,12 @@
+## [1.8.1] - 2025-10-07
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.18.0 to v0.18.10 for latest features and improvements
+  - **Enhanced Features**: Latest buildfab release includes performance improvements and bug fixes
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests pass with race detection enabled with updated library version
+  - **Library**: Updated github.com/AlexBurnes/buildfab from v0.18.0 to v0.18.10
+
 ## [1.8.0] - 2025-10-06
 
 ### Added
