@@ -1,3 +1,17 @@
+## [1.9.0] - 2025-10-08
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.18.10 to v0.21.0 with multiline output feature
+  - **Multiline Output Support**: New buildfab v0.21.0 includes multiline output feature for better command output display
+  - **Enhanced Features**: Latest buildfab release includes performance improvements and bug fixes
+  - **Go Version Update**: Updated from Go 1.23.1 to Go 1.24.0 (required by buildfab v0.21.0)
+  - **Toolchain Update**: Added toolchain go1.24.8 for Go version management
+  - **Dependencies**: Updated golang.org/x/sys to v0.36.0 and added golang.org/x/term v0.35.0
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests pass with race detection enabled with updated library version
+  - **Test Fix**: Updated buildfab_executor_test.go to use proper buildfab.Project struct type
+  - **Library**: Updated github.com/AlexBurnes/buildfab from v0.18.10 to v0.21.0
+
 ## [1.8.2] - 2025-10-07
 
 ### Updated

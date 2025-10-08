@@ -1,11 +1,11 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.20.0 Integration + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.8.2 Release + Project Version Detection Fix + Buildfab Library Update**
+**Core Implementation Complete - Enhanced with Buildfab v0.21.0 Integration + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.9.0 Release + Project Version Detection Fix + Buildfab Library Update**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
-- **COMPLETED**: Buildfab v0.17.0 integration as core DAG execution engine
+- **COMPLETED**: Buildfab v0.21.0 integration as core DAG execution engine with multiline output feature
 - **COMPLETED**: Enhanced version flag handling (-V outputs only version, --version outputs full info)
 - **COMPLETED**: Added bin directory support for project configuration
 - **COMPLETED**: Implemented flexible shell script approach for version module validation
@@ -20,14 +20,16 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
-- **Buildfab Library Update to v0.20.0**: Updated buildfab library to latest release v0.20.0 with enhanced features and improvements
-  - **COMPLETED**: Updated buildfab library from v0.18.10 to v0.20.0 for latest features and improvements
-  - **COMPLETED**: Fixed test file to use `buildfab.Project` as proper type instead of inline anonymous struct
+- **Buildfab Library Update to v0.21.0**: Updated buildfab library to latest release with multiline output feature
+  - **COMPLETED**: Updated buildfab library from v0.18.10 to v0.21.0 for multiline output feature
+  - **COMPLETED**: Go version updated from 1.23.1 to 1.24.0 (required by buildfab v0.21.0)
+  - **COMPLETED**: Added toolchain go1.24.8 for Go version management
+  - **COMPLETED**: Updated golang.org/x/sys to v0.36.0 and added golang.org/x/term v0.35.0
+  - **COMPLETED**: Fixed test compilation error - updated buildfab.Project struct usage
   - **COMPLETED**: All tests passing with race detection enabled
   - **COMPLETED**: Maintained full compatibility with existing configuration
-  - **COMPLETED**: Enhanced execution capabilities and performance optimizations
-  - **COMPLETED**: Updated CHANGELOG.md with comprehensive update documentation
-  - **COMPLETED**: Updated memory bank files with new buildfab version
+  - **COMPLETED**: Enhanced execution capabilities with multiline output support
+  - **COMPLETED**: Version bumped to v1.9.0 for buildfab v0.21.0 update with multiline output feature (2025-10-08)
 - **Buildfab Library Update to v0.18.10**: Updated buildfab library to latest release with enhanced features and improvements
   - **COMPLETED**: Updated buildfab library from v0.18.0 to v0.18.10 for latest features and improvements
   - **COMPLETED**: All tests passing with race detection enabled
