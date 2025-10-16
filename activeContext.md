@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.21.0 Integration + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.9.0 Release + Project Version Detection Fix + Buildfab Library Update**
+**Core Implementation Complete - Enhanced with Buildfab v0.25.0 Integration + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.9.1 Release + Project Version Detection Fix + Buildfab Library Update**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,17 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Library Updates to buildfab v0.25.0 and version-go v1.5.0**: Updated core libraries to latest releases (2025-10-16)
+  - **COMPLETED**: Updated buildfab library from v0.21.0 to v0.25.0 for enhanced variable system
+  - **COMPLETED**: Updated version-go library from v1.4.0 to v1.5.0 for latest features
+  - **COMPLETED**: Buildfab v0.25.0 includes comprehensive variable system with list-variables command support
+  - **COMPLETED**: All buildfab variables available in pre-push: arch, cpu, env.*, module, os, os_version, platform, project, version.*
+  - **COMPLETED**: Pre-push provides extra Git-specific variables: tag, branch, tags, branches, version.tag, version.branch
+  - **COMPLETED**: Created comprehensive variable reference documentation (docs/Variable-reference.md)
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Maintained full compatibility with existing configuration
+  - **COMPLETED**: Enhanced variable detection and platform support capabilities
+  - **COMPLETED**: Version bumped to v1.9.1 for library updates (2025-10-16)
 - **Buildfab Library Update to v0.21.0**: Updated buildfab library to latest release with multiline output feature
   - **COMPLETED**: Updated buildfab library from v0.18.10 to v0.21.0 for multiline output feature
   - **COMPLETED**: Go version updated from 1.23.1 to 1.24.0 (required by buildfab v0.21.0)

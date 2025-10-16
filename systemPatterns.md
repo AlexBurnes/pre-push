@@ -19,13 +19,13 @@
 │                External Dependencies                        │
 │  ┌─────────────┬─────────────┬─────────────┬─────────────┐  │
 │  │   buildfab  │ version-go  │   YAML     │   Context   │  │
-│  │   v0.8.11   │  library    │  parsing   │  handling   │  │
+│  │   v0.25.0   │  library    │  parsing   │  handling   │  │
 │  └─────────────┴─────────────┴─────────────┴─────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
 ## Key Technical Decisions
-- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.18.0 for advanced DAG execution and workflow automation
+- **Buildfab Integration**: Powered by [buildfab](https://github.com/AlexBurnes/buildfab) v0.25.0 for advanced DAG execution and workflow automation with enhanced variable system
 - **DAG-based execution**: Parallel execution of independent checks with explicit dependencies via buildfab
 - **YAML configuration**: GitHub Actions-inspired config format for familiarity and flexibility
 - **Context-aware execution**: All operations respect context cancellation and timeouts

@@ -1,3 +1,28 @@
+## [1.9.1] - 2025-10-16
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.21.0 to v0.25.0 with enhanced variable system
+  - **Variable System Enhancement**: Buildfab v0.25.0 includes comprehensive variable system with list-variables command
+  - **Enhanced Features**: Latest buildfab release includes improved variable detection and platform support
+  - **Variable Compatibility**: All buildfab variables are available in pre-push plus additional Git-specific variables
+  - **Pre-push Variables**: Provides all buildfab variables (`arch`, `cpu`, `env.*`, `module`, `os`, `os_version`, `platform`, `project`, `version.*`)
+  - **Extra Git Variables**: Additional Git-specific variables (`tag`, `branch`, `tags`, `branches`, `version.tag`, `version.branch`)
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests pass with race detection enabled with updated library version
+  - **Library**: Updated github.com/AlexBurnes/buildfab from v0.21.0 to v0.25.0
+- **Version-Go Library**: Updated version-go library from v1.4.0 to v1.5.0 for latest features
+  - **Enhanced Features**: Latest version-go release includes improvements and bug fixes
+  - **Compatibility**: All existing functionality maintained with updated library
+  - **Testing**: All tests pass with race detection enabled
+  - **Library**: Updated github.com/AlexBurnes/version-go from v1.4.0 to v1.5.0
+
+### Documentation
+- **Variable Reference**: Added comprehensive variable reference documentation (`docs/Variable-reference.md`)
+  - Complete list of all available variables in pre-push
+  - Variables from buildfab, version-go library, and Git-specific enhancements
+  - Usage examples for platform-specific actions, version validation, and Git operations
+  - Backward compatibility documentation
+
 ## [1.9.0] - 2025-10-08
 
 ### Updated

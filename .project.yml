@@ -73,6 +73,7 @@ actions:
 
   - name: version-module
     run: |
+      echo "check project ${{project}} modules versions on os ${{os}}.${{os_version}}"
       for module in $(scripts/version modules); do
         echo "Checking module: bin/$module"
         module_version=$(bin/$module -V 2>/dev/null || echo "")

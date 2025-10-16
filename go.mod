@@ -5,8 +5,8 @@ go 1.24.0
 toolchain go1.24.8
 
 require (
-	github.com/AlexBurnes/buildfab v0.21.0
-	github.com/AlexBurnes/version-go v1.4.0
+	github.com/AlexBurnes/buildfab v0.25.0
+	github.com/AlexBurnes/version-go v1.5.0
 	github.com/spf13/cobra v1.8.0
 	gopkg.in/yaml.v3 v3.0.1
 )

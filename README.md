@@ -13,8 +13,8 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 ✅ **Flexible Configuration** - Bin directory support and shell script validation  
 ✅ **Streaming Output** - Results display immediately as steps complete while maintaining declaration order  
 ✅ **Parallel Execution** - True parallel execution with dependency-aware result display  
-✅ **Buildfab Integration** - Powered by buildfab v0.21.0 with multiline output support, platform variable detection and advanced DAG execution  
-✅ **Version Library Integration** - Integrated with `github.com/AlexBurnes/version-go/pkg/version` v1.4.0
+✅ **Buildfab Integration** - Powered by buildfab v0.25.0 with enhanced variable system, multiline output support, platform variable detection and advanced DAG execution  
+✅ **Version Library Integration** - Integrated with `github.com/AlexBurnes/version-go/pkg/version` v1.5.0
 ✅ **Platform Variable Detection** - Comprehensive platform variable detection and variable substitution with simple names  
 ✅ **Git Hook Installation** - Install command implemented with clear output and version information  
 ⏳ **Advanced Features** - Environment variables, conditional execution pending
@@ -22,7 +22,7 @@ A cross-platform, configurable Git `pre-push` hook runner written in Go, designe
 ## Features
 
 - **Cross-platform**: Works on Linux, Windows, and macOS (amd64/arm64)
-- **DAG-based execution**: Powered by buildfab v0.21.0 for advanced parallel execution with explicit dependencies and multiline output support
+- **DAG-based execution**: Powered by buildfab v0.25.0 for advanced parallel execution with explicit dependencies, enhanced variable system, and multiline output support
 - **Built-in checks**: Git state validation with flexible custom actions
 - **Configuration-driven**: YAML-based configuration similar to GitHub Actions
 - **Self-installing**: Automatic installation as Git pre-push hook

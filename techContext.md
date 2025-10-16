@@ -55,8 +55,8 @@ go test ./... -race
 ## Dependencies
 **Core Dependencies:**
 - `gopkg.in/yaml.v3`: YAML configuration parsing
-- `github.com/AlexBurnes/version-go/pkg/version`: Version parsing and validation library v0.8.22
-- `github.com/AlexBurnes/buildfab`: DAG execution engine v0.16.9
+- `github.com/AlexBurnes/version-go/pkg/version`: Version parsing and validation library v1.5.0
+- `github.com/AlexBurnes/buildfab`: DAG execution engine v0.25.0 with enhanced variable system
 - `golang.org/x/sync/errgroup`: Parallel execution management
 - `github.com/spf13/cobra`: CLI framework (optional, may use standard flag package)
 
