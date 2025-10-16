@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.25.0 Integration + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.9.1 Release + Project Version Detection Fix + Buildfab Library Update**
+**Core Implementation Complete - Enhanced with Buildfab v0.25.0 Integration + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.9.2 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,13 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Variable Interpolation Fixes**: Fixed missing buildfab version variables and duplicate error output (2025-10-16)
+  - **COMPLETED**: Fixed missing `version.rawversion` variable by adding `buildfab.AddVersionVariables()` call
+  - **COMPLETED**: Added all buildfab version variables including `version.major`, `version.minor`, `version.patch`, `version.commit`, `version.date`, `version.type`
+  - **COMPLETED**: Fixed duplicate error output issue for cleaner display
+  - **COMPLETED**: Verified full compatibility with buildfab variable system
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Version bumped to v1.9.2 for variable interpolation fixes (2025-10-16)
 - **Library Updates to buildfab v0.25.0 and version-go v1.5.0**: Updated core libraries to latest releases (2025-10-16)
   - **COMPLETED**: Updated buildfab library from v0.21.0 to v0.25.0 for enhanced variable system
   - **COMPLETED**: Updated version-go library from v1.4.0 to v1.5.0 for latest features

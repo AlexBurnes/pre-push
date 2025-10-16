@@ -1,3 +1,27 @@
+## [1.9.2] - 2025-10-16
+
+### Fixed
+- **Variable Interpolation**: Fixed missing `version.rawversion` variable by adding `buildfab.AddVersionVariables()`
+  - **Issue**: Pre-push was not providing all buildfab version variables (e.g., `version.rawversion`, `version.major`, `version.minor`, `version.patch`)
+  - **Root Cause**: Pre-push was not calling `buildfab.AddVersionVariables()` to add all buildfab version variables
+  - **Solution**: Added `buildfab.AddVersionVariables()` call in `GetAllVariables()` method
+  - **Impact**: Pre-push now provides all buildfab version variables for complete variable interpolation compatibility
+  - **Testing**: Verified `version.rawversion` variable now works correctly in test-variables action
+  - **File**: Updated `internal/exec/buildfab_executor.go` to add version variables
+- **Output Display**: Fixed duplicate error output issue
+  - **Issue**: Error messages were being repeated multiple times in output
+  - **Solution**: Buildfab's output system now handles error display correctly
+  - **Impact**: Clean, non-redundant output for all error messages
+  - **Testing**: Verified output is clean with no duplicate error messages
+
+### Compatibility
+- **Full Buildfab Compatibility**: Pre-push now provides all buildfab variables ensuring complete compatibility
+  - All version variables including: `version.rawversion`, `version.major`, `version.minor`, `version.patch`, `version.commit`, `version.date`, `version.type`
+  - Platform variables: `platform`, `arch`, `os`, `os_version`, `cpu`
+  - Environment variables: `env.*`
+  - Git variables: `tag`, `branch`, `tags`, `branches`, `version.tag`, `version.branch`
+  - Project variables: `project`, `module`, `modules`
+
 ## [1.9.1] - 2025-10-16
 
 ### Updated

@@ -15,12 +15,14 @@ stages:
 
       # Always run version module validation
       - action: version-module
-      
+
+      - action: test-variables
+
       # Run tests after version module validation
       - action: run-tests
         only: [release]
         require: [version-module]
-      
+
       # Run Git checks for all versions      
       - action: git-untracked
       - action: git-uncommitted
@@ -95,6 +97,11 @@ actions:
 
   - name: run-tests
     run: go test ./... -v -race
+
+  - name: test-variables
+    run: |
+      echo "version ${{version.version}}"
+      echo "raw version ${{version.rawversion}}"
 
   # Git actions
   - name: git-untracked

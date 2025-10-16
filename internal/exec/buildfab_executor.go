@@ -279,6 +279,9 @@ func (e *BuildfabExecutor) GetAllVariables() map[string]string {
     // Add buildfab platform variables using the helper function (these will have platform. prefix)
     variables = buildfab.AddPlatformVariables(variables)
     
+    // Add buildfab version variables (including version.rawversion, version.major, version.minor, version.patch, etc.)
+    variables = buildfab.AddVersionVariables(variables)
+    
     return variables
 }
 
