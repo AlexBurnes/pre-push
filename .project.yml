@@ -23,6 +23,11 @@ stages:
         only: [release]
         require: [version-module]
 
+      - action: platform-view
+      - action: container-platform-view
+        variables:
+          matrix.image: "alpine:latest"
+
       # Run Git checks for all versions      
       - action: git-untracked
       - action: git-uncommitted
@@ -64,6 +69,18 @@ stages:
         require: [install-binary]
       - action: goreleaser-release
         require: [create-installers, pre-check]
+
+  test-view:
+    steps:
+      - action: container-platform-view
+        matrix:
+          values:
+            image: ["alpine:latest", "ubuntu:22.04", "debian:12"]
+          strategy:
+            max_parallel: 3
+            fail_fast: false
+            continue_on_error: true
+
 
 actions:
   # Version and validation actions
@@ -218,3 +235,22 @@ actions:
     run: |
       export PATH="$(go env GOPATH)/bin:$PATH"
       goreleaser release --clean
+
+  - name: container-platform-view
+    description: Test platform detection in ${{ matrix.image }}
+    container:
+      image:
+        from: ${{ matrix.image }}
+      run_action: platform-view
+
+  - name: platform-view
+    description: Display platform information
+    run: |
+      echo "=== Platform Detection Test ==="
+      echo "Platform: ${{platform}}"
+      echo "Architecture: '${{arch}}'"
+      echo "OS: '${{os}}'"
+      echo "OS Version: '${{os_version}}'"
+      echo "CPU Count: ${{cpu}}"
+      echo "================================"
+      exit 0

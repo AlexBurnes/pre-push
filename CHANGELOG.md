@@ -1,3 +1,34 @@
+## [1.10.0] - 2025-10-17
+
+### Added
+- **Container Support with buildfab v0.26.0**: Full support for container actions with `run_action` in all verbose modes
+  - Updated buildfab library from v0.25.2 to v0.26.0
+  - Implemented `BuildfabBinaryPath` option to enable container preparation
+  - Added `findBuildfabBinary()` function to search for buildfab in system directories
+  - Searches in: `/usr/local/bin`, `/usr/bin`, `$HOME/bin`, current binary directory, `./scripts`, and PATH
+  - Container actions now work perfectly without hanging (completes in ~0.8s)
+  - Supports both `run_action` (with buildfab in container) and `run:` (direct shell commands)
+
+### Fixed
+- **Resolved Container Hang Issue**: Container actions no longer hang in verbose mode
+  - Previously, containers would hang indefinitely when verbose output was enabled (levels 1-3)
+  - Root cause: Missing buildfab binary in containers for `run_action` execution
+  - Solution: SimpleRunner now receives buildfab binary path via `BuildfabBinaryPath` option
+  - Containers properly execute with buildfab mounted into container environment
+
+### Changed
+- **Enhanced Debug Logging**: Added comprehensive debug output for container execution
+  - Shows buildfab binary search paths and results
+  - Displays SimpleRunOptions configuration including BuildfabBinaryPath
+  - Logs stage execution status and detailed container command execution
+
+### Documentation
+- **Updated Container Issue Documentation**: Marked buildfab-container-hang-issue.md as RESOLVED
+  - Documented the complete investigation and solution
+  - Added implementation details for BuildfabBinaryPath usage
+  - Included binary search strategy and error handling
+  - Provided instructions for buildfab binary installation
+
 ## [1.9.2] - 2025-10-16
 
 ### Fixed

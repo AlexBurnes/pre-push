@@ -6,6 +6,7 @@ import (
     "fmt"
     "os"
     "os/exec"
+    "path/filepath"
     "strings"
     "time"
 
@@ -88,6 +89,64 @@ func (e *BuildfabExecutor) SetGitPushInfo(pushInfo *GitPushInfo) {
     e.gitPushInfo = pushInfo
 }
 
+// findBuildfabBinary searches for buildfab binary in system directories
+func findBuildfabBinary() (string, error) {
+    // Get HOME directory
+    homeDir, err := os.UserHomeDir()
+    if err != nil {
+        homeDir = ""
+    }
+    
+    // Get current executable directory
+    execPath, err := os.Executable()
+    if err != nil {
+        execPath = ""
+    }
+    execDir := filepath.Dir(execPath)
+    
+    // Define search paths in order of preference
+    searchPaths := []string{
+        "/usr/local/bin/buildfab",
+        "/usr/bin/buildfab",
+    }
+    
+    // Add HOME/bin if HOME is available
+    if homeDir != "" {
+        searchPaths = append(searchPaths, filepath.Join(homeDir, "bin", "buildfab"))
+    }
+    
+    // Add current executable directory
+    if execDir != "" {
+        searchPaths = append(searchPaths, filepath.Join(execDir, "buildfab"))
+    }
+    
+    // Add ./scripts directory (relative to working directory)
+    searchPaths = append(searchPaths, "./scripts/buildfab")
+    searchPaths = append(searchPaths, "scripts/buildfab")
+    
+    // Search for buildfab in each path
+    for _, path := range searchPaths {
+        if _, err := os.Stat(path); err == nil {
+            // Check if file is executable
+            if info, err := os.Stat(path); err == nil && !info.IsDir() {
+                // Get absolute path
+                absPath, err := filepath.Abs(path)
+                if err == nil {
+                    return absPath, nil
+                }
+                return path, nil
+            }
+        }
+    }
+    
+    // Try using exec.LookPath as fallback (searches PATH)
+    if path, err := exec.LookPath("buildfab"); err == nil {
+        return path, nil
+    }
+    
+    return "", fmt.Errorf("buildfab binary not found in system directories")
+}
+
 // RunStage executes a specific stage using buildfab SimpleRunner
 func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error {
     _, exists := e.config.GetStage(stageName)
@@ -101,9 +160,10 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     e.ui.PrintCLIHeader("pre-push", cliVersion)
     e.ui.PrintProjectCheck(e.config.Project.Name, projectVersion)
     
-    // Debug output (remove in production)
+    // Debug output
     if e.ui.IsDebug() {
         fmt.Fprintf(os.Stderr, "DEBUG: UI IsVerbose=%v, IsDebug=%v\n", e.ui.IsVerbose(), e.ui.IsDebug())
+        fmt.Fprintf(os.Stderr, "DEBUG: UI VerboseLevel=%d\n", e.ui.GetVerboseLevel())
     }
     
     // Create simple run options with verbose and debug settings
@@ -114,15 +174,90 @@ func (e *BuildfabExecutor) RunStage(ctx context.Context, stageName string) error
     opts.Output = os.Stdout
     opts.ErrorOutput = os.Stderr
     
+    // Search for buildfab binary for container support
+    buildfabPath, err := findBuildfabBinary()
+    if err != nil {
+        // Log warning but continue - containers will fail if they need buildfab
+        if e.ui.IsDebug() {
+            fmt.Fprintf(os.Stderr, "DEBUG: Could not find buildfab binary: %v\n", err)
+            fmt.Fprintf(os.Stderr, "DEBUG: Container actions using run_action will not work\n")
+        }
+    } else {
+        opts.BuildfabBinaryPath = buildfabPath
+        if e.ui.IsDebug() {
+            fmt.Fprintf(os.Stderr, "DEBUG: Found buildfab binary: %s\n", buildfabPath)
+        }
+    }
+    
+    // Debug: Log SimpleRunOptions configuration
+    if e.ui.IsDebug() {
+        fmt.Fprintf(os.Stderr, "DEBUG: SimpleRunOptions:\n")
+        fmt.Fprintf(os.Stderr, "  VerboseLevel: %d\n", opts.VerboseLevel)
+        fmt.Fprintf(os.Stderr, "  Debug: %v\n", opts.Debug)
+        fmt.Fprintf(os.Stderr, "  WorkingDir: %s\n", opts.WorkingDir)
+        fmt.Fprintf(os.Stderr, "  Output: %T\n", opts.Output)
+        fmt.Fprintf(os.Stderr, "  ErrorOutput: %T\n", opts.ErrorOutput)
+        fmt.Fprintf(os.Stderr, "  BuildfabBinaryPath: %s\n", opts.BuildfabBinaryPath)
+    }
+    
     // Pass variables to buildfab for interpolation
     variables := e.GetAllVariables()
     opts.Variables = variables
     
+    // Debug: Log variables
+    if e.ui.IsDebug() {
+        fmt.Fprintf(os.Stderr, "DEBUG: Variables passed to buildfab:\n")
+        for k, v := range variables {
+            if len(v) > 50 {
+                fmt.Fprintf(os.Stderr, "  %s = %s... (truncated)\n", k, v[:50])
+            } else {
+                fmt.Fprintf(os.Stderr, "  %s = %s\n", k, v)
+            }
+        }
+    }
+    
+    // Debug: Log stage configuration
+    if e.ui.IsDebug() {
+        stage, _ := e.config.GetStage(stageName)
+        fmt.Fprintf(os.Stderr, "DEBUG: Stage '%s' has %d steps\n", stageName, len(stage.Steps))
+        for i, step := range stage.Steps {
+            fmt.Fprintf(os.Stderr, "DEBUG: Step %d: action=%s\n", i+1, step.Action)
+            if action, exists := e.config.GetAction(step.Action); exists {
+                fmt.Fprintf(os.Stderr, "DEBUG:   Action type: ")
+                if action.Run != "" {
+                    fmt.Fprintf(os.Stderr, "run command\n")
+                } else if action.Uses != "" {
+                    fmt.Fprintf(os.Stderr, "uses %s\n", action.Uses)
+                } else if action.Container != nil {
+                    fmt.Fprintf(os.Stderr, "container action\n")
+                    fmt.Fprintf(os.Stderr, "DEBUG:   Container image: %s\n", action.Container.Image.From)
+                    fmt.Fprintf(os.Stderr, "DEBUG:   Container run_action: %s\n", action.Container.RunAction)
+                }
+            }
+        }
+    }
+    
     // Create simple runner
     runner := buildfab.NewSimpleRunner(e.config, opts)
     
+    // Debug: Log before execution
+    if e.ui.IsDebug() {
+        fmt.Fprintf(os.Stderr, "DEBUG: Starting stage execution via SimpleRunner\n")
+    }
+    
     // Execute the stage - buildfab handles all output automatically
-    return runner.RunStage(ctx, stageName)
+    err = runner.RunStage(ctx, stageName)
+    
+    // Debug: Log after execution
+    if e.ui.IsDebug() {
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "DEBUG: Stage execution failed: %v\n", err)
+        } else {
+            fmt.Fprintf(os.Stderr, "DEBUG: Stage execution completed successfully\n")
+        }
+    }
+    
+    return err
 }
 
 // RunAction executes a specific action using buildfab SimpleRunner
