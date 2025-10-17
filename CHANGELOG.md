@@ -1,3 +1,29 @@
+## [1.10.1] - 2025-10-17
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.26.0 to v0.28.0 with new step features
+  - **Optional Step Names (v0.28.0)**: Steps can now have optional `name:` field for unique identification
+    - Allows using the same action or stage multiple times within a single stage
+    - Custom names used for dependency resolution via `require:` field
+    - Automatic step name derivation: custom name > action name > stage name
+    - Matrix-expanded steps append matrix values to custom names for uniqueness
+    - Validation ensures no duplicate step names within a stage
+  - **Stage References in Steps (v0.27.0)**: Steps can now reference other stages using `stage:` field
+    - New `stage:` field in step configuration (mutually exclusive with `action:`)
+    - Nested stage references with variable and condition inheritance
+    - Circular dependency detection for dependencies and stage references
+    - Enables reusable, composable workflows across stages
+  - **Full Compatibility**: All buildfab v0.28.0 features automatically supported in pre-push
+  - **Testing**: All tests pass with race detection enabled with v0.28.0
+  - **Library**: Updated github.com/AlexBurnes/buildfab from v0.26.0 to v0.28.0
+
+### Documentation
+- **Step Configuration Enhancement**: Pre-push now supports buildfab v0.28.0 step configuration features
+  - `name:` field for steps - allows reusing same action/stage with different names
+  - `stage:` field for steps - allows referencing and including entire stages
+  - Both features are automatically available through buildfab configuration system
+  - See buildfab documentation for detailed examples and usage patterns
+
 ## [1.10.0] - 2025-10-17
 
 ### Added

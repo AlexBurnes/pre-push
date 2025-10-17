@@ -2,6 +2,19 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Buildfab Library Update to v0.28.0**: Updated buildfab library to latest release with step features (2025-10-17)
+  - **COMPLETED**: Updated buildfab library from v0.26.0 to v0.28.0 for latest step configuration features
+  - **COMPLETED**: Optional Step Names (v0.28.0) - steps can now have `name:` field for unique identification
+  - **COMPLETED**: Stage References in Steps (v0.27.0) - steps can reference other stages using `stage:` field
+  - **COMPLETED**: Allows using same action/stage multiple times with different names
+  - **COMPLETED**: Custom names used for dependency resolution via `require:` field
+  - **COMPLETED**: Nested stage references with variable and condition inheritance
+  - **COMPLETED**: Circular dependency detection for dependencies and stage references
+  - **COMPLETED**: All buildfab v0.28.0 features automatically supported in pre-push
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Maintained full compatibility with existing configuration
+  - **COMPLETED**: Enhanced workflow composition capabilities
+  - **COMPLETED**: Version bumped to v1.10.1 for buildfab v0.28.0 update (2025-10-17)
 - **Variable Interpolation Fixes**: Fixed missing buildfab version variables and duplicate error output (2025-10-16)
   - **COMPLETED**: Fixed missing `version.rawversion` variable by adding `buildfab.AddVersionVariables()` call
   - **COMPLETED**: Added all buildfab version variables for complete compatibility
@@ -120,6 +133,7 @@
   - **COMPLETED**: check-pre-push-releases action now properly loaded from config/update-checking-actions.yml
   - **COMPLETED**: Version bumped to v1.6.1 for include functionality fix
 - **Library Updates**: Updated core dependencies to latest stable releases
+  - **COMPLETED**: Updated buildfab library from v0.26.0 to v0.28.0 for step configuration features (2025-10-17)
   - **COMPLETED**: Updated buildfab library from v0.21.0 to v0.25.0 for enhanced variable system (2025-10-16)
   - **COMPLETED**: Updated buildfab library from v0.16.9 to v0.17.0 for latest features and improvements
 - **COMPLETED**: Variable interpolation enhancement with comprehensive documentation and implementation

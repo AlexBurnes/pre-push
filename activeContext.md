@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.25.0 Integration + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.9.2 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update**
+**Core Implementation Complete - Enhanced with Buildfab v0.28.0 Integration + Optional Step Names + Stage References + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.10.1 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,19 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Buildfab Library Update to v0.28.0**: Updated buildfab library to latest release with step features (2025-10-17)
+  - **COMPLETED**: Updated buildfab library from v0.26.0 to v0.28.0 for latest step configuration features
+  - **COMPLETED**: Optional Step Names (v0.28.0) - steps can now have `name:` field for unique identification
+  - **COMPLETED**: Stage References in Steps (v0.27.0) - steps can reference other stages using `stage:` field
+  - **COMPLETED**: Allows using same action/stage multiple times with different names
+  - **COMPLETED**: Custom names used for dependency resolution via `require:` field
+  - **COMPLETED**: Nested stage references with variable and condition inheritance
+  - **COMPLETED**: Circular dependency detection for dependencies and stage references
+  - **COMPLETED**: All buildfab v0.28.0 features automatically supported in pre-push
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Maintained full compatibility with existing configuration
+  - **COMPLETED**: Enhanced workflow composition capabilities
+  - **COMPLETED**: Version bumped to v1.10.1 for buildfab v0.28.0 update (2025-10-17)
 - **Variable Interpolation Fixes**: Fixed missing buildfab version variables and duplicate error output (2025-10-16)
   - **COMPLETED**: Fixed missing `version.rawversion` variable by adding `buildfab.AddVersionVariables()` call
   - **COMPLETED**: Added all buildfab version variables including `version.major`, `version.minor`, `version.patch`, `version.commit`, `version.date`, `version.type`
