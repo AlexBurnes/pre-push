@@ -539,39 +539,77 @@ func validateTagSemantics(tag string) error {
 }
 
 // shouldSkipPrePushStage determines if we should skip the pre-push stage
+// Logic:
+// - If pushing the branch we are on → this is our branch (don't skip)
+// - If pushing a tag that is on the current branch → this is our branch (don't skip)
+// - If pushing a tag that is NOT on the current branch → not our branch (skip)
+// - If pushing a branch that is NOT the current branch → not our branch (skip)
 func shouldSkipPrePushStage(pushInfo *GitPushInfo) bool {
-    // Get current branch and tag
+    // Get current branch
     currentBranch, err := getCurrentBranch()
     if err != nil {
-        // If we can't get current branch, don't skip
+        // If we can't get current branch, don't skip (safer to run checks)
         return false
     }
     
-    currentTag, err := getCurrentTag()
-    if err != nil {
-        // If we can't get current tag, don't skip
-        return false
-    }
-    
-    // Check if we're pushing tags that are not the current tag
-    if len(pushInfo.Tags) > 0 {
-        for _, tag := range pushInfo.Tags {
-            if tag != currentTag {
-                return true
-            }
-        }
-    }
-    
-    // Check if we're pushing branches that are not the current branch
+    // If pushing branches, check if any branch matches current branch
     if len(pushInfo.Branches) > 0 {
+        isOurBranch := false
         for _, branch := range pushInfo.Branches {
-            if branch != currentBranch {
-                return true
+            if branch == currentBranch {
+                // This is our branch - don't skip
+                isOurBranch = true
+                break
             }
         }
+        if !isOurBranch {
+            // None of the pushed branches is our current branch - skip
+            return true
+        }
+        // At least one branch is our current branch - don't skip
+        return false
     }
     
+    // If pushing tags, check if any tag exists on current branch
+    if len(pushInfo.Tags) > 0 {
+        isTagOnBranch := false
+        for _, tag := range pushInfo.Tags {
+            if isTagOnCurrentBranch(tag, currentBranch) {
+                // Tag is on our branch - don't skip
+                isTagOnBranch = true
+                break
+            }
+        }
+        if !isTagOnBranch {
+            // None of the tags are on our current branch - skip
+            return true
+        }
+        // At least one tag is on our current branch - don't skip
+        return false
+    }
+    
+    // No branches or tags to push? Shouldn't happen, but don't skip
     return false
+}
+
+// isTagOnCurrentBranch checks if a tag exists on the current branch
+// A tag is "on a branch" if the tag commit is reachable from HEAD
+// (meaning the tag is part of the branch's commit history)
+func isTagOnCurrentBranch(tag, currentBranch string) bool {
+    // Get the commit SHA of the tag
+    cmd := exec.Command("git", "rev-parse", tag+"^{commit}")
+    tagCommit, err := cmd.Output()
+    if err != nil {
+        // If tag doesn't exist or can't resolve, assume not on branch (safer to skip)
+        return false
+    }
+    tagCommitStr := strings.TrimSpace(string(tagCommit))
+    
+    // Check if tag commit is reachable from current branch HEAD
+    // This checks if tag is an ancestor of HEAD (tag is in branch history)
+    cmd = exec.Command("git", "merge-base", "--is-ancestor", tagCommitStr, "HEAD")
+    err = cmd.Run()
+    return err == nil // Exit code 0 means tag is ancestor of HEAD (tag is on branch)
 }
 
 // getCurrentBranch gets the current Git branch

@@ -1,3 +1,22 @@
+## [1.10.2] - 2025-10-31
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.28.0 to v0.29.1
+  - Updated github.com/AlexBurnes/buildfab from v0.28.0 to v0.29.1
+  - All tests passing with race detection enabled
+
+### Fixed
+- **Branch Detection Logic**: Fixed pre-push hook branch detection to correctly identify "our branch"
+  - Fixed logic to properly detect when pushing the branch we are on → this is our branch (don't skip)
+  - Fixed logic to detect when pushing a tag that is on current branch → this is our branch (don't skip)
+  - Fixed logic to skip when pushing a tag that is NOT on current branch → not our branch (skip)
+  - Fixed logic to skip when pushing a branch that is NOT the current branch → not our branch (skip)
+  - Changed from incorrect "current tag" comparison to proper "tag on branch" detection using `git merge-base --is-ancestor`
+  - Improved tag-on-branch detection: uses `git rev-parse` and `git merge-base --is-ancestor` to check if tag commit is reachable from HEAD
+  - Prevents false positives where tags from other branches would incorrectly trigger pre-push checks
+
+## [Unreleased]
+
 ## [1.10.1] - 2025-10-17
 
 ### Updated

@@ -2,6 +2,13 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Buildfab Library Update to v0.29.1**: Updated buildfab library to latest release with branch detection fixes (2025-10-31)
+  - **COMPLETED**: Updated buildfab library from v0.28.0 to v0.29.1 for latest features and improvements
+  - **COMPLETED**: Fixed branch detection logic to correctly identify "our branch" when pushing
+  - **COMPLETED**: Improved tag-on-branch detection using `git merge-base --is-ancestor` for accurate branch checking
+  - **COMPLETED**: Prevents false positives where tags from other branches would incorrectly trigger pre-push checks
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: Version bumped to v1.10.2 for buildfab v0.29.1 update and branch detection fix (2025-10-31)
 - **Buildfab Library Update to v0.28.0**: Updated buildfab library to latest release with step features (2025-10-17)
   - **COMPLETED**: Updated buildfab library from v0.26.0 to v0.28.0 for latest step configuration features
   - **COMPLETED**: Optional Step Names (v0.28.0) - steps can now have `name:` field for unique identification
