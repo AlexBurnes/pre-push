@@ -15,7 +15,38 @@
   - Improved tag-on-branch detection: uses `git rev-parse` and `git merge-base --is-ancestor` to check if tag commit is reachable from HEAD
   - Prevents false positives where tags from other branches would incorrectly trigger pre-push checks
 
-## [Unreleased]
+## [1.11.0] - 2025-11-05
+
+### Updated
+- **Buildfab Library**: Updated buildfab library from v0.29.1 to v0.32.0
+  - Updated github.com/AlexBurnes/buildfab from v0.29.1 to v0.32.0
+  - All tests passing with race detection enabled
+
+### Documentation
+- **Buildfab Execution Summary**: Created concise summary of execution paths and buildfab library methods
+  - Listed all 10 buildfab library methods called by pre-push tool
+  - Documented method signatures, locations, and purposes
+  - Created complete execution path details for Git hook and test command flows
+  - Added method call sequence diagram showing integration points
+  - Provided summary table with file locations and line numbers
+  - Explained architecture benefits and performance characteristics
+  - Created docs/Buildfab-execution-summary.md as quick reference
+- **Buildfab Execution Paths Documentation**: Created comprehensive documentation of buildfab integration and execution flows
+  - Documented all main execution paths including CLI entry point, Git hook execution, test command, and stage execution
+  - Detailed variable resolution path covering platform, version, Git, and environment variables
+  - Explained Git push information parsing with delete detection and tag semantic validation
+  - Documented smart pre-push skipping logic using branch and tag-on-branch detection
+  - Created configuration loading path documentation with include directive support
+  - Added data flow diagrams for overall system architecture and variable resolution
+  - Explained design patterns: Delegation, Strategy, Observer, Builder, and Template Method
+  - Documented performance characteristics: parallel execution, ordered display, streaming output, smart skipping
+  - Provided error handling strategy with stop/warn policies and resilience features
+  - Added configuration examples for basic, advanced, and container actions
+  - Created debugging and troubleshooting guide with common issues and solutions
+  - Documented BuildfabExecutor.RunStage() execution flow with SimpleRunner integration
+  - Explained buildfab binary discovery for container action support
+  - Added comprehensive variable categories documentation (40+ variables)
+  - Created docs/Buildfab-execution-paths.md as complete reference for developers
 
 ## [1.10.1] - 2025-10-17
 

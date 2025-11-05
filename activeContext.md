@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.29.1 Integration + Branch Detection Fix + Optional Step Names + Stage References + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.10.2 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update**
+**Core Implementation Complete - Enhanced with Buildfab v0.32.0 Integration + Branch Detection Fix + Optional Step Names + Stage References + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.10.2 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update + Buildfab Execution Paths Documentation**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,38 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Version v1.11.0 Release**: Released new minor version for buildfab v0.32.0 integration (2025-11-05)
+  - **COMPLETED**: Version bumped from v1.10.2 to v1.11.0 for buildfab v0.32.0 update with huge changes
+  - **COMPLETED**: Updated CHANGELOG.md with release notes
+  - **COMPLETED**: Updated README.md with new buildfab version references
+  - **COMPLETED**: Updated VERSION file and packaging files (Windows Scoop, macOS Homebrew)
+  - **COMPLETED**: Built and tested binary successfully
+  - **COMPLETED**: All tests passing with race detection enabled
+- **Buildfab Library Update to v0.32.0**: Updated buildfab library to latest release (2025-11-05)
+  - **COMPLETED**: Updated buildfab library from v0.29.1 to v0.32.0 for latest features and improvements
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: go.mod updated with new version
+  - **COMPLETED**: Dependencies cleaned up with go mod tidy
+- **Buildfab Execution Summary**: Created concise summary of execution paths and buildfab library methods (2025-11-05)
+  - **COMPLETED**: Listed all 10 buildfab library methods used (LoadConfig, GetStage, GetAction, Get/Add Platform/Version Variables, DefaultSimpleRunOptions, NewSimpleRunner, RunStage, RunAction)
+  - **COMPLETED**: Documented each method with signature, location, purpose, and usage examples
+  - **COMPLETED**: Created complete execution path sequences for Git hook and test command flows
+  - **COMPLETED**: Added method call sequence diagram showing integration points
+  - **COMPLETED**: Provided summary table with file locations and line numbers for each method
+  - **COMPLETED**: Explained key integration points and architecture benefits
+  - **COMPLETED**: Documented performance characteristics from both buildfab and pre-push
+  - **COMPLETED**: Created docs/Buildfab-execution-summary.md as quick reference guide
+- **Buildfab Execution Paths Documentation**: Created comprehensive documentation of buildfab integration and execution paths (2025-11-05)
+  - **COMPLETED**: Documented all main execution paths (CLI entry, Git hook, test command, stage execution)
+  - **COMPLETED**: Detailed variable resolution path with all variable sources and categories
+  - **COMPLETED**: Explained Git push information parsing and smart pre-push skipping logic
+  - **COMPLETED**: Documented configuration loading path with include support
+  - **COMPLETED**: Created data flow diagrams for overall system and variable resolution
+  - **COMPLETED**: Explained design patterns used (Delegation, Strategy, Observer, Builder, Template Method)
+  - **COMPLETED**: Documented performance characteristics (parallel execution, ordered display, smart skipping)
+  - **COMPLETED**: Provided error handling strategy and resilience features
+  - **COMPLETED**: Added configuration examples and debugging troubleshooting guide
+  - **COMPLETED**: Created docs/Buildfab-execution-paths.md with comprehensive analysis
 - **Buildfab Library Update to v0.29.1 and Branch Detection Fix**: Updated buildfab library and fixed branch detection logic (2025-10-31)
   - **COMPLETED**: Updated buildfab library from v0.28.0 to v0.29.1 for latest features and improvements
   - **COMPLETED**: Fixed branch detection logic to correctly identify "our branch" when pushing
