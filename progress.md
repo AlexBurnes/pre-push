@@ -2,6 +2,20 @@
 
 ## What Works
 - **Complete core implementation**: All essential functionality implemented and working
+- **Version v1.11.1 Release**: Released new patch version for buildfab v0.32.1 integration (2025-11-06)
+  - **COMPLETED**: Version bumped from v1.11.0 to v1.11.1 for buildfab v0.32.1 update
+  - **COMPLETED**: Updated CHANGELOG.md with release notes
+  - **COMPLETED**: Updated README.md with new buildfab version references
+  - **COMPLETED**: Updated VERSION file and packaging files (Windows Scoop, macOS Homebrew)
+  - **COMPLETED**: Built and tested binary successfully
+  - **COMPLETED**: All tests passing with race detection enabled
+- **Buildfab Library Update to v0.32.1**: Updated buildfab library to latest patch release (2025-11-06)
+  - **COMPLETED**: Updated buildfab library from v0.32.0 to v0.32.1 for latest improvements
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: go.mod updated with new version
+  - **COMPLETED**: Dependencies cleaned up with go mod tidy
+  - **COMPLETED**: CHANGELOG.md updated with buildfab v0.32.1 update documentation
+  - **COMPLETED**: Memory bank updated with latest buildfab version
 - **Version v1.11.0 Release**: Released new minor version for buildfab v0.32.0 integration (2025-11-05)
   - **COMPLETED**: Version bumped from v1.10.2 to v1.11.0 for buildfab v0.32.0 update with huge changes
   - **COMPLETED**: Updated CHANGELOG.md with release notes

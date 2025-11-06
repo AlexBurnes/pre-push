@@ -1,7 +1,7 @@
 # Active Context: pre-push
 
 ## Current Work Focus
-**Core Implementation Complete - Enhanced with Buildfab v0.32.0 Integration + Branch Detection Fix + Optional Step Names + Stage References + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.10.2 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update + Buildfab Execution Paths Documentation**
+**Core Implementation Complete - Enhanced with Buildfab v0.32.1 Integration + Branch Detection Fix + Optional Step Names + Stage References + Enhanced Variable System + Multiline Output Support + Enhanced Git Pre-Push Behavior + Git Delete Detection + Tag Semantic Validation + Smart Pre-Push Skipping + Enhanced Git Variables + Include Functionality Fix + Platform Variable Detection + Variable Substitution + Verbose Mode Support + PRD Requirements + Version Compilation Fix + Version Display Improvements + Darwin/MacOS Naming Consistency Fix + Git Hook Binary Installation Fix + GitHub Actions CI Workflow Fix + Static Builds Fix + Shell Option Support Fix + CLI Behavior Improvements + Version v1.11.1 Release + Variable Interpolation Fixes + Project Version Detection Fix + Buildfab Library Update + Buildfab Execution Paths Documentation**
 - All core functionality implemented and tested
 - Complete working pre-push CLI tool with full feature set
 - Comprehensive test suite with 100% test coverage
@@ -20,6 +20,20 @@
   - Dependency-aware display that waits for required steps - ✅ IMPLEMENTED
 
 ## Recent Changes
+- **Version v1.11.1 Release**: Released new patch version for buildfab v0.32.1 integration (2025-11-06)
+  - **COMPLETED**: Version bumped from v1.11.0 to v1.11.1 for buildfab v0.32.1 update
+  - **COMPLETED**: Updated CHANGELOG.md with release notes
+  - **COMPLETED**: Updated README.md with new buildfab version references
+  - **COMPLETED**: Updated VERSION file and packaging files (Windows Scoop, macOS Homebrew)
+  - **COMPLETED**: Built and tested binary successfully
+  - **COMPLETED**: All tests passing with race detection enabled
+- **Buildfab Library Update to v0.32.1**: Updated buildfab library to latest patch release (2025-11-06)
+  - **COMPLETED**: Updated buildfab library from v0.32.0 to v0.32.1 for latest improvements
+  - **COMPLETED**: All tests passing with race detection enabled
+  - **COMPLETED**: go.mod updated with new version
+  - **COMPLETED**: Dependencies cleaned up with go mod tidy
+  - **COMPLETED**: CHANGELOG.md updated with buildfab v0.32.1 update documentation
+  - **COMPLETED**: Memory bank updated with latest buildfab version
 - **Version v1.11.0 Release**: Released new minor version for buildfab v0.32.0 integration (2025-11-05)
   - **COMPLETED**: Version bumped from v1.10.2 to v1.11.0 for buildfab v0.32.0 update with huge changes
   - **COMPLETED**: Updated CHANGELOG.md with release notes
