@@ -1,3 +1,10 @@
+## [1.11.2] - 2026-03-20
+
+### Fixed
+- **Buildfab Library**: Updated buildfab from v0.32.1 to v0.32.3 (critical fix)
+  - Fixed order of output steps in quiet mode (default mode for pre-push)
+  - Steps now display in declaration order instead of completion order in quiet mode
+
 ## [1.11.1] - 2025-11-06
 
 ### Updated
